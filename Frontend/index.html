@@ -122,7 +122,7 @@ select.flt:focus{border-color:var(--navy)}
 .sec-head p{font-size:.79rem;color:var(--grey);margin-top:4px;line-height:1.55}
 
 /* ---- KPI STRIP ---- */
-.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:13px;margin-bottom:22px}
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:22px}
 .kpi{background:#fff;border-radius:10px;padding:15px 17px;box-shadow:var(--shadow);border-top:3px solid var(--grey)}
 .kpi.a{border-color:var(--neon)}.kpi.b{border-color:#7c3aed}.kpi.c{border-color:var(--t1)}
 .kpi.d{border-color:var(--t2)}.kpi.e{border-color:var(--t3)}
@@ -243,12 +243,6 @@ select.flt:focus{border-color:var(--navy)}
 .mx th.t{text-align:center;font-size:.68rem}
 .tl-item .tese{font-size:.79rem;line-height:1.55;color:#334;margin-bottom:6px}
 .tl-item .leitura{font-size:.77rem;line-height:1.55;color:var(--grey);margin-bottom:8px}
-
-/* ---- ACERVO ---- */
-.arow{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:13px 0;border-bottom:1px solid var(--grey-border)}
-.arow:last-child{border:none}.arow:first-child{padding-top:0}
-.arow h4{font-size:.86rem;font-weight:700;margin:6px 0 4px;line-height:1.4}
-.arow p{font-size:.74rem;color:var(--grey)}
 
 /* ---- AGENDA ---- */
 .erow{display:flex;gap:15px;align-items:center;padding:13px 0;border-bottom:1px solid var(--grey-border)}
@@ -599,13 +593,13 @@ async function iniciarAcesso(){
 let HOJE, PERIODO_TRI, VALOR1000_CAMPOS, VALOR1000, TAXONOMIA, TRIMESTRAL_2T26, INDICADORES_SETORIAIS, DADOS;
 
 async function carregarDados(){
-  const nomes = ["edicao","taxonomia","radar","movimentos","agenda","acervo","valor1000","companhias_abertas","indicadores"];
+  const nomes = ["edicao","taxonomia","radar","movimentos","agenda","valor1000","companhias_abertas","indicadores"];
   const {data, error} = await sb.from("secoes").select("nome,conteudo").in("nome", [...nomes, "analises"]);
   if(error) throw new Error(error.message);
   const porNome = Object.fromEntries(data.map(l=>[l.nome, l.conteudo]));
   const faltando = nomes.filter(n=>!(n in porNome));
   if(faltando.length) throw new Error("seções sem dados: " + faltando.join(", "));
-  const [edicao, taxo, radar, movimentos, agenda, acervo, valor, abertas, indicadores] = nomes.map(n=>porNome[n]);
+  const [edicao, taxo, radar, movimentos, agenda, valor, abertas, indicadores] = nomes.map(n=>porNome[n]);
   // leituras escritas pela rotina de IA (Backend/ia/ROTINA.md); sem elas, o site segue normalmente
   const analises = porNome.analises || {financas:{}, indicadores:{}};
   HOJE = edicao.hoje;
@@ -623,7 +617,7 @@ async function carregarDados(){
     trimestral: empresasTrimestrais(),
     indicadores: INDICADORES_SETORIAIS,
     // itens que a rotina de IA descartou (sem relação com negócios) ficam guardados nos dados, mas não aparecem
-    radar: radar.filter(i=>!i.oculto), movimentos: movimentos.filter(m=>!m.oculto), acervo, agenda,
+    radar: radar.filter(i=>!i.oculto), movimentos: movimentos.filter(m=>!m.oculto), agenda,
     analises: {financas: analises.financas || {}, indicadores: analises.indicadores || {}}
   };
   const dataBr = formatarData(HOJE);
@@ -654,7 +648,6 @@ const ABAS = [
   {id:"financas", label:"Finanças dos players"},
   {id:"indicadores", label:"Indicadores setoriais"},
   {id:"movimentos", label:"Movimentos estratégicos"},
-  {id:"acervo", label:"Acervo Peers"},
   {id:"agenda", label:"Agenda setorial"}
 ];
 
@@ -723,11 +716,10 @@ function universoItens(){
   const a = estado.aba;
   const lista = a==="radar" ? DADOS.radar
     : a==="movimentos" ? DADOS.movimentos
-    : a==="acervo" ? DADOS.acervo
     : a==="agenda" ? DADOS.agenda
     : a==="financas" ? (estadoFinancas.base==="abertas" ? DADOS.trimestral : DADOS.players.flatMap(p=>p.segmentos))
     : a==="indicadores" ? DADOS.indicadores
-    : DADOS.radar.concat(DADOS.movimentos, DADOS.acervo, DADOS.agenda.filter(e=>diasEntre(e.data)>=0 && diasEntre(e.data)<=30));
+    : DADOS.radar.concat(DADOS.movimentos, DADOS.agenda.filter(e=>diasEntre(e.data)>=0 && diasEntre(e.data)<=30));
   return lista.map(x=>({industria:x.industria, offering:x.offering, temas:x.temas||[]}));
 }
 
@@ -879,7 +871,6 @@ function renderizar(){
   else if(estado.aba==="financas") c.innerHTML = renderFinancas();
   else if(estado.aba==="indicadores") c.innerHTML = renderIndicadores();
   else if(estado.aba==="movimentos") c.innerHTML = renderMovimentos();
-  else if(estado.aba==="acervo") c.innerHTML = renderAcervo();
   else if(estado.aba==="agenda") c.innerHTML = renderAgenda();
   if(estado.modoVisualizacao==="comercial") c.insertAdjacentHTML("afterbegin", barraComercial());
   atualizarContador();
@@ -916,7 +907,6 @@ function renderHome(){
   const movsRecentes = movs.slice(0,5);
   const agendaAberta = DADOS.agenda.filter(passaFiltro).filter(e=>diasEntre(e.data)>=0).sort((a,b)=>a.data.localeCompare(b.data));
   const agenda30 = agendaAberta.filter(e=>diasEntre(e.data)<=30);
-  const acervo = DADOS.acervo.filter(passaFiltro);
   const indsSel = [...estado.industrias];
   const playersCobertos = indsSel.length
     ? indsSel.reduce((s,i)=>s+segmentosDaIndustria(i).length, 0)
@@ -928,7 +918,6 @@ function renderHome(){
     {cls:"a", l:"Itens no Radar", v:radar.length, s:alta+" de alta relevância"},
     {cls:"c", l:"Movimentos mapeados", v:movs.length, s: movs.length ? "último em "+formatarData(movs[0].data) : "sem registro"},
     {cls:"d", l:"Players cobertos", v:playersCobertos, s: subPlayers+" · Valor 1000"},
-    {cls:"b", l:"Acervo Peers", v:acervo.length, s:"ilustrativo"},
     {cls:"e", l:"Agenda — 30 dias", v:agenda30.length, s: agendaAberta.length ? "próxima em "+formatarData(agendaAberta[0].data) : "nada agendado"}
   ];
 
@@ -1731,35 +1720,6 @@ function abrirFichaPlayer(pl){
 }
 
 /* =========================================================
-   ACERVO PEERS
-   ========================================================= */
-function renderAcervo(){
-  const itens = DADOS.acervo.filter(passaFiltro).sort((a,b)=>b.ano-a.ano);
-  const cls = t => t==="POV" ? "bp" : (t==="Benchmark" ? "b1" : "b2");
-  return '' +
-  '<div class="sec-head"><h2>Acervo Peers</h2>' +
-  '<p>O que a Peers já produziu para este recorte. Material de projeto de cliente nunca fica legível no portal: aparece o metadado e quem conduziu o trabalho.</p></div>' +
-  '<div class="warn" style="margin-bottom:18px"><b>Conteúdo ilustrativo.</b> Os títulos abaixo são exemplos. Na versão final, o Acervo vem do Kx e do agente de benchmark do PeersHub.</div>' +
-  '<div class="card">' +
-    '<div class="card-title"><span class="dot"></span>Conteúdo disponível<span class="hint">'+itens.length+' itens no recorte</span></div>' +
-    (itens.length ? itens.map(i=>
-      '<div class="arow"><div>' +
-        '<span class="badge '+cls(i.tipo)+'">'+i.tipo+'</span>' +
-        '<h4>'+i.titulo+'</h4>' +
-        '<p>'+esc(rotuloInd(i))+' · '+i.offering+' · '+i.ano+'</p>' +
-        '<p style="margin-top:3px;opacity:.85">'+i.fonte+(i.responsavel ? ' · '+i.responsavel : '')+'</p>' +
-      '</div>' +
-      '<label class="cbx"><input type="checkbox" class="chk" data-tipo="acervo" data-id="'+i.id+'" ' +
-        (estado.selecionados.has("acervo:"+i.id)?'checked':'')+'> incluir</label></div>').join("")
-     : '<div class="vazio">Nada no acervo para este recorte.</div>') +
-  '</div>' +
-  '<div class="card" style="text-align:center">' +
-    '<p class="cardnote" style="margin:0 0 12px">Sem cobertura suficiente para este recorte? O pedido já sai preenchido com a indústria, a offering e os players desta tela.</p>' +
-    '<button class="btn">Solicitar benchmark ao PeersHub</button>' +
-  '</div>';
-}
-
-/* =========================================================
    AGENDA SETORIAL
    ========================================================= */
 function renderAgenda(){
@@ -1905,12 +1865,8 @@ function paraFala(t){
    CRUZAMENTOS
    O que faz o resumo soar como conversa, e não como leitura, é trazer
    coisa que NÃO está escrita na aba. Tudo aqui é calculado a partir dos
-   dados do portal (Finanças, Acervo, Agenda, Movimentos) — nada é inventado.
+   dados do portal (Finanças, Agenda, Movimentos) — nada é inventado.
    --------------------------------------------------------- */
-function acervoRelacionado(item){
-  return DADOS.acervo.find(a=>a.industria===item.industria && a.offering===item.offering)
-      || DADOS.acervo.find(a=>a.industria===item.industria);
-}
 function agendaRelacionada(item){
   return DADOS.agenda.filter(e=>(e.industria===item.industria || (e.industrias||[]).includes(item.industria)) && diasEntre(e.data)>=0)
     .sort((a,b)=>a.data.localeCompare(b.data))[0];
@@ -1939,20 +1895,12 @@ function temaDominante(lista){
 function semente(){ const d = dataLocal(HOJE); return d.getDate() + d.getMonth(); }
 function variante(opcoes, n){ return opcoes[Math.abs(n) % opcoes.length]; }
 
-// Evita dizer duas vezes a mesma coisa: se o Ângulo Peers já cita aquele material,
-// o cruzamento com o Acervo vira repetição e é descartado.
-function jaCitado(angulo, titulo){
-  const limpa = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
-  const chave = limpa(titulo).split(/\s+/).slice(0,4).join(" ");
-  return limpa(angulo).indexOf(chave) >= 0;
-}
-
 // Monta uma observação a partir de OUTRA aba do portal. Só entra se o dado existir,
 // e prefere um tipo de cruzamento que ainda não foi usado no mesmo episódio.
 function comentarioCruzado(r, n, usados){
   const ops = [];
 
-  // Finanças e Acervo são ilustrativos nesta edição: o áudio só cruza com Agenda e Movimentos.
+  // Finanças é ilustrativo nesta edição: o áudio só cruza com Agenda e Movimentos.
   const ev = agendaRelacionada(r);
   if(ev){
     ops.push({tipo:"agenda", txt:"E isso não fica no abstrato: dia " + dataFalada(ev.data, false) + " tem " +
@@ -2529,11 +2477,11 @@ document.addEventListener("keydown", e=>{
    ========================================================= */
 function abrirBriefing(){
   if(estado.selecionados.size===0){
-    alert("Marque ao menos um item (Radar, Finanças, Movimentos, Acervo ou Agenda) para gerar o briefing.");
+    alert("Marque ao menos um item (Radar, Finanças, Movimentos ou Agenda) para gerar o briefing.");
     return;
   }
   const L = [];
-  L.push("BRIEFING · PORTAL DE INTELIGÊNCIA PEERS (edição de " + formatarData(HOJE) + "; Acervo ilustrativo)");
+  L.push("BRIEFING · PORTAL DE INTELIGÊNCIA PEERS (edição de " + formatarData(HOJE) + ")");
   L.push("Recorte: " + rotuloRecorte());
   L.push("Visualização: " + (estado.modoVisualizacao==='comercial' ? "Time comercial" : "Consultor"));
   if(estado.modoVisualizacao==='comercial'){
@@ -2606,16 +2554,6 @@ function abrirBriefing(){
       L.push("  Fonte: " + i.fonte + (i.url ? " · " + i.url : ""));
       L.push("");
     });
-  }
-
-  const acSel = sel("acervo");
-  if(acSel.length){
-    L.push("--- ACERVO PEERS ---");
-    acSel.forEach(id=>{
-      const i = DADOS.acervo.find(a=>a.id===id);
-      L.push("• [" + i.tipo + "] " + i.titulo + " (" + rotuloInd(i) + " / " + i.offering + ", " + i.ano + ") — " + i.fonte);
-    });
-    L.push("");
   }
 
   const agSel = sel("agenda");
