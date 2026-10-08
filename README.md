@@ -1,7 +1,7 @@
 # Portal de Inteligência Peers
 
 Protótipo do portal da área de Research & Insights: Radar, Finanças dos players, Indicadores setoriais,
-Movimentos estratégicos, Acervo Peers e Agenda setorial, filtráveis por indústria e offering.
+Movimentos estratégicos e Agenda setorial, filtráveis por indústria e offering.
 
 O portal se atualiza sozinho: o GitHub Actions roda os scripts em Python todo dia, busca os dados em fontes
 públicas (feeds de notícias, Banco Central, IBGE, CVM, Câmara) e grava no **Supabase**. Uma rotina do Claude
@@ -57,7 +57,6 @@ Supabase/
 | Finanças · companhias abertas | CVM e releases (`config/financas_cvm.json`, `config/financas_releases.json`) | Semanal |
 | Finanças · Valor 1000 | Planilha do ranking | Manual, uma vez por ano |
 | Análises (resumos, "Por que importa", Ângulo Peers, leituras) | Rotina de IA (`Backend/ia/ROTINA.md`) | Diária, às 07h05 |
-| Acervo | Ilustrativo | — |
 
 ## Ajustes sem programar (pasta Backend/config)
 
