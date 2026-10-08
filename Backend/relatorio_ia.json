@@ -1,0 +1,37 @@
+{
+ "executadoEm": "2026-10-08 07:11",
+ "escritos": {
+  "radar": 150,
+  "movimentos": 37,
+  "financas": 29,
+  "indicadores": 43
+ },
+ "pendentesNaoRespondidos": {
+  "radar": 0,
+  "movimentos": 0
+ },
+ "revisar": {
+  "rda0a6d093f": "Curiosidade (mosaico de abóboras), sem relação com negócios.",
+  "rcfbf79cd7e": "Sugestão de filmes para aulas, sem relação com negócios.",
+  "re692f6e242": "Curiosidade (bombom de cebola), sem relação com negócios.",
+  "r8281489268": "Perfil de professor na China, sem relação com negócios.",
+  "r9e6303228f": "Curiosidade sobre Enem e Nobel, sem relação com negócios.",
+  "r05d0539dde": "Programa de rádio, sem relação com negócios.",
+  "r51a9ccd0ca": "Projeto de lei de homenagem, sem relação com negócios.",
+  "r6610cb5688": "Agenda eleitoral, sem relação com negócios.",
+  "rfcbf79cd7e": "Sugestão de filmes para aulas, sem relação com negócios.",
+  "r9000225633": "Acidente de trânsito local.",
+  "rfb9b3ea6ca": "Acidente de trânsito local.",
+  "r7c6ee5da0a": "Bloqueio pontual de via.",
+  "rf40b29b843": "Oferta de varejo de eletrônico.",
+  "rc8a481cab0": "Oferta de varejo de eletrônico.",
+  "rb007bda60d": "Oferta de varejo de eletrônico.",
+  "r8c106f4add": "Movimento de pessoal em agência, sem relação com o setor.",
+  "rf07fdb0608": "Lista de vagas.",
+  "r380d858b13": "Perfil de carreira.",
+  "r616d0de5bc": "Lista de reconhecimento de profissionais.",
+  "r2300e12562": "Ranking de segurança de aéreas europeias.",
+  "r141ca706b7": "Conteúdo comercial de veículo de mídia.",
+  "mbfc35cc6b1": "Notícia de futebol, fora da indústria A&B + Agro."
+ }
+}

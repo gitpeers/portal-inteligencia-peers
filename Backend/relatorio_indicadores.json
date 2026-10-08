@@ -1,0 +1,635 @@
+{
+ "executadoEm": "2026-10-07 21:51",
+ "ok": 100,
+ "falhas": 4,
+ "series": [
+  {
+   "indicador": "Carteira de crédito do SFN",
+   "segmento": "Bancos",
+   "conector": "sgs",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Inadimplência acima de 90 dias",
+   "segmento": "Bancos",
+   "conector": "sgs",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Spread médio das operações de crédito",
+   "segmento": "Bancos",
+   "conector": "sgs",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Dívida bruta do governo geral",
+   "segmento": "Administração pública",
+   "conector": "sgs",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "INCC",
+   "segmento": "Construção civil, construção pesada e engenharia",
+   "conector": "sgs",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Produção física da indústria de transformação",
+   "segmento": "Indústria de transformação",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Produção física da indústria de alimentos",
+   "segmento": "Alimentos",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Produção física de bebidas",
+   "segmento": "Bebidas",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Produção física da indústria química",
+   "segmento": "Química e petroquímica",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Produção física farmacêutica",
+   "segmento": "Farmacêutica, dispositivos e diagnóstico",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Produção física de celulose e papel",
+   "segmento": "Papel e celulose",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Produção física da metalurgia",
+   "segmento": "Siderurgia",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Produção física de veículos automotores",
+   "segmento": "Automotivo",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Produção física de eletroeletrônicos",
+   "segmento": "Eletroeletrônicos",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Produção física de informática e eletrônicos",
+   "segmento": "Hardware, dispositivos e componentes",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Produção física de minerais não metálicos",
+   "segmento": "Construção civil, construção pesada e engenharia",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Produção física têxtil e de vestuário",
+   "segmento": "Vestuário",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Volume de vendas do varejo restrito",
+   "segmento": "Varejo geral",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Volume de vendas do varejo ampliado",
+   "segmento": "Varejo geral",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Volume de vendas de hiper e supermercados",
+   "segmento": "Supermercados e hipermercados",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Receita nominal de hiper e supermercados",
+   "segmento": "Supermercados e hipermercados",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Volume de vendas de artigos farmacêuticos",
+   "segmento": "Farmácias e drogarias",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Receita nominal de artigos farmacêuticos",
+   "segmento": "Farmácias e drogarias",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Volume de vendas de tecidos, vestuário e calçados",
+   "segmento": "Vestuário",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "IPCA de alimentação e bebidas",
+   "segmento": "Alimentos",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "IPCA de alimentação no domicílio",
+   "segmento": "Supermercados e hipermercados",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "IPCA de vestuário",
+   "segmento": "Vestuário",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Crédito rural concedido",
+   "segmento": "Grãos & Insumos (Row Crops)",
+   "conector": "sgs",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Abate de bovinos",
+   "segmento": "Proteína Animal (Carnes)",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Peso total das carcaças",
+   "segmento": "Proteína Animal (Carnes)",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Efetivo do rebanho bovino",
+   "segmento": "Proteína Animal (Carnes)",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Pessoal ocupado na indústria de alimentos",
+   "segmento": "Alimentos",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "IPCA de bebidas",
+   "segmento": "Bebidas",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Índice de Basileia do sistema",
+   "segmento": "Bancos",
+   "conector": "ifdata",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Lucro líquido do sistema bancário",
+   "segmento": "Bancos",
+   "conector": "ifdata",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Transações via Pix",
+   "segmento": "Meios de pagamento",
+   "conector": "mpv",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Valor transacionado via Pix",
+   "segmento": "Meios de pagamento",
+   "conector": "mpv",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Valor transacionado com cartões",
+   "segmento": "Meios de pagamento",
+   "conector": "mpv",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Disponibilidade do SPI",
+   "segmento": "Meios de pagamento",
+   "conector": "spi",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Índice de preços ao produtor",
+   "segmento": "Indústria de transformação",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Volume de vendas de veículos e peças",
+   "segmento": "Automotivo",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Produção física de máquinas e equipamentos",
+   "segmento": "Máquinas e equipamentos",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Área de florestas plantadas",
+   "segmento": "Papel e celulose",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Carteira de crédito dos bancos públicos",
+   "segmento": "Bancos comerciais, bancos de desenvolvimento e agências de fomento públicas",
+   "conector": "ifdata",
+   "situacao": "falha",
+   "erro": "HTTP Error 500: Internal Server Error"
+  },
+  {
+   "indicador": "Participação no crédito do SFN",
+   "segmento": "Bancos comerciais, bancos de desenvolvimento e agências de fomento públicas",
+   "conector": "ifdata",
+   "situacao": "falha",
+   "erro": "HTTP Error 500: Internal Server Error"
+  },
+  {
+   "indicador": "Lucro líquido dos bancos públicos",
+   "segmento": "Bancos comerciais, bancos de desenvolvimento e agências de fomento públicas",
+   "conector": "ifdata",
+   "situacao": "falha",
+   "erro": "HTTP Error 500: Internal Server Error"
+  },
+  {
+   "indicador": "Índice de Basileia médio",
+   "segmento": "Bancos comerciais, bancos de desenvolvimento e agências de fomento públicas",
+   "conector": "ifdata",
+   "situacao": "falha",
+   "erro": "HTTP Error 500: Internal Server Error"
+  },
+  {
+   "indicador": "Inadimplência das pessoas físicas",
+   "segmento": "Varejo geral",
+   "conector": "sgs",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Produção física de higiene e cosméticos",
+   "segmento": "Perfumaria e cosméticos",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Receita do setor de transporte e armazenagem",
+   "segmento": "Operadores logísticos, armazenagem, entregas e comércio exterior",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Volume de serviços de transporte e armazenagem",
+   "segmento": "Operadores logísticos, armazenagem, entregas e comércio exterior",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Receita de serviços de telecomunicações",
+   "segmento": "Operadoras de telefonia, banda larga e fibra",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Receita de serviços de tecnologia da informação",
+   "segmento": "Software, SaaS e plataformas digitais",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Unidades locais de serviços de TI (CNAE 62)",
+   "segmento": "Software, SaaS e plataformas digitais",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Exportações de serviços de TI",
+   "segmento": "Software, SaaS e plataformas digitais",
+   "conector": "sgs",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Volume de serviços de informação e comunicação",
+   "segmento": "Integração, outsourcing e consultoria em TI",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Volume de serviços prestados às empresas",
+   "segmento": "Facilities, terceirização, BPO, segurança e serviços ao consumidor",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Receita dos serviços prestados às empresas",
+   "segmento": "Facilities, terceirização, BPO, segurança e serviços ao consumidor",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "PIB da construção",
+   "segmento": "Construção civil, construção pesada e engenharia",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Financiamento imobiliário",
+   "segmento": "Incorporação, shoppings e propriedades",
+   "conector": "sgs",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Volume de serviços audiovisuais e de edição",
+   "segmento": "Mídia, publicidade, editorial e gráfica",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Exportações de carnes",
+   "segmento": "Proteína Animal (Carnes)",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Exportações de alimentos industrializados",
+   "segmento": "Alimentos",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Exportações de bebidas",
+   "segmento": "Bebidas",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Importações de bebidas",
+   "segmento": "Bebidas",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Importações de medicamentos",
+   "segmento": "Farmacêutica, dispositivos e diagnóstico",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Exportações de manufaturados",
+   "segmento": "Indústria de transformação",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Exportações de veículos",
+   "segmento": "Automotivo",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Exportações",
+   "segmento": "Máquinas e equipamentos",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Déficit da balança comercial de químicos",
+   "segmento": "Química e petroquímica",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Importações de químicos",
+   "segmento": "Química e petroquímica",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Exportações de papel",
+   "segmento": "Papel e celulose",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Exportações de celulose",
+   "segmento": "Papel e celulose",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Exportações de eletroeletrônicos",
+   "segmento": "Eletroeletrônicos",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Déficit comercial do setor",
+   "segmento": "Eletroeletrônicos",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Importações de aço",
+   "segmento": "Siderurgia",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Exportações de aço",
+   "segmento": "Siderurgia",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Exportações minerais",
+   "segmento": "Mineração",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Exportações do setor",
+   "segmento": "Perfumaria e cosméticos",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Importações de vestuário",
+   "segmento": "Vestuário",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Corrente de comércio exterior",
+   "segmento": "Operadores logísticos, armazenagem, entregas e comércio exterior",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Importações de equipamentos de informática",
+   "segmento": "Hardware, dispositivos e componentes",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Importações de componentes eletrônicos",
+   "segmento": "Hardware, dispositivos e componentes",
+   "conector": "comex",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Resultado primário do governo central",
+   "segmento": "Administração pública",
+   "conector": "rtn",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Despesa com pessoal",
+   "segmento": "Administração pública",
+   "conector": "rtn",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Investimentos",
+   "segmento": "Administração pública",
+   "conector": "rtn",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Receita do FPM",
+   "segmento": "Administração pública municipal",
+   "conector": "fpm",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Desembolsos do BNDES",
+   "segmento": "Bancos comerciais, bancos de desenvolvimento e agências de fomento públicas",
+   "conector": "sgs",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Desembolsos do BNDES para máquinas",
+   "segmento": "Máquinas e equipamentos",
+   "conector": "finame",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Estados com Capag A ou B",
+   "segmento": "Administração pública estadual",
+   "conector": "capag",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Municípios com Capag A ou B",
+   "segmento": "Administração pública municipal",
+   "conector": "capag",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Receita de ICMS",
+   "segmento": "Administração pública estadual",
+   "conector": "siconfi",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Despesa com pessoal sobre a RCL",
+   "segmento": "Administração pública estadual",
+   "conector": "siconfi",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Dívida consolidada sobre a RCL",
+   "segmento": "Administração pública estadual",
+   "conector": "siconfi",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Produção de petróleo",
+   "segmento": "Exploração, produção, refino e distribuição",
+   "conector": "anp",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Produção de gás natural",
+   "segmento": "Exploração, produção, refino e distribuição",
+   "conector": "anp",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Vendas de combustíveis",
+   "segmento": "Exploração, produção, refino e distribuição",
+   "conector": "anp",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Produção de etanol",
+   "segmento": "Sucroalcooleiro (Cana-de-açúcar)",
+   "conector": "anp",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Preço do etanol hidratado ao consumidor",
+   "segmento": "Sucroalcooleiro (Cana-de-açúcar)",
+   "conector": "anp",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Preço médio do diesel",
+   "segmento": "Rodoviário, ferroviário, aéreo e cabotagem",
+   "conector": "anp",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Carga de energia do SIN",
+   "segmento": "Geração, transmissão e distribuição",
+   "conector": "ons",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Capacidade instalada de geração",
+   "segmento": "Geração, transmissão e distribuição",
+   "conector": "siga",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Capacidade instalada solar, eólica e biomassa",
+   "segmento": "Solar, Eólica e Biomassa e biogás",
+   "conector": "siga",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Participação na matriz elétrica",
+   "segmento": "Solar, Eólica e Biomassa e biogás",
+   "conector": "siga",
+   "situacao": "ok"
+  }
+ ]
+}

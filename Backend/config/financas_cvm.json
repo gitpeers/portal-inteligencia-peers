@@ -1,0 +1,359 @@
+{
+ "_como_usar": "Base automática de Finanças a partir dos dados abertos da CVM (ITR). 'setores' liga o setor de atividade do cadastro da CVM (sem o prefixo 'Emp. Adm. Part. - ') a [indústria, divisão]; quando a empresa está no Valor 1000, vale a classificação do Valor 1000. Setores fora da lista (securitizadoras, holdings sem setor) ficam de fora. 'excecoes' corrige empresas que a regra classifica mal: CNPJ -> nome e [indústria, divisão]; vale sobre o setor da CVM e sobre o Valor 1000.",
+ "setores": {
+  "Serviços Transporte e Logística": [
+   "Transportes & Logística",
+   "Infraestrutura de transporte"
+  ],
+  "Energia Elétrica": [
+   "Power & Utilities",
+   "Energia elétrica"
+  ],
+  "Comércio (Atacado e Varejo)": [
+   "Varejo",
+   "Retail"
+  ],
+  "Construção Civil, Mat. Constr. e Decoração": [
+   "Outros",
+   "Empreendimentos imobiliários"
+  ],
+  "Const. Civil, Mat. Const. e Decoração": [
+   "Outros",
+   "Empreendimentos imobiliários"
+  ],
+  "Saneamento, Serv. Água e Gás": [
+   "Power & Utilities",
+   "Saneamento"
+  ],
+  "Máquinas, Equipamentos, Veículos e Peças": [
+   "Manufacturing & Natural Resources",
+   "Manufatura"
+  ],
+  "Máqs., Equip., Veíc. e Peças": [
+   "Manufacturing & Natural Resources",
+   "Manufatura"
+  ],
+  "Bancos": [
+   "Financial Services",
+   "Banking"
+  ],
+  "Intermediação Financeira": [
+   "Financial Services",
+   "Banking"
+  ],
+  "Crédito Imobiliário": [
+   "Financial Services",
+   "Banking"
+  ],
+  "Bolsas de Valores/Mercadorias e Futuros": [
+   "Financial Services",
+   "Banking"
+  ],
+  "Seguradoras e Corretoras": [
+   "Financial Services",
+   "Insurance"
+  ],
+  "Metalurgia e Siderurgia": [
+   "Manufacturing & Natural Resources",
+   "Metalurgia e Siderurgia"
+  ],
+  "Extração Mineral": [
+   "Manufacturing & Natural Resources",
+   "Mineração"
+  ],
+  "Petroquímicos e Borracha": [
+   "Manufacturing & Natural Resources",
+   "Manufatura"
+  ],
+  "Papel e Celulose": [
+   "Manufacturing & Natural Resources",
+   "Manufatura"
+  ],
+  "Embalagens": [
+   "Manufacturing & Natural Resources",
+   "Manufatura"
+  ],
+  "Serviços Médicos": [
+   "Health",
+   "Hospitais"
+  ],
+  "Serviços médicos": [
+   "Health",
+   "Hospitais"
+  ],
+  "Farmacêutico e Higiene": [
+   "Health",
+   "Indústria Health"
+  ],
+  "Têxtil e Vestuário": [
+   "Varejo",
+   "Retail"
+  ],
+  "Telecomunicações": [
+   "TI & Telecom",
+   "Telecomunicações"
+  ],
+  "Comunicação e Informática": [
+   "TI & Telecom",
+   "Software e plataformas"
+  ],
+  "Alimentos": [
+   "A&B + Agro",
+   "A&B"
+  ],
+  "Bebidas e Fumo": [
+   "A&B + Agro",
+   "A&B"
+  ],
+  "Agricultura (Açúcar, Álcool e Cana)": [
+   "A&B + Agro",
+   "Agro"
+  ],
+  "Reflorestamento": [
+   "A&B + Agro",
+   "Agro"
+  ],
+  "Petróleo e Gás": [
+   "Power & Utilities",
+   "Petróleo e gás"
+  ],
+  "Educação": [
+   "Educação",
+   "Privado"
+  ],
+  "Hospedagem e Turismo": [
+   "Outros",
+   "Serviços especializados"
+  ],
+  "Brinquedos e Lazer": [
+   "Outros",
+   "Serviços especializados"
+  ]
+ },
+ "excecoes": {
+  "02.286.479/0001-08": {
+   "nome": "Localiza  Fleet",
+   "classe": [
+    "Transportes & Logística",
+    "Mobilidade de passageiros"
+   ]
+  },
+  "21.314.559/0001-66": {
+   "nome": "Movida Participações",
+   "classe": [
+    "Transportes & Logística",
+    "Mobilidade de passageiros"
+   ]
+  },
+  "45.736.131/0001-70": {
+   "nome": "Unidas Locadora",
+   "classe": [
+    "Transportes & Logística",
+    "Mobilidade de passageiros"
+   ]
+  },
+  "26.982.634/0001-80": {
+   "nome": "Turbi Compartilhamento De Veículos",
+   "classe": [
+    "Transportes & Logística",
+    "Mobilidade de passageiros"
+   ]
+  },
+  "07.682.638/0001-07": {
+   "nome": "Concessionária Da Linha 4 Do Metrô De São Paulo",
+   "classe": [
+    "Transportes & Logística",
+    "Mobilidade de passageiros"
+   ]
+  },
+  "23.373.000/0001-32": {
+   "nome": "Vamos Locação De Caminhões, Máquinas E Equipamentos",
+   "classe": [
+    "Transportes & Logística",
+    "Transporte de carga"
+   ]
+  },
+  "35.654.688/0001-08": {
+   "nome": "Vamos Comércio De Máquinas Linha Amarela",
+   "classe": [
+    "Transportes & Logística",
+    "Transporte de carga"
+   ]
+  },
+  "42.276.907/0001-28": {
+   "nome": "Vli Multimodal",
+   "classe": [
+    "Transportes & Logística",
+    "Transporte de carga"
+   ]
+  },
+  "52.548.435/0001-79": {
+   "nome": "Jsl",
+   "classe": [
+    "Transportes & Logística",
+    "Logística e armazenagem"
+   ]
+  },
+  "01.599.101/0001-93": {
+   "nome": "Sequoia Logística E Transportes",
+   "classe": [
+    "Transportes & Logística",
+    "Logística e armazenagem"
+   ]
+  },
+  "32.681.371/0001-72": {
+   "nome": "Vix Logística",
+   "classe": [
+    "Transportes & Logística",
+    "Logística e armazenagem"
+   ]
+  },
+  "06.977.745/0001-91": {
+   "nome": "Br Malls Participaçoes",
+   "classe": [
+    "Outros",
+    "Empreendimentos imobiliários"
+   ]
+  },
+  "08.764.621/0001-53": {
+   "nome": "General Shopping Brasil",
+   "classe": [
+    "Outros",
+    "Empreendimentos imobiliários"
+   ]
+  },
+  "51.218.147/0001-93": {
+   "nome": "Iguatemi Empresa De Shopping Centers",
+   "classe": [
+    "Outros",
+    "Empreendimentos imobiliários"
+   ]
+  },
+  "82.120.676/0001-83": {
+   "nome": "Almeida Junior Shopping Centers",
+   "classe": [
+    "Outros",
+    "Empreendimentos imobiliários"
+   ]
+  },
+  "82.901.000/0001-27": {
+   "nome": "Intelbras",
+   "classe": [
+    "TI & Telecom",
+    "Hardware e equipamentos"
+   ]
+  },
+  "59.717.553/0001-02": {
+   "nome": "Grupo Multilaser",
+   "classe": [
+    "TI & Telecom",
+    "Hardware e equipamentos"
+   ]
+  },
+  "33.386.210/0001-19": {
+   "nome": "Sondotecnica S/A.",
+   "classe": [
+    "Outros",
+    "Construção e engenharia"
+   ]
+  },
+  "61.351.532/0001-68": {
+   "nome": "Azevedo & Travassos",
+   "classe": [
+    "Outros",
+    "Construção e engenharia"
+   ]
+  },
+  "89.723.993/0001-33": {
+   "nome": "Construtora Sultepa",
+   "classe": [
+    "Outros",
+    "Construção e engenharia"
+   ]
+  },
+  "90.441.460/0001-48": {
+   "nome": "Unicasa Indústria De Móveis",
+   "classe": [
+    "Manufacturing & Natural Resources",
+    "Manufatura"
+   ]
+  },
+  "04.032.433/0001-80": {
+   "nome": "Contax Participações S.A. - Em Recuperação Judicial",
+   "classe": [
+    "Outros",
+    "Serviços especializados"
+   ]
+  },
+  "35.980.592/0001-30": {
+   "nome": "Elea Digital Infraestrutura E Redes De Telecomunicações",
+   "classe": [
+    "TI & Telecom",
+    "Infraestrutura digital"
+   ]
+  },
+  "14.292.540/0001-09": {
+   "nome": "Brazil Tower, Cessão De Infra-Estruturas",
+   "classe": [
+    "TI & Telecom",
+    "Infraestrutura digital"
+   ]
+  },
+  "27.902.165/0002-96": {
+   "nome": "Highline Brasil Ii Infraestrutura De Telecomunicações",
+   "classe": [
+    "TI & Telecom",
+    "Infraestrutura digital"
+   ]
+  },
+  "36.542.025/0001-64": {
+   "nome": "Brq Soluções Em Informática",
+   "classe": [
+    "TI & Telecom",
+    "Serviços de TI"
+   ]
+  },
+  "14.127.813/0001-51": {
+   "nome": "Getninjas",
+   "classe": [
+    "TI & Telecom",
+    "Software e plataformas"
+   ]
+  },
+  "21.389.501/0001-81": {
+   "nome": "Compass Gás E Energia",
+   "classe": [
+    "Power & Utilities",
+    "Petróleo e gás"
+   ]
+  },
+  "46.573.272/0001-81": {
+   "nome": "Porto Saúde Participações",
+   "classe": [
+    "Health",
+    "Saúde suplementar"
+   ]
+  },
+  "58.119.199/0001-51": {
+   "nome": "Bradsaúde",
+   "classe": [
+    "Health",
+    "Saúde suplementar"
+   ]
+  },
+  "02.357.251/0001-53": {
+   "nome": "Lifemed Industrial De Equip. E Art. Medicos E Hosp.",
+   "classe": [
+    "Health",
+    "Indústria Health"
+   ]
+  },
+  "61.374.161/0001-30": {
+   "nome": "Baumer",
+   "classe": [
+    "Health",
+    "Indústria Health"
+   ]
+  }
+ }
+}

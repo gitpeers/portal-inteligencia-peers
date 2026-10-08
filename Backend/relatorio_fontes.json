@@ -1,0 +1,1090 @@
+{
+ "validadoEm": "2026-10-07 17:40",
+ "fontes": [
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "not well-formed (invalid token): line 29, column 18",
+   "nome": "Notícias Agrícolas",
+   "site": "https://www.noticiasagricolas.com.br",
+   "industria": "A&B + Agro · Agro",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.canalrural.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Canal Rural",
+   "site": "https://www.canalrural.com.br",
+   "industria": "A&B + Agro · Agro",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://agfeed.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "AgFeed",
+   "site": "https://agfeed.com.br",
+   "industria": "A&B + Agro · Agro",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.foodconnection.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Food Connection",
+   "site": "https://www.foodconnection.com.br",
+   "industria": "A&B + Agro · A&B",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "parado",
+   "feed": "https://mercadoeconsumo.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-08-11",
+   "nome": "Mercado&Consumo",
+   "site": "https://mercadoeconsumo.com.br",
+   "industria": "A&B + Agro · A&B / Varejo",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "not well-formed (invalid token): line 49, column 28",
+   "nome": "FoodNavigator-LATAM",
+   "site": "https://www.foodnavigator-latam.com",
+   "industria": "A&B + Agro · A&B",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "syntax error: line 1, column 0",
+   "nome": "Desafios da Educação",
+   "site": "https://desafiosdaeducacao.com.br",
+   "industria": "Educação · Privado",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "HTTP Error 500: Internal Server Error",
+   "nome": "Revista Ensino Superior",
+   "site": "https://revistaensinosuperior.com.br",
+   "industria": "Educação · Privado",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "not well-formed (invalid token): line 9, column 44",
+   "nome": "MEC (notícias)",
+   "site": "https://www.gov.br/mec/pt-br/assuntos/noticias",
+   "industria": "Educação · Privado / Público",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://agenciabrasil.ebc.com.br/rss/educacao/feed.xml",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Agência Brasil (Educação)",
+   "site": "https://agenciabrasil.ebc.com.br",
+   "industria": "Educação · Público",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://porvir.org/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Porvir",
+   "site": "https://porvir.org",
+   "industria": "Educação · Público",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "not well-formed (invalid token): line 42, column 60",
+   "nome": "Nova Escola",
+   "site": "https://novaescola.org.br",
+   "industria": "Educação · Público",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://finsidersbrasil.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Finsiders Brasil",
+   "site": "https://finsidersbrasil.com.br",
+   "industria": "Financial Services · Banking / Payments",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.bloomberglinea.com.br/arc/outboundfeeds/rss.xml",
+   "itens": 100,
+   "mais_recente": "2026-10-07",
+   "nome": "Bloomberg Línea (finanças)",
+   "site": "https://www.bloomberglinea.com.br",
+   "industria": "Financial Services · Banking",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.finextra.com/rss/headlines.aspx",
+   "itens": 53,
+   "mais_recente": "2026-11-25",
+   "nome": "Finextra",
+   "site": "https://www.finextra.com",
+   "industria": "Financial Services · Banking",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.sonhoseguro.com.br/feed/",
+   "itens": 20,
+   "mais_recente": "2026-10-07",
+   "nome": "Sonho Seguro",
+   "site": "https://www.sonhoseguro.com.br",
+   "industria": "Financial Services · Insurance",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://revistaapolice.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Revista Apólice",
+   "site": "https://revistaapolice.com.br",
+   "industria": "Financial Services · Insurance",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://cqcs.com.br/feed/",
+   "itens": 50,
+   "mais_recente": "2026-10-07",
+   "nome": "CQCS",
+   "site": "https://cqcs.com.br",
+   "industria": "Financial Services · Insurance",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.mobiletime.com.br/feed/",
+   "itens": 20,
+   "mais_recente": "2026-10-07",
+   "nome": "Mobile Time",
+   "site": "https://www.mobiletime.com.br",
+   "industria": "Financial Services · Payments / TI & Telecom",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.paymentsdive.com/feeds/news/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Payments Dive",
+   "site": "https://www.paymentsdive.com",
+   "industria": "Financial Services · Payments",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://futurodasaude.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Futuro da Saúde",
+   "site": "https://futurodasaude.com.br",
+   "industria": "Health",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://medicinasa.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Medicina S/A",
+   "site": "https://medicinasa.com.br",
+   "industria": "Health",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.gov.br/ans/rss.xml",
+   "itens": 12,
+   "mais_recente": "2026-10-07",
+   "nome": "ANS (notícias)",
+   "site": "https://www.gov.br/ans/pt-br/assuntos/noticias",
+   "industria": "Health",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "not well-formed (invalid token): line 3, column 50",
+   "nome": "Agência de Notícias da Indústria (CNI)",
+   "site": "https://noticias.portaldaindustria.com.br",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "not well-formed (invalid token): line 26, column 52",
+   "nome": "Notícias de Mineração Brasil",
+   "site": "https://www.noticiasdemineracao.com",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "not well-formed (invalid token): line 10, column 56",
+   "nome": "Automotive Business",
+   "site": "https://www.automotivebusiness.com.br",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "feed sem itens",
+   "nome": "CanalEnergia",
+   "site": "https://www.canalenergia.com.br",
+   "industria": "Power & Utilities",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "The read operation timed out",
+   "nome": "epbr",
+   "site": "https://epbr.com.br",
+   "industria": "Power & Utilities",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://megawhat.energy/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "MegaWhat",
+   "site": "https://megawhat.energy",
+   "industria": "Power & Utilities",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://agenciabrasil.ebc.com.br/rss/politica/feed.xml",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Agência Brasil (Política)",
+   "site": "https://agenciabrasil.ebc.com.br",
+   "industria": "Public Services",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.jota.info/feed",
+   "itens": 25,
+   "mais_recente": "2026-10-07",
+   "nome": "JOTA",
+   "site": "https://www.jota.info",
+   "industria": "Public Services",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.poder360.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Poder360",
+   "site": "https://www.poder360.com.br",
+   "industria": "Public Services",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "syntax error: line 1, column 0",
+   "nome": "NoVarejo",
+   "site": "https://novarejo.com.br",
+   "industria": "Varejo · Retail",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "not well-formed (invalid token): line 21, column 64",
+   "nome": "E-Commerce Brasil",
+   "site": "https://www.ecommercebrasil.com.br",
+   "industria": "Varejo · Retail",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "not well-formed (invalid token): line 25, column 2128",
+   "nome": "Portos e Navios",
+   "site": "https://www.portosenavios.com.br",
+   "industria": "Transportes & Logística",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "syntax error: line 1, column 0",
+   "nome": "Tecnologística",
+   "site": "https://www.tecnologistica.com.br",
+   "industria": "Transportes & Logística",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "HTTP Error 307: Temporary Redirect",
+   "nome": "Aeroin",
+   "site": "https://aeroin.net",
+   "industria": "Transportes & Logística",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://teletime.com.br/feed/",
+   "itens": 30,
+   "mais_recente": "2026-10-07",
+   "nome": "Teletime",
+   "site": "https://teletime.com.br",
+   "industria": "TI & Telecom",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.telesintese.com.br/feed/",
+   "itens": 100,
+   "mais_recente": "2026-10-07",
+   "nome": "Telesíntese",
+   "site": "https://www.telesintese.com.br",
+   "industria": "TI & Telecom",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "syntax error: line 1, column 0",
+   "nome": "Baguete",
+   "site": "https://www.baguete.com.br",
+   "industria": "TI & Telecom",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://meioemensagem.com.br/feed",
+   "itens": 30,
+   "mais_recente": "2026-10-07",
+   "nome": "Meio & Mensagem",
+   "site": "https://meioemensagem.com.br",
+   "industria": "Outros",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://propmark.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Propmark",
+   "site": "https://propmark.com.br",
+   "industria": "Outros",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://cbic.org.br/feed/",
+   "itens": 50,
+   "mais_recente": "2026-10-07",
+   "nome": "Agência CBIC",
+   "site": "https://cbic.org.br",
+   "industria": "Outros",
+   "papel": "anexo"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://braziljournal.com/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Brazil Journal",
+   "site": "https://braziljournal.com",
+   "industria": "Transversal",
+   "papel": "transversal"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.infomoney.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "InfoMoney",
+   "site": "https://www.infomoney.com.br",
+   "industria": "Transversal",
+   "papel": "transversal"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://neofeed.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "NeoFeed",
+   "site": "https://neofeed.com.br",
+   "industria": "Transversal",
+   "papel": "transversal"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.bcb.gov.br/api/feed/sitebcb/sitefeeds/notasImprensa",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Banco Central (notas e normas)",
+   "site": "https://www.bcb.gov.br",
+   "industria": "Transversal",
+   "papel": "transversal"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://timesbrasil.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Times Brasil",
+   "site": "https://timesbrasil.com.br",
+   "industria": "Transversal",
+   "papel": "transversal"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://bpmoney.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "BPMoney",
+   "site": "https://bpmoney.com.br",
+   "industria": "Transversal",
+   "papel": "transversal"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://agenciabrasil.ebc.com.br/rss/ultimasnoticias/feed.xml",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Agência Brasil (últimas)",
+   "site": "https://agenciabrasil.ebc.com.br",
+   "industria": "Transversal",
+   "papel": "transversal"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://globorural.globo.com/rss/globorural",
+   "itens": 100,
+   "mais_recente": "2026-10-07",
+   "nome": "Globo Rural",
+   "site": "https://globorural.globo.com",
+   "industria": "A&B + Agro · Agro",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "not well-formed (invalid token): line 9, column 381",
+   "nome": "Agrolink",
+   "site": "https://www.agrolink.com.br",
+   "industria": "A&B + Agro · Agro",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://revistaeducacao.com.br/feed/",
+   "itens": 9,
+   "mais_recente": "2026-10-07",
+   "nome": "Revista Educação",
+   "site": "https://revistaeducacao.com.br",
+   "industria": "Educação · Privado",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://feeds.folha.uol.com.br/educacao/rss091.xml",
+   "itens": 100,
+   "mais_recente": "2026-10-07",
+   "nome": "Folha (Educação)",
+   "site": "https://www1.folha.uol.com.br/educacao",
+   "industria": "Educação",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "feed sem itens",
+   "nome": "SA Varejo",
+   "site": "https://savarejo.com.br",
+   "industria": "Varejo · Retail",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "parado",
+   "feed": "https://sm.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2021-12-07",
+   "nome": "Supermercado Moderno",
+   "site": "https://www.sm.com.br",
+   "industria": "Varejo · Retail",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "undefined entity: line 21, column 22",
+   "nome": "Giro News",
+   "site": "https://gironews.com",
+   "industria": "Varejo · Retail",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "The read operation timed out",
+   "nome": "Logweb",
+   "site": "https://www.logweb.com.br",
+   "industria": "Transportes & Logística",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "HTTP Error 403: Forbidden",
+   "nome": "Revista Ferroviária",
+   "site": "https://revistaferroviaria.com.br",
+   "industria": "Transportes & Logística",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.aeroflap.com.br/feed/",
+   "itens": 18,
+   "mais_recente": "2026-10-07",
+   "nome": "Aeroflap",
+   "site": "https://www.aeroflap.com.br",
+   "industria": "Transportes & Logística",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://agenciainfra.com/blog/feed/",
+   "itens": 100,
+   "mais_recente": "2026-10-07",
+   "nome": "Agência Infra",
+   "site": "https://agenciainfra.com",
+   "industria": "Transportes & Logística / Power & Utilities",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "<urlopen error [Errno 11001] getaddrinfo failed>",
+   "nome": "Portal Portuário",
+   "site": "https://portalportuario.com.br",
+   "industria": "Transportes & Logística",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://petronoticias.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Petronotícias",
+   "site": "https://petronoticias.com.br",
+   "industria": "Power & Utilities",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "not well-formed (invalid token): line 12, column 63",
+   "nome": "Brasil Energia",
+   "site": "https://brasilenergia.com.br",
+   "industria": "Power & Utilities",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.brasilmineral.com.br/feed/",
+   "itens": 40,
+   "mais_recente": "2026-10-06",
+   "nome": "Brasil Mineral",
+   "site": "https://www.brasilmineral.com.br",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.inthemine.com.br/site/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-05",
+   "nome": "In The Mine",
+   "site": "https://www.inthemine.com.br",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.mining.com/feed/",
+   "itens": 36,
+   "mais_recente": "2026-10-07",
+   "nome": "Mining.com",
+   "site": "https://www.mining.com",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.autoindustria.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "AutoIndústria",
+   "site": "https://www.autoindustria.com.br",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "not well-formed (invalid token): line 1, column 251",
+   "nome": "Revista Química e Derivados",
+   "site": "https://www.quimica.com.br",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://tecnoblog.net/feed/",
+   "itens": 50,
+   "mais_recente": "2026-10-07",
+   "nome": "Tecnoblog",
+   "site": "https://tecnoblog.net",
+   "industria": "TI & Telecom",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://itforum.com.br/feed/",
+   "itens": 32,
+   "mais_recente": "2026-10-07",
+   "nome": "IT Forum",
+   "site": "https://itforum.com.br",
+   "industria": "TI & Telecom",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "HTTP Error 403: Forbidden",
+   "nome": "TI Inside",
+   "site": "https://tiinside.com.br",
+   "industria": "TI & Telecom",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://startups.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Startups.com.br",
+   "site": "https://startups.com.br",
+   "industria": "TI & Telecom",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://convergenciadigital.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Convergência Digital",
+   "site": "https://www.convergenciadigital.com.br",
+   "industria": "TI & Telecom",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://consumidormoderno.com.br/feed/",
+   "itens": 12,
+   "mais_recente": "2026-10-07",
+   "nome": "Consumidor Moderno",
+   "site": "https://consumidormoderno.com.br",
+   "industria": "Varejo · Retail",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "syntax error: line 1, column 0",
+   "nome": "Mundo do Marketing",
+   "site": "https://www.mundodomarketing.com.br",
+   "industria": "Varejo · Retail",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "not well-formed (invalid token): line 46, column 60",
+   "nome": "SuperVarejo (APAS)",
+   "site": "https://supervarejo.com.br",
+   "industria": "Varejo · Retail",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://saopaulosa.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Varejo S.A.",
+   "site": "https://www.varejosa.com.br",
+   "industria": "Varejo · Retail",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "parado",
+   "feed": "https://ecommercenapratica.com/feed/",
+   "itens": 10,
+   "mais_recente": "2026-09-16",
+   "nome": "Ecommerce na Prática",
+   "site": "https://ecommercenapratica.com",
+   "industria": "Varejo · Retail",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://panoramafarmaceutico.com.br/feed/",
+   "itens": 20,
+   "mais_recente": "2026-10-07",
+   "nome": "Panorama Farmacêutico",
+   "site": "https://panoramafarmaceutico.com.br",
+   "industria": "Varejo · Retail / Health",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "not well-formed (invalid token): line 1, column 2634",
+   "nome": "Guia da Farmácia",
+   "site": "https://guiadafarmacia.com.br",
+   "industria": "Varejo · Retail / Health",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.engarrafadormoderno.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Engarrafador Moderno",
+   "site": "https://www.engarrafadormoderno.com.br",
+   "industria": "A&B + Agro · A&B",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "HTTP Error 403: Forbidden",
+   "nome": "Food Dive",
+   "site": "https://www.fooddive.com",
+   "industria": "A&B + Agro · A&B",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.retaildive.com/feeds/news/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Retail Dive",
+   "site": "https://www.retaildive.com",
+   "industria": "Varejo · Retail",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "not well-formed (invalid token): line 3, column 196",
+   "nome": "Canal Solar",
+   "site": "https://canalsolar.com.br",
+   "industria": "Power & Utilities",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "not well-formed (invalid token): line 12, column 63",
+   "nome": "Energia Hoje",
+   "site": "https://energiahoje.editorabrasilenergia.com.br",
+   "industria": "Power & Utilities",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "not well-formed (invalid token): line 4, column 24",
+   "nome": "Revista Portuária",
+   "site": "https://www.revistaportuaria.com.br",
+   "industria": "Transportes & Logística",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "not well-formed (invalid token): line 7, column 42",
+   "nome": "Guia Marítimo",
+   "site": "https://www.guiamaritimo.com.br",
+   "industria": "Transportes & Logística",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "parado",
+   "feed": "https://datamarnews.com/feed/",
+   "itens": 10,
+   "mais_recente": "2023-10-25",
+   "nome": "Datamar News",
+   "site": "https://www.datamarnews.com",
+   "industria": "Transportes & Logística",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.plastico.com.br/feed/",
+   "itens": 5,
+   "mais_recente": "2026-10-02",
+   "nome": "Plástico Moderno",
+   "site": "https://www.plastico.com.br",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "sem feed",
+   "feed": null,
+   "erro": "not well-formed (invalid token): line 57, column 69",
+   "nome": "Fiesp (notícias)",
+   "site": "https://www.fiesp.com.br",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://monitormercantil.com.br/feed/",
+   "itens": 12,
+   "mais_recente": "2026-10-07",
+   "nome": "Monitor Mercantil",
+   "site": "https://monitormercantil.com.br",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "alternativa"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://g1.globo.com/rss/g1/educacao/",
+   "itens": 100,
+   "mais_recente": "2026-10-07",
+   "nome": "g1 Educação",
+   "site": "https://g1.globo.com",
+   "industria": "Educação · Público",
+   "papel": "reforco"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://abf.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-01",
+   "nome": "ABF (franquias)",
+   "site": "https://www.abf.com.br",
+   "industria": "Varejo · Retail",
+   "papel": "reforco"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.superhiper.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Super Hiper (Abras)",
+   "site": "https://www.superhiper.com.br",
+   "industria": "Varejo · Retail",
+   "papel": "reforco"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.retaildive.com/feeds/news/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Retail Dive",
+   "site": "https://www.retaildive.com",
+   "industria": "Varejo · Retail",
+   "papel": "reforco"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.saudebusiness.com/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Saúde Business",
+   "site": "https://www.saudebusiness.com",
+   "industria": "Health · Hospitais",
+   "papel": "reforco"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://portalhospitaisbrasil.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-06",
+   "nome": "Portal Hospitais Brasil",
+   "site": "https://portalhospitaisbrasil.com.br",
+   "industria": "Health · Hospitais",
+   "papel": "reforco"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://imobireport.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Imobi Report",
+   "site": "https://imobireport.com.br",
+   "industria": "Outros · Empreendimentos imobiliários",
+   "papel": "reforco"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://revistaoe.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Revista O Empreiteiro",
+   "site": "https://revistaoe.com.br",
+   "industria": "Outros · Construção e engenharia",
+   "papel": "reforco"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.pv-magazine-brasil.com/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "pv magazine Brasil",
+   "site": "https://www.pv-magazine-brasil.com",
+   "industria": "Power & Utilities · Energias renováveis",
+   "papel": "reforco"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://tratabrasil.org.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Trata Brasil",
+   "site": "https://tratabrasil.org.br",
+   "industria": "Power & Utilities · Saneamento",
+   "papel": "reforco"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://ambienteenergia.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Ambiente Energia",
+   "site": "https://ambienteenergia.com.br",
+   "industria": "Power & Utilities · Energia elétrica",
+   "papel": "reforco"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://diariodotransporte.com.br/feed/",
+   "itens": 12,
+   "mais_recente": "2026-10-07",
+   "nome": "Diário do Transporte",
+   "site": "https://diariodotransporte.com.br",
+   "industria": "Transportes & Logística · Mobilidade de passageiros",
+   "papel": "reforco"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.frotacia.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Frota&Cia",
+   "site": "https://www.frotacia.com.br",
+   "industria": "Transportes & Logística · Transporte de carga",
+   "papel": "reforco"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://estradas.com.br/feed/",
+   "itens": 10,
+   "mais_recente": "2026-10-07",
+   "nome": "Estradas",
+   "site": "https://estradas.com.br",
+   "industria": "Transportes & Logística · Infraestrutura de transporte",
+   "papel": "reforco"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www12.senado.leg.br/noticias/rss",
+   "itens": 15,
+   "mais_recente": "2026-10-07",
+   "nome": "Agência Senado",
+   "site": "https://www12.senado.leg.br/noticias",
+   "industria": "Public Services · Governo federal",
+   "papel": "reforco"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.camara.leg.br/noticias/rss/ultimas-noticias",
+   "itens": 20,
+   "mais_recente": "2026-10-07",
+   "nome": "Agência Câmara",
+   "site": "https://www.camara.leg.br/noticias",
+   "industria": "Public Services · Governo federal",
+   "papel": "reforco"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://agenciagov.ebc.com.br/rss.xml",
+   "itens": 15,
+   "mais_recente": "2026-10-07",
+   "nome": "Agência Gov",
+   "site": "https://agenciagov.ebc.com.br",
+   "industria": "Public Services · Governo federal",
+   "papel": "reforco"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://portal.tcu.gov.br/feed/",
+   "itens": 30,
+   "mais_recente": "2026-10-07",
+   "nome": "TCU (notícias)",
+   "site": "https://portal.tcu.gov.br",
+   "industria": "Public Services · Governo federal",
+   "papel": "reforco"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.airway.com.br/feed.xml",
+   "itens": 25,
+   "mais_recente": "2026-10-07",
+   "nome": "AirWay",
+   "site": "https://www.airway.com.br",
+   "industria": "Transportes & Logística · Mobilidade de passageiros",
+   "papel": "reforco"
+  },
+  {
+   "situacao": "ok",
+   "feed": "https://www.gov.br/cade/rss.xml",
+   "itens": 8,
+   "mais_recente": "2026-10-07",
+   "nome": "CADE (notícias)",
+   "site": "https://www.gov.br/cade",
+   "industria": "Transversal",
+   "papel": "movimentos"
+  }
+ ]
+}
