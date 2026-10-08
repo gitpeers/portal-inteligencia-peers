@@ -1,7 +1,7 @@
 {
- "executadoEm": "2026-10-07 21:51",
- "ok": 100,
- "falhas": 4,
+ "executadoEm": "2026-10-08 16:23",
+ "ok": 148,
+ "falhas": 3,
  "series": [
   {
    "indicador": "Carteira de crédito do SFN",
@@ -265,29 +265,25 @@
    "indicador": "Carteira de crédito dos bancos públicos",
    "segmento": "Bancos comerciais, bancos de desenvolvimento e agências de fomento públicas",
    "conector": "ifdata",
-   "situacao": "falha",
-   "erro": "HTTP Error 500: Internal Server Error"
+   "situacao": "ok"
   },
   {
    "indicador": "Participação no crédito do SFN",
    "segmento": "Bancos comerciais, bancos de desenvolvimento e agências de fomento públicas",
    "conector": "ifdata",
-   "situacao": "falha",
-   "erro": "HTTP Error 500: Internal Server Error"
+   "situacao": "ok"
   },
   {
    "indicador": "Lucro líquido dos bancos públicos",
    "segmento": "Bancos comerciais, bancos de desenvolvimento e agências de fomento públicas",
    "conector": "ifdata",
-   "situacao": "falha",
-   "erro": "HTTP Error 500: Internal Server Error"
+   "situacao": "ok"
   },
   {
    "indicador": "Índice de Basileia médio",
    "segmento": "Bancos comerciais, bancos de desenvolvimento e agências de fomento públicas",
    "conector": "ifdata",
-   "situacao": "falha",
-   "erro": "HTTP Error 500: Internal Server Error"
+   "situacao": "ok"
   },
   {
    "indicador": "Inadimplência das pessoas físicas",
@@ -617,18 +613,303 @@
    "indicador": "Capacidade instalada de geração",
    "segmento": "Geração, transmissão e distribuição",
    "conector": "siga",
-   "situacao": "ok"
+   "situacao": "falha",
+   "erro": "<urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)>"
   },
   {
    "indicador": "Capacidade instalada solar, eólica e biomassa",
    "segmento": "Solar, Eólica e Biomassa e biogás",
    "conector": "siga",
-   "situacao": "ok"
+   "situacao": "falha",
+   "erro": "<urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)>"
   },
   {
    "indicador": "Participação na matriz elétrica",
    "segmento": "Solar, Eólica e Biomassa e biogás",
    "conector": "siga",
+   "situacao": "falha",
+   "erro": "<urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)>"
+  },
+  {
+   "indicador": "Emprego formal na indústria",
+   "segmento": "Indústria de transformação",
+   "conector": "caged",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Empregos diretos na mineração",
+   "segmento": "Mineração",
+   "conector": "caged",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Emprego formal no comércio",
+   "segmento": "Varejo geral",
+   "conector": "caged",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Emprego formal na construção",
+   "segmento": "Construção civil, construção pesada e engenharia",
+   "conector": "caged",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Emprego formal em transporte e armazenagem",
+   "segmento": "Operadores logísticos, armazenagem, entregas e comércio exterior",
+   "conector": "caged",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Emprego formal em educação privada",
+   "segmento": "Educação básica",
+   "conector": "caged",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Emprego formal em serviços administrativos",
+   "segmento": "Facilities, terceirização, BPO, segurança e serviços ao consumidor",
+   "conector": "caged",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Emprego formal em TI",
+   "segmento": "Software, SaaS e plataformas digitais",
+   "conector": "caged",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Acessos móveis",
+   "segmento": "Operadoras de telefonia, banda larga e fibra",
+   "conector": "anatel",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Acessos de banda larga fixa",
+   "segmento": "Operadoras de telefonia, banda larga e fibra",
+   "conector": "anatel",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Assinantes de TV por assinatura",
+   "segmento": "Mídia, publicidade, editorial e gráfica",
+   "conector": "anatel",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Leitos totais",
+   "segmento": "Hospitais públicos e privados",
+   "conector": "cnes",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Leitos de UTI",
+   "segmento": "Hospitais públicos e privados",
+   "conector": "cnes",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Estabelecimentos hospitalares",
+   "segmento": "Hospitais públicos e privados",
+   "conector": "cnes",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Geração eólica e solar",
+   "segmento": "Solar, Eólica e Biomassa e biogás",
+   "conector": "ons",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Pessoal ocupado no setor",
+   "segmento": "Bebidas",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Pessoal ocupado na indústria farmacêutica",
+   "segmento": "Farmacêutica, dispositivos e diagnóstico",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Pessoal ocupado na fabricação de veículos",
+   "segmento": "Automotivo",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Pessoal ocupado no setor",
+   "segmento": "Química e petroquímica",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Pessoal ocupado no setor",
+   "segmento": "Papel e celulose",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Pessoal ocupado no setor",
+   "segmento": "Eletroeletrônicos",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Pessoal ocupado no setor",
+   "segmento": "Hardware, dispositivos e componentes",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Pessoal ocupado na indústria de cosméticos",
+   "segmento": "Perfumaria e cosméticos",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Pessoal ocupado em farmácias",
+   "segmento": "Farmácias e drogarias",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Pessoal ocupado em hiper e supermercados",
+   "segmento": "Supermercados e hipermercados",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Pessoal ocupado na cadeia têxtil",
+   "segmento": "Vestuário",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Pessoal ocupado em serviços de TI",
+   "segmento": "Integração, outsourcing e consultoria em TI",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Pessoal ocupado em mídia e publicidade",
+   "segmento": "Mídia, publicidade, editorial e gráfica",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Salário médio mensal em TI",
+   "segmento": "Integração, outsourcing e consultoria em TI",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Preços ao produtor de alimentos",
+   "segmento": "Alimentos",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Preços ao produtor de máquinas",
+   "segmento": "Máquinas e equipamentos",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Preços ao produtor da metalurgia",
+   "segmento": "Siderurgia",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Preços ao produtor de higiene e cosméticos",
+   "segmento": "Perfumaria e cosméticos",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Lojas de cosméticos e perfumaria",
+   "segmento": "Perfumaria e cosméticos",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Farmácias em funcionamento",
+   "segmento": "Farmácias e drogarias",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Preços ao produtor de medicamentos",
+   "segmento": "Farmácias e drogarias",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Volume do transporte de cargas",
+   "segmento": "Rodoviário, ferroviário, aéreo e cabotagem",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Pessoal ocupado em terceirização",
+   "segmento": "Facilities, terceirização, BPO, segurança e serviços ao consumidor",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Pessoal ocupado em data centers e hospedagem",
+   "segmento": "Data centers, redes neutras e torres",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Empresas de data centers e hospedagem",
+   "segmento": "Data centers, redes neutras e torres",
+   "conector": "sidra",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Participação da fibra na banda larga fixa",
+   "segmento": "Operadoras de telefonia, banda larga e fibra",
+   "conector": "anatel_col",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Municípios com 5G",
+   "segmento": "Operadoras de telefonia, banda larga e fibra",
+   "conector": "anatel_col",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Prestadoras regionais de banda larga",
+   "segmento": "Data centers, redes neutras e torres",
+   "conector": "anatel_col",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Credenciamentos de estabelecimentos",
+   "segmento": "Meios de pagamento",
+   "conector": "mpv",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Internações no SUS",
+   "segmento": "Hospitais públicos e privados",
+   "conector": "sih",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Permanência média no SUS",
+   "segmento": "Hospitais públicos e privados",
+   "conector": "sih",
+   "situacao": "ok"
+  },
+  {
+   "indicador": "Investimentos",
+   "segmento": "Administração pública estadual",
+   "conector": "siconfi",
    "situacao": "ok"
   }
  ]
