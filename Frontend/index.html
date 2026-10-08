@@ -1,0 +1,2652 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal de Inteligência Peers | Protótipo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#001334;--navy2:#0a1f4e;--neon:#E0FE00;--neon-dim:rgba(224,254,0,.13);
+--grey:#677084;--grey-light:#f0f2f7;--grey-border:#dde1ec;--bg:#f4f6fb;
+--t1:#0052cc;--t2:#1a8252;--t3:#c9372c;--shadow:0 2px 16px rgba(0,19,52,.10);}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--navy)}
+
+/* ---- AVISO DE PROTÓTIPO ---- */
+.proto-bar{background:var(--neon);color:var(--navy);text-align:center;font-size:.72rem;font-weight:800;
+  letter-spacing:.4px;padding:7px 16px;text-transform:uppercase}
+
+/* ---- HEADER ---- */
+.header{background:linear-gradient(135deg,var(--navy),var(--navy2));padding:26px 40px 22px;display:flex;
+  align-items:center;justify-content:space-between;border-bottom:3px solid var(--neon);flex-wrap:wrap;gap:12px}
+.header h1{color:var(--neon);font-size:1.5rem;font-weight:800;letter-spacing:-.5px}
+.header p{color:rgba(255,255,255,.7);font-size:.82rem;margin-top:4px}
+.peers-logo{color:var(--neon);font-size:1.05rem;font-weight:900;letter-spacing:2px}
+.header-badge{background:var(--neon);color:var(--navy);font-weight:700;font-size:.72rem;padding:4px 14px;border-radius:20px}
+.header-hint{color:rgba(255,255,255,.5);font-size:.73rem}
+.header-user{color:rgba(255,255,255,.7);font-size:.73rem;display:flex;gap:10px;align-items:center}
+.header-user button{background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:6px;
+  padding:3px 10px;font-size:.7rem;font-weight:700;cursor:pointer;font-family:inherit}
+.header-user button:hover{border-color:var(--neon);color:var(--neon)}
+
+/* ---- LOGIN (enquanto não há sessão, só a tela de login aparece) ---- */
+[hidden]{display:none!important}
+#login{display:none}
+body.bloqueado > :not(#login){display:none!important}
+body.bloqueado #login{display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px 16px;
+  background:linear-gradient(135deg,var(--navy),var(--navy2))}
+.login-card{background:#fff;width:100%;max-width:400px;border-radius:14px;border-top:4px solid var(--neon);
+  box-shadow:0 10px 40px rgba(0,0,0,.25);padding:32px 28px}
+.login-card .peers-logo{color:var(--navy)}
+.login-card h1{font-size:1.25rem;font-weight:800;letter-spacing:-.4px;margin:4px 0 6px}
+.login-sub{color:var(--grey);font-size:.8rem;line-height:1.5;margin-bottom:20px}
+.login-card form{display:flex;flex-direction:column;gap:8px}
+.login-card label{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--grey)}
+.login-card input{border:1.5px solid var(--grey-border);border-radius:8px;padding:11px 12px;font-size:.92rem;
+  font-family:inherit;color:var(--navy);outline:none}
+.login-card input:focus{border-color:var(--navy)}
+#loginCodigo{font-size:1.3rem;letter-spacing:6px;text-align:center;font-variant-numeric:tabular-nums}
+.login-card .btn{padding:11px 18px;font-size:.85rem;margin-top:6px}
+.login-card .btn:disabled{opacity:.55;cursor:default}
+.login-links{display:flex;justify-content:space-between;margin-top:6px}
+.login-links button{background:none;border:none;color:var(--t1);font-size:.76rem;font-weight:600;cursor:pointer;
+  font-family:inherit;padding:2px 0}
+.login-links button:disabled{color:var(--grey);cursor:default}
+.login-msg{font-size:.78rem;line-height:1.5;margin-top:14px;min-height:1em;color:var(--t3);font-weight:600}
+.login-msg.info{color:var(--grey);font-weight:500}
+
+/* ---- BARRA FIXA: ABAS + FILTROS ---- */
+.topbar{position:sticky;top:0;z-index:100;box-shadow:0 2px 14px rgba(0,19,52,.13)}
+.nav-tabs{background:var(--navy);display:flex;gap:2px;padding:0 40px;overflow-x:auto}
+.nav-tab{padding:13px 18px;color:rgba(255,255,255,.55);font-size:.81rem;font-weight:600;cursor:pointer;
+  border-bottom:3px solid transparent;white-space:nowrap;transition:.2s}
+.nav-tab:hover{color:rgba(255,255,255,.9)}
+.nav-tab.active{color:var(--neon);border-bottom-color:var(--neon)}
+.filters-bar{background:#fff;border-bottom:1px solid var(--grey-border);padding:11px 40px;display:flex;
+  gap:9px;align-items:center;flex-wrap:wrap}
+.flt-label{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--grey)}
+select.flt{border:1.5px solid var(--grey-border);border-radius:7px;padding:7px 11px;font-size:.79rem;
+  color:var(--navy);background:#fff;outline:none;font-family:inherit;font-weight:500}
+select.flt:focus{border-color:var(--navy)}
+.vgroup{display:flex;gap:6px;margin-left:auto;align-items:center}
+.bgroup{display:flex;gap:6px;align-items:center;margin-left:10px;padding-left:12px;border-left:1px solid var(--grey-border)}
+.vbtn{padding:7px 14px;border:1.5px solid var(--grey-border);border-radius:7px;background:#fff;color:var(--navy);
+  font-size:.77rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s}
+.vbtn:hover{border-color:var(--navy)}
+.vbtn.active{background:var(--navy);color:var(--neon);border-color:var(--navy)}
+.chip-restrito{display:inline-flex;align-items:center;gap:6px;background:var(--neon-dim);
+  border:1px solid rgba(224,254,0,.55);color:var(--navy);border-radius:14px;padding:4px 11px;
+  font-size:.71rem;font-weight:800;letter-spacing:.3px}
+
+/* ---- MULTI-SELEÇÃO ---- */
+.ms{position:relative;display:inline-block}
+.ms-btn{border:1.5px solid var(--grey-border);border-radius:7px;padding:7px 30px 7px 11px;font-size:.79rem;
+  color:var(--navy);background:#fff;cursor:pointer;font-family:inherit;font-weight:500;white-space:nowrap;position:relative}
+.ms-btn:after{content:'▾';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:.7rem;color:var(--grey)}
+.ms-btn:hover{border-color:var(--navy)}
+.ms.on .ms-btn{border-color:var(--navy);background:var(--neon-dim);font-weight:700}
+.ms-cnt{display:inline-block;background:var(--navy);color:var(--neon);border-radius:9px;padding:0 6px;
+  font-size:.68rem;font-weight:800;margin-left:6px;line-height:15px;vertical-align:1px}
+.ms-pop{display:none;position:absolute;top:calc(100% + 5px);left:0;z-index:160;background:#fff;
+  border:1.5px solid var(--grey-border);border-radius:9px;box-shadow:0 8px 28px rgba(0,19,52,.18);
+  min-width:242px;max-width:330px;max-height:320px;overflow:auto;padding:6px}
+.ms.open .ms-pop{display:block}
+.ms-tools{display:flex;gap:6px;padding:4px 6px 7px;border-bottom:1px solid var(--grey-border);margin-bottom:4px}
+.ms-tools button{flex:1;border:1px solid var(--grey-border);background:#fff;border-radius:5px;font-size:.71rem;
+  font-weight:700;padding:5px;cursor:pointer;color:var(--navy);font-family:inherit}
+.ms-tools button:hover{background:var(--neon-dim);border-color:var(--navy)}
+.ms-opt{display:flex;align-items:center;gap:8px;padding:5px 7px;border-radius:5px;cursor:pointer;font-size:.78rem}
+.ms-opt:hover{background:var(--neon-dim)}
+.ms-opt input{accent-color:var(--navy);cursor:pointer;flex:none}
+.ms-opt span.n{margin-left:auto;font-size:.7rem;color:var(--grey);font-weight:700}
+.ms-opt.zero span:not(.n){color:var(--grey)}
+.filters-chips{display:none;gap:6px;flex-wrap:wrap;align-items:center;background:#fff;
+  border-bottom:1px solid var(--grey-border);padding:0 40px 11px}
+.chip-f{display:inline-flex;align-items:center;gap:7px;background:var(--neon-dim);
+  border:1px solid rgba(224,254,0,.5);color:var(--navy);border-radius:14px;padding:3px 6px 3px 11px;
+  font-size:.73rem;font-weight:600}
+.chip-f b{font-weight:800}
+.chip-f button{border:none;background:rgba(0,19,52,.1);color:var(--navy);border-radius:50%;width:16px;height:16px;
+  line-height:1;font-size:.7rem;cursor:pointer;font-family:inherit;padding:0}
+.chip-f button:hover{background:var(--navy);color:var(--neon)}
+.chip-limpar{border:1.5px solid var(--grey-border);background:#fff;color:var(--navy);border-radius:14px;
+  padding:3px 12px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit}
+.chip-limpar:hover{border-color:var(--navy);background:var(--grey-light)}
+
+/* ---- CONTEÚDO ---- */
+.content{padding:26px 40px 90px;max-width:1420px;margin:0 auto}
+.sec-head{margin-bottom:18px}
+.sec-head h2{font-size:1.15rem;font-weight:800;letter-spacing:-.3px}
+.sec-head p{font-size:.79rem;color:var(--grey);margin-top:4px;line-height:1.55}
+
+/* ---- KPI STRIP ---- */
+.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:13px;margin-bottom:22px}
+.kpi{background:#fff;border-radius:10px;padding:15px 17px;box-shadow:var(--shadow);border-top:3px solid var(--grey)}
+.kpi.a{border-color:var(--neon)}.kpi.b{border-color:#7c3aed}.kpi.c{border-color:var(--t1)}
+.kpi.d{border-color:var(--t2)}.kpi.e{border-color:var(--t3)}
+.kpi-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--grey);margin-bottom:6px}
+.kpi-value{font-size:1.6rem;font-weight:900;line-height:1}
+.kpi-sub{font-size:.71rem;color:var(--grey);margin-top:4px}
+
+/* ---- CARDS ---- */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.card{background:#fff;border-radius:12px;padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+.card-title{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--grey);
+  margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card-title span.dot{width:6px;height:6px;border-radius:50%;background:var(--neon);flex:none}
+.hint{font-size:.72rem;color:var(--grey);font-weight:500;text-transform:none;letter-spacing:0;margin-left:auto}
+.cardnote{font-size:.76rem;color:var(--grey);line-height:1.55;margin:-6px 0 14px}
+.vazio{text-align:center;padding:34px 18px;color:var(--grey);font-size:.82rem}
+
+/* ---- BADGES E CHIPS ---- */
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:.68rem;font-weight:700;white-space:nowrap}
+.b1{background:rgba(0,82,204,.1);color:var(--t1)}
+.b2{background:rgba(26,130,82,.12);color:var(--t2)}
+.b3{background:rgba(201,55,44,.1);color:var(--t3)}
+.bp{background:rgba(224,254,0,.22);color:#4d5c00;border:1px solid var(--neon)}
+.bg-n{background:var(--grey-light);color:var(--grey)}
+.chip{display:inline-block;padding:3px 10px;border-radius:12px;font-size:.71rem;font-weight:700;margin:3px 3px 0 0;
+  background:var(--neon-dim);color:var(--navy);border:1px solid rgba(224,254,0,.45)}
+.chip.neutro{background:var(--grey-light);color:var(--grey);border-color:var(--grey-border)}
+.chip.neutro.marcado{background:var(--navy);color:var(--neon);border-color:var(--navy)}
+.analise-ia{background:var(--grey-light);border-left:3px solid var(--navy);border-radius:7px;padding:10px 13px;margin:0 0 12px;font-size:.78rem;line-height:1.55;color:#334}
+.analise-ia .selo-ia{margin-right:7px}
+.selo-ia{background:var(--grey-light);color:var(--grey);font-size:.67rem;font-weight:700;padding:3px 9px;
+  border-radius:12px;border:1px solid var(--grey-border);white-space:nowrap}
+
+/* ---- HOME: MANCHETES ---- */
+.mh{padding:13px 0;border-bottom:1px solid var(--grey-border)}
+.mh:last-child{border:none}.mh:first-child{padding-top:0}
+.mh h3{font-size:.9rem;font-weight:700;margin:7px 0 5px;line-height:1.4}
+.mh p{font-size:.77rem;color:var(--grey);line-height:1.55}
+.mini{list-style:none}
+.mini li{display:flex;gap:10px;font-size:.79rem;padding:8px 0;border-bottom:1px solid var(--grey-border);line-height:1.5}
+.mini li:last-child{border:none}
+.mini .d{color:var(--t1);font-weight:800;font-size:.73rem;flex:none;padding-top:1px;width:46px}
+
+/* ---- RADAR ---- */
+.rcard{background:#fff;border-radius:12px;padding:20px;box-shadow:var(--shadow);margin-bottom:14px;
+  border-left:4px solid var(--grey-border)}
+.rcard.alta{border-left-color:var(--neon)}
+.rcard-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:11px}
+.rcard h3{font-size:1rem;font-weight:800;line-height:1.35;margin-bottom:9px;letter-spacing:-.2px}
+.rcard .resumo{font-size:.82rem;line-height:1.6;color:#334;margin-bottom:11px}
+.linha-rot{font-size:.79rem;line-height:1.55;margin-bottom:11px}
+.rot{font-weight:800;color:var(--navy)}
+.box-angulo{background:var(--neon-dim);border-left:3px solid var(--neon);padding:11px 13px;border-radius:6px;
+  font-size:.79rem;line-height:1.55;color:#334;margin-bottom:11px}
+.barra-com{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:rgba(0,82,204,.06);border-left:3px solid var(--t1);
+  padding:11px 14px;border-radius:6px;margin-bottom:18px;font-size:.78rem;line-height:1.5;color:#334}
+.barra-com .btn-sec{border:1.5px solid var(--navy);background:#fff;color:var(--navy);border-radius:14px;padding:5px 13px;font-size:.74rem;font-weight:700;cursor:pointer}
+.barra-com .btn-sec:hover{background:var(--navy);color:var(--neon)}
+.tag-cli{display:inline-block;background:var(--navy);color:var(--neon);font-size:.62rem;font-weight:800;border-radius:9px;padding:1px 7px;margin-left:6px;vertical-align:middle}
+#btnConta{background:transparent;border:1.5px solid var(--neon);color:var(--neon);border-radius:14px;padding:5px 13px;font-size:.74rem;font-weight:700;cursor:pointer}
+#btnConta:hover{background:var(--neon);color:var(--navy)}
+.box-com{background:rgba(0,82,204,.06);border-left:3px solid var(--t1);padding:11px 13px;border-radius:6px;
+  font-size:.79rem;line-height:1.55;color:#334;margin-bottom:11px}
+.rcard-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  margin-top:13px;padding-top:12px;border-top:1px solid var(--grey-border);font-size:.73rem;color:var(--grey)}
+.btns-util{display:flex;gap:6px}
+.btn-util{border:1.5px solid var(--grey-border);background:#fff;border-radius:7px;padding:5px 11px;
+  font-size:.73rem;font-weight:700;cursor:pointer;font-family:inherit;color:var(--navy)}
+.btn-util:hover{border-color:var(--navy)}
+.btn-util.on{background:var(--navy);color:var(--neon);border-color:var(--navy)}
+.cbx{display:inline-flex;align-items:center;gap:7px;font-size:.73rem;font-weight:600;color:var(--grey);cursor:pointer;white-space:nowrap}
+.cbx input{accent-color:var(--navy);cursor:pointer;width:15px;height:15px;flex:none}
+
+/* ---- TABELA ---- */
+.table-wrap{overflow:auto;border-radius:8px;border:1px solid var(--grey-border)}
+.data-table{width:100%;border-collapse:collapse;font-size:.79rem}
+.data-table th{background:var(--navy);color:var(--neon);padding:10px;text-align:left;font-size:.69rem;
+  letter-spacing:.4px;font-weight:700;white-space:nowrap;cursor:pointer;user-select:none;position:sticky;top:0;z-index:2}
+.data-table th:hover{background:var(--navy2)}
+.data-table td{padding:9px 10px;border-bottom:1px solid var(--grey-border);vertical-align:middle;white-space:nowrap}
+.data-table tbody tr{cursor:pointer}
+.data-table tbody tr:hover td{background:var(--neon-dim)}
+.num{font-variant-numeric:tabular-nums;font-weight:600}
+.pos{color:var(--t2);font-weight:700;font-variant-numeric:tabular-nums}
+.neg{color:var(--t3);font-weight:700;font-variant-numeric:tabular-nums}
+.vs-setor{display:block;font-size:.66rem;font-weight:600;margin-top:2px;white-space:nowrap;color:var(--grey)}
+.vs-setor.pos{color:var(--t2)} .vs-setor.neg{color:var(--t3)}
+.linha-mediana td{background:var(--grey-light);font-style:italic;border-bottom:2px solid var(--navy)}
+.linha-mediana .nome-p{font-style:normal}
+.nome-p{font-weight:800}
+.subnome{display:block;font-size:.68rem;color:var(--grey);font-weight:500;margin-top:2px}
+.srcnote{background:rgba(0,82,204,.06);border-left:3px solid var(--t1);padding:10px 12px;border-radius:6px;
+  font-size:.75rem;color:#334;margin-bottom:14px;line-height:1.55}
+.warn{background:var(--neon-dim);border-left:3px solid var(--neon);padding:10px 12px;border-radius:6px;
+  font-size:.77rem;color:#334;line-height:1.55}
+
+/* ---- BARRAS ---- */
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.bar-label{width:62px;font-size:.75rem;font-weight:700;flex:none;color:var(--grey)}
+.bar-track{flex:1;height:20px;background:var(--grey-light);border-radius:4px;overflow:hidden;min-width:40px}
+.bar-fill{height:100%;background:var(--navy);border-radius:0 4px 4px 0;min-width:3px;transition:width .5s ease}
+.bar-val{width:96px;font-size:.76rem;font-weight:700;text-align:right;flex:none;font-variant-numeric:tabular-nums}
+
+/* ---- TIMELINE ---- */
+.tl{position:relative;padding-left:26px}
+.tl::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:var(--grey-border)}
+.tl-item{position:relative;padding-bottom:22px}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{content:"";position:absolute;left:-26px;top:4px;width:12px;height:12px;border-radius:50%;
+  background:var(--navy);border:2px solid var(--neon);box-sizing:border-box}
+.tl-head{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.tl-data{font-size:.72rem;color:var(--grey);font-weight:700}
+.tl-item h4{font-size:.88rem;font-weight:800;margin-bottom:5px}
+.lnk-player{cursor:pointer;border-bottom:1px dotted var(--grey)}
+.lnk-player:hover{color:var(--navy2);border-bottom-color:var(--navy)}
+.mx td.n{text-align:center;font-weight:700}
+.mx td.z{text-align:center;color:var(--grey-border)}
+.mx th.t{text-align:center;font-size:.68rem}
+.tl-item .tese{font-size:.79rem;line-height:1.55;color:#334;margin-bottom:6px}
+.tl-item .leitura{font-size:.77rem;line-height:1.55;color:var(--grey);margin-bottom:8px}
+
+/* ---- ACERVO ---- */
+.arow{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:13px 0;border-bottom:1px solid var(--grey-border)}
+.arow:last-child{border:none}.arow:first-child{padding-top:0}
+.arow h4{font-size:.86rem;font-weight:700;margin:6px 0 4px;line-height:1.4}
+.arow p{font-size:.74rem;color:var(--grey)}
+
+/* ---- AGENDA ---- */
+.erow{display:flex;gap:15px;align-items:center;padding:13px 0;border-bottom:1px solid var(--grey-border)}
+.erow:last-child{border:none}.erow:first-child{padding-top:0}
+.edate{min-width:58px;text-align:center;background:var(--navy);color:var(--neon);border-radius:8px;
+  padding:8px 6px;font-size:1.05rem;font-weight:900;line-height:1;flex:none}
+.edate small{display:block;font-size:.62rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  margin-top:3px;color:rgba(255,255,255,.7)}
+.erow h4{font-size:.86rem;font-weight:700;margin:6px 0 4px}
+.erow p{font-size:.74rem;color:var(--grey);line-height:1.5}
+
+/* ---- BOTÃO BRIEFING ---- */
+#btnBriefing{position:fixed;bottom:24px;right:24px;z-index:800;background:var(--navy);color:var(--neon);
+  border:2px solid var(--neon);border-radius:30px;padding:13px 22px;font-size:.82rem;font-weight:800;
+  cursor:pointer;font-family:inherit;box-shadow:0 6px 22px rgba(0,19,52,.35);display:flex;align-items:center;gap:9px}
+#btnBriefing:hover{background:var(--navy2)}
+#btnBriefing .cnt{background:var(--neon);color:var(--navy);border-radius:11px;min-width:22px;height:22px;
+  display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:900;padding:0 6px}
+
+/* ---- RESUMO FALADO ---- */
+.sec-head-row{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
+.btn-audio{background:var(--neon);color:var(--navy);border:none;border-radius:22px;padding:10px 20px;
+  font-size:.8rem;font-weight:800;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:9px;
+  box-shadow:0 2px 12px rgba(224,254,0,.5);white-space:nowrap;flex:none}
+.btn-audio:hover{background:#ecff4d}
+.btn-audio small{font-weight:600;opacity:.7;font-size:.72rem}
+.audio-ctrls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.audio-prog{height:6px;background:var(--grey-light);border-radius:3px;overflow:hidden;margin:14px 0 7px}
+.audio-prog i{display:block;height:100%;background:var(--navy);width:0;transition:width .35s ease}
+.audio-status{font-size:.73rem;color:var(--grey);font-weight:600;margin-bottom:14px}
+.audio-txt{background:#fafbfe;border:1.5px solid var(--grey-border);border-radius:9px;padding:16px 18px;
+  font-size:.83rem;line-height:1.75;max-height:290px;overflow:auto;color:#334}
+.audio-txt p{margin-bottom:12px;border-radius:5px;padding:3px 6px;margin-left:-6px;transition:background .25s}
+.audio-txt p:last-child{margin-bottom:0}
+.audio-txt p.on{background:var(--neon-dim);box-shadow:inset 3px 0 0 var(--neon);font-weight:500;color:var(--navy)}
+
+/* ---- MODAL ---- */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,19,52,.55);z-index:900;backdrop-filter:blur(2px)}
+.modal-bg.open{display:block}
+.modal{position:fixed;top:5vh;left:50%;transform:translateX(-50%);width:min(880px,94vw);max-height:90vh;
+  background:#fff;border-radius:14px;z-index:901;display:none;flex-direction:column;
+  box-shadow:0 20px 60px rgba(0,19,52,.4);overflow:hidden}
+.modal.open{display:flex}
+.modal-head{background:linear-gradient(135deg,var(--navy),var(--navy2));padding:17px 22px;display:flex;
+  align-items:center;justify-content:space-between;gap:14px;flex:none}
+.modal-head h3{color:var(--neon);font-size:1rem;font-weight:800}
+.modal-head p{color:rgba(255,255,255,.7);font-size:.76rem;margin-top:3px}
+.modal-close{background:transparent;border:1.5px solid rgba(255,255,255,.35);color:#fff;border-radius:7px;
+  padding:6px 13px;font-size:.76rem;font-weight:700;cursor:pointer;flex:none;font-family:inherit}
+.modal-close:hover{background:rgba(255,255,255,.14)}
+.modal-tools{padding:11px 22px;border-bottom:1px solid var(--grey-border);display:flex;gap:7px;align-items:center;
+  flex-wrap:wrap;flex:none;background:#fafbfe}
+.modal-body{overflow:auto;padding:20px 22px 24px}
+.tbtn{border:1.5px solid var(--grey-border);background:#fff;color:var(--navy);border-radius:14px;padding:5px 13px;
+  font-size:.74rem;font-weight:700;cursor:pointer;font-family:inherit}
+.tbtn:hover{border-color:var(--navy)}
+.tbtn.on{background:var(--navy);color:var(--neon);border-color:var(--navy)}
+.kgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:11px}
+.kbox{background:var(--grey-light);border-radius:9px;padding:13px 14px;border-left:3px solid var(--neon)}
+.kbox .v{font-size:1.15rem;font-weight:900;line-height:1.1}
+.kbox .l{font-size:.69rem;color:var(--grey);font-weight:600;margin-top:5px;line-height:1.35}
+.kbox .v .u{font-size:.68rem;font-weight:600;color:var(--grey)}
+.kbox .m{font-size:.64rem;color:var(--grey);margin-top:6px;line-height:1.4}
+.kbox .m .pos,.kbox .m .neg,.kbox .m .num{font-weight:700}
+.ind-seg{padding:14px 0;border-top:1px solid var(--grey-border)}
+.kgrid.ind{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:13px}
+.kgrid.ind .kbox{padding:16px 18px}
+.kgrid.ind .kbox .v{font-size:1.4rem}
+.kgrid.ind .kbox .v .u{font-size:.78rem}
+.kgrid.ind .kbox .l{font-size:.8rem}
+.kgrid.ind .kbox .m{font-size:.72rem}
+.kgrid.ind .kbox .sem-auto{font-size:.64rem}
+.kbox .sem-auto{display:inline-block;margin-top:7px;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px;
+  color:var(--grey);border:1px dashed var(--grey-border);border-radius:5px;padding:2px 6px}
+.ind-seg:first-of-type{border-top:none}
+.ind-seg-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:11px}
+.ind-seg-top h4{font-size:.92rem;font-weight:800}
+.ind-seg-top p{font-size:.72rem;color:var(--grey);margin-top:3px}
+.simple{width:100%;border-collapse:collapse;font-size:.8rem}
+.simple td,.simple th{padding:8px 10px;border-bottom:1px solid var(--grey-border);text-align:left}
+.simple th{font-size:.69rem;text-transform:uppercase;letter-spacing:.5px;color:var(--grey);font-weight:700}
+.simple td:last-child{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+#txtBriefing,#txtConta{width:100%;min-height:340px;font-family:ui-monospace,Consolas,monospace;font-size:.76rem;
+  line-height:1.6;padding:14px;border-radius:9px;border:1.5px solid var(--grey-border);resize:vertical;
+  color:var(--navy);background:#fafbfe;outline:none}
+.btn{background:var(--navy);color:var(--neon);border:none;border-radius:7px;padding:9px 18px;font-size:.79rem;
+  font-weight:800;cursor:pointer;font-family:inherit}
+.btn:hover{background:var(--navy2)}
+.ok{font-size:.76rem;color:var(--t2);font-weight:700;align-self:center;display:none}
+
+::-webkit-scrollbar{width:7px;height:7px}
+::-webkit-scrollbar-thumb{background:var(--grey-border);border-radius:4px}
+@media(max-width:1100px){.kpi-strip{grid-template-columns:repeat(2,1fr)}.grid-2{grid-template-columns:1fr!important}
+  .content,.header,.nav-tabs,.filters-bar{padding-left:16px;padding-right:16px}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+</head>
+<body class="bloqueado">
+
+<div id="login">
+  <div class="login-card">
+    <div class="peers-logo">PEERS+</div>
+    <h1>Portal de Inteligência Peers</h1>
+    <p class="login-sub" id="loginSub">Verificando acesso…</p>
+    <form id="formEmail" onsubmit="pedirCodigo(event)" hidden>
+      <label for="loginEmail">Seu e-mail da Peers</label>
+      <input id="loginEmail" type="email" autocomplete="email" placeholder="Seu e-mail Peers" required>
+      <button class="btn" id="btnEmail">Receber código</button>
+    </form>
+    <form id="formCodigo" onsubmit="confirmarCodigo(event)" hidden>
+      <label for="loginCodigo">Código</label>
+      <input id="loginCodigo" inputmode="numeric" autocomplete="one-time-code" maxlength="10" required>
+      <button class="btn" id="btnCodigo">Entrar</button>
+      <div class="login-links">
+        <button type="button" id="btnReenviar" onclick="reenviarCodigo()">Reenviar código</button>
+        <button type="button" onclick="trocarEmail()">Usar outro e-mail</button>
+      </div>
+    </form>
+    <p class="login-msg" id="loginMsg"></p>
+  </div>
+</div>
+
+<div class="proto-bar">⚠ Edição de teste de 05/10/2026</div>
+
+<div class="header">
+  <div>
+    <div class="peers-logo">PEERS+</div>
+    <h1>Portal de Inteligência Peers</h1>
+    <p id="headerSub"></p>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px">
+    <div class="header-badge">EDIÇÃO DE 05/10/2026</div>
+    <div class="header-hint">Marque itens em qualquer seção e gere o briefing</div>
+    <button id="btnConta" onclick="abrirConta()">Briefing de conta</button>
+    <div class="header-user"><span id="usuarioEmail"></span><button onclick="sair()">Sair</button></div>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="nav-tabs" id="navTabs"></div>
+  <div class="filters-bar">
+    <span class="flt-label">Recorte</span>
+    <div class="ms" id="msIndustria"></div>
+    <div class="ms" id="msOffering"></div>
+    <div class="ms" id="msTema"></div>
+    <div class="bgroup" id="grpBase">
+      <span class="flt-label">Base</span>
+      <button class="vbtn" data-base="abertas" title="Resultados trimestrais das companhias abertas (CVM), com números ajustados da R&I nas empresas acompanhadas">Companhias abertas</button>
+      <button class="vbtn" data-base="valor" title="Ranking anual das 1.000 maiores empresas do Brasil">Maiores empresas · Valor 1000</button>
+    </div>
+    <span id="chipRestrito"></span>
+    <div class="vgroup">
+      <span class="flt-label">Visualizar como</span>
+      <button class="vbtn active" data-v="consultor">Consultor</button>
+      <button class="vbtn" data-v="comercial">Time comercial</button>
+    </div>
+  </div>
+  <div class="filters-chips" id="fChips"></div>
+</div>
+
+<div class="content" id="conteudo"></div>
+
+<button id="btnBriefing" onclick="abrirBriefing()">Gerar briefing <span class="cnt" id="cntBriefing">0</span></button>
+
+<div class="modal-bg" id="bgFicha" onclick="fecharModal('Ficha')"></div>
+<div class="modal" id="mFicha"></div>
+
+<div class="modal-bg" id="bgAudio" onclick="fecharModal('Audio')"></div>
+<div class="modal" id="mAudio"></div>
+
+<div class="modal-bg" id="bgConta" onclick="fecharModal('Conta')"></div>
+<div class="modal" id="mConta">
+  <div class="modal-head">
+    <div>
+      <h3>Briefing de conta</h3>
+      <p>Tudo o que o portal tem sobre uma empresa: Finanças, Movimentos, Radar e Agenda</p>
+    </div>
+    <button class="modal-close" onclick="fecharModal('Conta')">Fechar</button>
+  </div>
+  <div class="modal-body">
+    <div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:14px">
+      <input class="flt" id="inpConta" list="dlContas" placeholder="Digite o nome da empresa" style="min-width:320px;padding:7px 11px;font-size:.82rem">
+      <datalist id="dlContas"></datalist>
+      <button class="btn" onclick="montarConta()">Montar briefing</button>
+    </div>
+    <textarea id="txtConta" readonly placeholder="Escolha uma empresa e clique em Montar briefing."></textarea>
+    <div style="margin-top:13px;display:flex;gap:11px">
+      <button class="btn" onclick="copiarConta()">Copiar texto</button>
+      <span class="ok" id="msgContaCopiado">Copiado</span>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="bgBriefing" onclick="fecharModal('Briefing')"></div>
+<div class="modal" id="mBriefing">
+  <div class="modal-head">
+    <div>
+      <h3>Briefing gerado</h3>
+      <p>Revise o texto e copie para levar à conversa com o cliente</p>
+    </div>
+    <button class="modal-close" onclick="fecharModal('Briefing')">Fechar</button>
+  </div>
+  <div class="modal-body">
+    <textarea id="txtBriefing" readonly></textarea>
+    <div style="margin-top:13px;display:flex;gap:11px">
+      <button class="btn" onclick="copiarBriefing()">Copiar texto</button>
+      <span class="ok" id="msgCopiado">Copiado</span>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   ACESSO · login por código enviado ao e-mail da Peers (Supabase)
+   A URL e a chave abaixo são públicas por natureza: quem protege os dados são as regras do banco
+   (Supabase/configuracao.sql), que só entregam dados a quem entrou com e-mail do domínio.
+   ========================================================= */
+const SUPABASE_URL = "https://jznkivbmqrdfajxyklhp.supabase.co";
+const SUPABASE_CHAVE = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6bmtpdmJtcXJkZmFqeHlrbGhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0ODM1NzksImV4cCI6MjEwNzA1OTU3OX0.BlEpP8zE9akVpR1bTa67fBcrtS_OCeg1H9wMlA0Pd4Y";  // chave pública "anon", nunca a secreta
+const DOMINIO = "@peers.com.br";
+const ESPERA_REENVIO = 60;                             // segundos até liberar "Reenviar código"
+
+let sb, emailLogin = "", portalAberto = false;
+
+function msgLogin(texto, info){
+  const el = document.getElementById("loginMsg");
+  el.textContent = texto || "";
+  el.classList.toggle("info", !!info);
+}
+
+function mostrarEtapa(etapa){
+  document.getElementById("formEmail").hidden = etapa !== "email";
+  document.getElementById("formCodigo").hidden = etapa !== "codigo";
+  document.getElementById("loginSub").textContent = etapa === "codigo"
+    ? "Enviamos um código para " + emailLogin + ". Confira também o lixo eletrônico."
+    : "Acesso restrito à equipe Peers. Informe seu e-mail e enviaremos um código de acesso.";
+  document.getElementById(etapa === "codigo" ? "loginCodigo" : "loginEmail").focus();
+}
+
+function contarReenvio(){
+  const btn = document.getElementById("btnReenviar");
+  let falta = ESPERA_REENVIO;
+  btn.disabled = true;
+  const passo = ()=>{
+    if(falta <= 0){ btn.disabled = false; btn.textContent = "Reenviar código"; return; }
+    btn.textContent = "Reenviar em " + falta-- + "s";
+    setTimeout(passo, 1000);
+  };
+  passo();
+}
+
+async function enviarCodigo(){
+  // o e-mail traz o código e, se o modelo tiver link, ele também traz a pessoa de volta a esta página já logada
+  const {error} = await sb.auth.signInWithOtp({email: emailLogin,
+    options: {shouldCreateUser: true, emailRedirectTo: location.origin + location.pathname}});
+  if(error){
+    const detalhe = error.message && error.message !== "{}" ? error.message : "erro " + (error.status || "desconhecido");
+    msgLogin(error.status === 429
+      ? "Muitas tentativas seguidas. Aguarde um minuto e tente de novo."
+      : "Não foi possível enviar o código (" + detalhe + "). Tente de novo em instantes.");
+    return false;
+  }
+  return true;
+}
+
+async function pedirCodigo(ev){
+  ev.preventDefault();
+  const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+  if(!email.endsWith(DOMINIO)){ msgLogin("Acesso permitido somente para e-mails Peers."); return; }
+  const btn = document.getElementById("btnEmail");
+  btn.disabled = true; btn.textContent = "Enviando…"; msgLogin("");
+  emailLogin = email;
+  const ok = await enviarCodigo();
+  btn.disabled = false; btn.textContent = "Receber código";
+  if(ok){
+    document.getElementById("loginCodigo").value = "";
+    mostrarEtapa("codigo");
+    contarReenvio();
+  }
+}
+
+async function reenviarCodigo(){
+  msgLogin("");
+  if(await enviarCodigo()){ msgLogin("Código reenviado.", true); contarReenvio(); }
+}
+
+function trocarEmail(){ msgLogin(""); mostrarEtapa("email"); }
+
+async function confirmarCodigo(ev){
+  ev.preventDefault();
+  const codigo = document.getElementById("loginCodigo").value.replace(/\D/g, "");
+  const btn = document.getElementById("btnCodigo");
+  btn.disabled = true; btn.textContent = "Entrando…"; msgLogin("");
+  const {data, error} = await sb.auth.verifyOtp({email: emailLogin, token: codigo, type: "email"});
+  btn.disabled = false; btn.textContent = "Entrar";
+  if(error){ msgLogin("Código inválido ou expirado. Confira o e-mail ou peça um novo código."); return; }
+  abrirPortal(data.session);
+}
+
+function abrirPortal(sessao){
+  if(portalAberto) return;
+  portalAberto = true;
+  document.getElementById("usuarioEmail").textContent = sessao.user.email;
+  document.body.classList.remove("bloqueado");
+  carregarDados().then(init).catch(e=>{
+    document.getElementById("conteudo").innerHTML =
+      '<div class="card"><div class="vazio">Não foi possível carregar os dados do portal (' + esc(e.message) + ').<br>' +
+      'Recarregue a página; se o problema continuar, avise a equipe de Research &amp; Insights.</div></div>';
+  });
+}
+
+async function sair(){
+  await sb.auth.signOut();
+  location.reload();
+}
+
+async function iniciarAcesso(){
+  if(typeof supabase === "undefined"){
+    document.getElementById("loginSub").textContent = "";
+    msgLogin("Não foi possível carregar o login. Verifique a conexão e recarregue a página.");
+    return;
+  }
+  try{
+    sb = supabase.createClient(SUPABASE_URL, SUPABASE_CHAVE);
+  }catch(e){
+    msgLogin("O portal não está configurado: preencha SUPABASE_URL e SUPABASE_CHAVE no index.html.");
+    document.getElementById("loginSub").textContent = "";
+    return;
+  }
+  // sessão encerrada em outra aba ou revogada: volta para a tela de login
+  sb.auth.onAuthStateChange(evento=>{ if(evento === "SIGNED_OUT" && portalAberto) location.reload(); });
+  const erroNoLink = new URLSearchParams(location.hash.slice(1)).get("error_code");
+  const {data:{session}} = await sb.auth.getSession();   // também conclui o login de quem chegou pelo link
+  if(session){ abrirPortal(session); return; }
+  mostrarEtapa("email");
+  if(erroNoLink){
+    history.replaceState(null, "", location.pathname);
+    msgLogin(erroNoLink === "otp_expired"
+      ? "O link de acesso expirou ou já foi usado. Peça um novo código."
+      : "Não foi possível entrar pelo link. Peça um novo código.");
+  }
+}
+
+/* =========================================================
+   DADOS · lidos da tabela "secoes" do Supabase, que recebe uma cópia dos arquivos em dados/
+   sempre que os scripts do Backend ou a rotina de IA os atualizam
+   ========================================================= */
+let HOJE, PERIODO_TRI, VALOR1000_CAMPOS, VALOR1000, TAXONOMIA, TRIMESTRAL_2T26, INDICADORES_SETORIAIS, DADOS;
+
+async function carregarDados(){
+  const nomes = ["edicao","taxonomia","radar","movimentos","agenda","acervo","valor1000","companhias_abertas","indicadores"];
+  const {data, error} = await sb.from("secoes").select("nome,conteudo").in("nome", [...nomes, "analises"]);
+  if(error) throw new Error(error.message);
+  const porNome = Object.fromEntries(data.map(l=>[l.nome, l.conteudo]));
+  const faltando = nomes.filter(n=>!(n in porNome));
+  if(faltando.length) throw new Error("seções sem dados: " + faltando.join(", "));
+  const [edicao, taxo, radar, movimentos, agenda, acervo, valor, abertas, indicadores] = nomes.map(n=>porNome[n]);
+  // leituras escritas pela rotina de IA (Backend/ia/ROTINA.md); sem elas, o site segue normalmente
+  const analises = porNome.analises || {financas:{}, indicadores:{}};
+  HOJE = edicao.hoje;
+  PERIODO_TRI = abertas.periodo;
+  VALOR1000_CAMPOS = valor.campos;
+  VALOR1000 = valor.linhas;
+  TAXONOMIA = taxo.industrias;
+  TRIMESTRAL_2T26 = abertas.empresas;
+  INDICADORES_SETORIAIS = indicadores;
+  DADOS = {
+    industrias: TAXONOMIA.map(t=>t[0]),
+    offerings: taxo.offerings,
+    temas: taxo.temas,
+    players: playersValor1000(),
+    trimestral: empresasTrimestrais(),
+    indicadores: INDICADORES_SETORIAIS,
+    // itens que a rotina de IA descartou (sem relação com negócios) ficam guardados nos dados, mas não aparecem
+    radar: radar.filter(i=>!i.oculto), movimentos: movimentos.filter(m=>!m.oculto), acervo, agenda,
+    analises: {financas: analises.financas || {}, indicadores: analises.indicadores || {}}
+  };
+  const dataBr = formatarData(HOJE);
+  document.querySelector(".proto-bar").textContent = "⚠ Edição de teste de " + dataBr;
+  document.querySelector(".header-badge").textContent = "EDIÇÃO DE " + dataBr;
+}
+
+/* =========================================================
+   ESTADO
+   ========================================================= */
+const estado = {
+  aba:"home",
+  industrias:new Set(),   // vazio = todas
+  offerings:new Set(),    // vazio = todas
+  temas:new Set(),        // vazio = todos; só vale no Radar
+  modoVisualizacao:"consultor",
+  avaliacoes:{},
+  selecionados:new Set()
+};
+// base: "abertas" (resultados trimestrais das companhias abertas) ou "valor" (ranking Valor 1000).
+const estadoFinancas = { ordenarPor:"receitaLiquida", ordemAsc:false, base:"abertas" };
+const estadoMovimentos = { filtroTipo:"todos", filtroPlayer:"todos", visao:"linha" };
+const estadoIndicadores = { divisao:"todas", segmento:"todos" };
+
+const ABAS = [
+  {id:"home", label:"Edição do dia"},
+  {id:"radar", label:"Radar"},
+  {id:"financas", label:"Finanças dos players"},
+  {id:"indicadores", label:"Indicadores setoriais"},
+  {id:"movimentos", label:"Movimentos estratégicos"},
+  {id:"acervo", label:"Acervo Peers"},
+  {id:"agenda", label:"Agenda setorial"}
+];
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+function esc(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+// Conjunto vazio significa "todas": o filtro só restringe quando há algo marcado.
+function passaFiltro(item){
+  // itens transversais (ex.: divulgações do IBGE) trazem a lista de indústrias em 'industrias'
+  const okInd = !estado.industrias.size || estado.industrias.has(item.industria) || (item.industrias||[]).some(i=>estado.industrias.has(i));
+  const okOff = !estado.offerings.size || estado.offerings.has(item.offering);
+  return okInd && okOff;
+}
+function formatarData(iso){
+  const [a,m,d] = iso.split("-");
+  return d+"/"+m+"/"+a;
+}
+function diasEntre(iso){
+  return Math.round((new Date(iso) - new Date(HOJE))/(1000*60*60*24));
+}
+function n(v){ return v.toLocaleString('pt-BR'); }
+// Link para a matéria original; sem URL, mostra só o nome da fonte.
+function linkFonte(fonte, url){
+  return url ? '<a href="'+esc(url)+'" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">'+esc(fonte)+' ↗</a>' : esc(fonte);
+}
+// Regra da edição: o que foi publicado hoje é novo; o resto foi mantido da edição anterior.
+function seloEdicao(iso){
+  return iso===HOJE ? '<span class="badge bp">Novo hoje</span>' : '<span class="badge bg-n">Mantido · '+formatarData(iso)+'</span>';
+}
+// Etiqueta do item: a indústria oficial e, quando houver, a divisão (que não é filtro, só contexto).
+function rotuloInd(item){
+  if(item.industrias && item.industrias.length>1) return item.industrias.join(', ');
+  return item.divisao ? item.industria + ' · ' + item.divisao : item.industria;
+}
+function listar(conjunto, vazio, plural){
+  const v = [...conjunto];
+  if(!v.length) return vazio;
+  if(v.length <= 3) return v.join(", ");
+  return v.length + " " + plural;
+}
+function rotuloRecorte(){
+  return listar(estado.industrias, 'todas as indústrias', 'indústrias') + " · " +
+         listar(estado.offerings, 'todas as offerings', 'offerings');
+}
+
+/* =========================================================
+   INICIALIZAÇÃO
+   ========================================================= */
+const FILTROS = [
+  {id:"msIndustria", chave:"industrias", campo:"industria", label:"Indústria", vals:()=>DADOS.industrias},
+  {id:"msOffering",  chave:"offerings",  campo:"offering",  label:"Offering",  vals:()=>DADOS.offerings},
+  // Tema só existe no Radar: é lá que a notícia é marcada, e uma notícia pode ter mais de um.
+  {id:"msTema",      chave:"temas",      campo:"temas",     label:"Tema", lista:true, soRadar:true, vals:()=>DADOS.temas}
+];
+
+function filtroVisivel(f){ return !f.soRadar || estado.aba==="radar"; }
+
+// Universo que indústria e offering governam: as quatro seções marcadas nos dois eixos.
+// Finanças entra pelo cadastro de players, que só tem o eixo de indústria.
+// Universo da contagem = o que a aba aberta exibe. A Home soma as seções que ela mostra
+// (a Agenda só com os próximos 30 dias); Finanças conta segmentos de players, que só têm indústria.
+function universoItens(){
+  const a = estado.aba;
+  const lista = a==="radar" ? DADOS.radar
+    : a==="movimentos" ? DADOS.movimentos
+    : a==="acervo" ? DADOS.acervo
+    : a==="agenda" ? DADOS.agenda
+    : a==="financas" ? (estadoFinancas.base==="abertas" ? DADOS.trimestral : DADOS.players.flatMap(p=>p.segmentos))
+    : a==="indicadores" ? DADOS.indicadores
+    : DADOS.radar.concat(DADOS.movimentos, DADOS.acervo, DADOS.agenda.filter(e=>diasEntre(e.data)>=0 && diasEntre(e.data)<=30));
+  return lista.map(x=>({industria:x.industria, offering:x.offering, temas:x.temas||[]}));
+}
+
+function itemTem(it, f, valor){
+  return f.lista ? (it[f.campo]||[]).indexOf(valor) >= 0 : it[f.campo]===valor;
+}
+
+// Contagem por opção considerando os OUTROS filtros já aplicados, como no dashboard de mídia.
+// A contagem olha só o que a aba aberta exibe, que é o universo que o usuário está vendo.
+function atualizarContagens(f){
+  const base = universoItens();
+  const outros = FILTROS.filter(o=>o.chave!==f.chave && filtroVisivel(o));
+  const universo = base.filter(it=>
+    outros.every(o=> !estado[o.chave].size ||
+      [...estado[o.chave]].some(v=>itemTem(it, o, v)))
+  );
+  const box = document.getElementById(f.id);
+  box.querySelectorAll(".ms-opt").forEach(opt=>{
+    const alvo = opt.querySelector(".n");
+    const q = universo.filter(it=>itemTem(it, f, alvo.dataset.n)).length;
+    alvo.textContent = q;
+    opt.classList.toggle("zero", q===0);
+  });
+}
+
+function montarFiltros(){
+  FILTROS.forEach(f=>{
+    const box = document.getElementById(f.id);
+    // Sem "marcar todas": para ver tudo, o caminho é Limpar — nada marcado significa todas.
+    box.innerHTML =
+      '<button class="ms-btn" type="button">'+f.label+'<span class="ms-cnt" style="display:none"></span></button>' +
+      '<div class="ms-pop">' +
+        '<div class="ms-tools"><button type="button" data-none>Limpar (ver todas)</button></div>' +
+        f.vals().map(v=>
+          '<label class="ms-opt"><input type="checkbox" value="'+esc(v)+'">' +
+          '<span>'+esc(v)+'</span><span class="n" data-n="'+esc(v)+'"></span></label>').join("") +
+      '</div>';
+
+    box.querySelector(".ms-btn").onclick = e=>{
+      e.stopPropagation();
+      const jaAberto = box.classList.contains("open");
+      document.querySelectorAll(".ms").forEach(m=>m.classList.remove("open"));
+      if(!jaAberto){ box.classList.add("open"); atualizarContagens(f); }
+    };
+    box.querySelector(".ms-pop").onclick = e=>e.stopPropagation();
+    box.querySelector("[data-none]").onclick = ()=>{ estado[f.chave].clear(); renderizar(); atualizarContagens(f); };
+    box.querySelectorAll(".ms-opt input").forEach(inp=>{
+      inp.onchange = ()=>{
+        if(inp.checked) estado[f.chave].add(inp.value); else estado[f.chave].delete(inp.value);
+        renderizar();
+      };
+    });
+  });
+  document.addEventListener("click", ()=> document.querySelectorAll(".ms").forEach(m=>m.classList.remove("open")));
+}
+
+// Atualiza contador, marcações e chips sem recriar o popover, para não fechá-lo a cada clique.
+function sincronizarFiltros(){
+  const chips = [];
+  let marcados = 0;
+
+  FILTROS.forEach(f=>{
+    const box = document.getElementById(f.id);
+    const visivel = filtroVisivel(f);
+    box.style.display = visivel ? "inline-block" : "none";
+    if(!visivel){ box.classList.remove("open"); return; }
+
+    const qtd = estado[f.chave].size;
+    const cnt = box.querySelector(".ms-cnt");
+    box.classList.toggle("on", qtd>0);
+    cnt.style.display = qtd ? "inline-block" : "none";
+    cnt.textContent = qtd;
+    box.querySelectorAll(".ms-opt input").forEach(i=>{ i.checked = estado[f.chave].has(i.value); });
+
+    marcados += qtd;
+    [...estado[f.chave]].forEach(v=>{
+      chips.push('<span class="chip-f"><b>'+f.label+':</b> '+esc(v) +
+        '<button data-k="'+f.chave+'" data-v="'+esc(v)+'" title="Remover">✕</button></span>');
+    });
+  });
+
+  if(marcados > 1) chips.push('<button class="chip-limpar" data-limpar>Limpar recorte</button>');
+
+  const barra = document.getElementById("fChips");
+  barra.innerHTML = chips.join("");
+  barra.style.display = chips.length ? "flex" : "none";
+  barra.querySelectorAll("button").forEach(b=>{
+    b.onclick = ()=>{
+      if(b.hasAttribute("data-limpar")){
+        FILTROS.forEach(f=>{ if(filtroVisivel(f)) estado[f.chave].clear(); });
+      } else estado[b.dataset.k].delete(b.dataset.v);
+      renderizar();
+    };
+  });
+}
+
+function init(){
+  montarFiltros();
+
+  document.querySelectorAll(".vbtn[data-v]").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      document.querySelectorAll(".vbtn[data-v]").forEach(x=>x.classList.remove("active"));
+      b.classList.add("active");
+      estado.modoVisualizacao = b.dataset.v;
+      renderizar();
+    });
+  });
+
+  document.querySelectorAll(".vbtn[data-base]").forEach(b=>{
+    b.addEventListener("click", ()=>{ estadoFinancas.base = b.dataset.base; renderizar(); });
+  });
+
+  montarAbas();
+  renderizar();
+}
+
+function montarAbas(){
+  const nav = document.getElementById("navTabs");
+  nav.innerHTML = ABAS.map(a=>'<div class="nav-tab '+(a.id===estado.aba?'active':'')+'" data-s="'+a.id+'">'+a.label+'</div>').join("");
+  nav.querySelectorAll(".nav-tab").forEach(t=>{
+    t.addEventListener("click", ()=>{
+      pararFala();            // trocar de aba interrompe o resumo falado
+      estado.aba = t.dataset.s;
+      montarAbas();
+      renderizar();
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  });
+}
+
+/* =========================================================
+   RENDER GERAL
+   ========================================================= */
+function renderizar(){
+  sincronizarFiltros();
+  document.getElementById("headerSub").innerHTML =
+    'Recorte atual: <b style="color:var(--neon)">' + esc(rotuloRecorte()) + '</b>';
+  document.getElementById("chipRestrito").innerHTML =
+    estado.modoVisualizacao==="comercial"
+      ? '<span class="chip-restrito">Área comercial restrita ativa</span>' : '';
+
+  // O seletor de base só faz sentido em Finanças.
+  document.getElementById("grpBase").style.display = estado.aba==="financas" ? "flex" : "none";
+  document.querySelectorAll(".vbtn[data-base]").forEach(b=>b.classList.toggle("active", b.dataset.base===estadoFinancas.base));
+
+  const c = document.getElementById("conteudo");
+  if(estado.aba==="home") c.innerHTML = renderHome();
+  else if(estado.aba==="radar") c.innerHTML = renderRadar();
+  else if(estado.aba==="financas") c.innerHTML = renderFinancas();
+  else if(estado.aba==="indicadores") c.innerHTML = renderIndicadores();
+  else if(estado.aba==="movimentos") c.innerHTML = renderMovimentos();
+  else if(estado.aba==="acervo") c.innerHTML = renderAcervo();
+  else if(estado.aba==="agenda") c.innerHTML = renderAgenda();
+  if(estado.modoVisualizacao==="comercial") c.insertAdjacentHTML("afterbegin", barraComercial());
+  atualizarContador();
+  if(estado.aba==="home") ajustarManchetes();
+  ligarEventos();
+}
+
+/* =========================================================
+   HOME — EDIÇÃO DO DIA
+   ========================================================= */
+// Mostra tantas manchetes quanto cabem ao lado de Movimentos + Agenda, para os dois lados terminarem juntos.
+function ajustarManchetes(){
+  const card = document.getElementById("cardManchetes"), dir = document.getElementById("colunaDireita");
+  if(!card || !dir) return;
+  const itens = [...card.querySelectorAll(".mh")];
+  itens.forEach(m=>m.style.display="");
+  if(window.innerWidth < 900) { itens.slice(6).forEach(m=>m.style.display="none"); return; }   // celular: lista curta
+  // as duas colunas se esticam na grade: compara o fim do conteúdo de cada lado, não a altura das colunas
+  const fimDireita = () => dir.lastElementChild.getBoundingClientRect().bottom;
+  const fimEsquerda = () => { const v = itens.filter(m=>m.style.display!=="none"); return v[v.length-1].getBoundingClientRect().bottom + 22; };
+  for(let i=itens.length-1; i>=4 && fimEsquerda() > fimDireita(); i--) itens[i].style.display="none";
+}
+window.addEventListener("resize", ()=>{ if(estado.aba==="home") ajustarManchetes(); });
+
+function renderHome(){
+  const radar = DADOS.radar.filter(passaFiltro).sort((a,b)=>b.data.localeCompare(a.data));
+  const porPeso = radar.slice().sort((a,b)=> b.data.localeCompare(a.data) || (a.relevancia==='alta'?-1:0) - (b.relevancia==='alta'?-1:0));
+  const vistas = new Set();
+  const primeiras = porPeso.filter(r=>{ if(vistas.has(r.industria)) return false; vistas.add(r.industria); return true; });
+  // a lista vem maior; ajustarManchetes() deixa só as que cabem na altura da coluna da direita (mínimo 4)
+  const manchetes = primeiras.concat(porPeso.filter(r=>!primeiras.includes(r))).slice(0,16);
+  const alta = radar.filter(r=>r.relevancia==="alta").length;
+  const movs = DADOS.movimentos.filter(passaFiltro).sort((a,b)=>b.data.localeCompare(a.data));
+  const movsRecentes = movs.slice(0,5);
+  const agendaAberta = DADOS.agenda.filter(passaFiltro).filter(e=>diasEntre(e.data)>=0).sort((a,b)=>a.data.localeCompare(b.data));
+  const agenda30 = agendaAberta.filter(e=>diasEntre(e.data)<=30);
+  const acervo = DADOS.acervo.filter(passaFiltro);
+  const indsSel = [...estado.industrias];
+  const playersCobertos = indsSel.length
+    ? indsSel.reduce((s,i)=>s+segmentosDaIndustria(i).length, 0)
+    : DADOS.players.reduce((s,p)=>s+p.segmentos.length, 0);
+  const subPlayers = indsSel.length===1 ? "em "+indsSel[0]
+    : (indsSel.length ? "em "+indsSel.length+" indústrias" : "todas as indústrias");
+
+  const kpis = [
+    {cls:"a", l:"Itens no Radar", v:radar.length, s:alta+" de alta relevância"},
+    {cls:"c", l:"Movimentos mapeados", v:movs.length, s: movs.length ? "último em "+formatarData(movs[0].data) : "sem registro"},
+    {cls:"d", l:"Players cobertos", v:playersCobertos, s: subPlayers+" · Valor 1000"},
+    {cls:"b", l:"Acervo Peers", v:acervo.length, s:"ilustrativo"},
+    {cls:"e", l:"Agenda — 30 dias", v:agenda30.length, s: agendaAberta.length ? "próxima em "+formatarData(agendaAberta[0].data) : "nada agendado"}
+  ];
+
+  const temConteudo = radar.length || movs.length || agendaAberta.length;
+  const durSeg = duracaoSegundos(roteiroQueCabe(1), 1);
+
+  return '' +
+  '<div class="sec-head sec-head-row">' +
+    '<div><h2>Edição do dia</h2>' +
+    '<p>O que mudou nas suas indústrias hoje, já filtrado pelo recorte de ' + esc(rotuloRecorte()) + '.</p></div>' +
+    (temConteudo
+      ? '<button class="btn-audio" onclick="abrirAudio()">▶ Ouvir o resumo <small>' + rotuloDuracao(durSeg) + '</small></button>'
+      : '') +
+  '</div>' +
+  '<div class="kpi-strip">' + kpis.map(k=>
+    '<div class="kpi '+k.cls+'"><div class="kpi-label">'+k.l+'</div>' +
+    '<div class="kpi-value">'+k.v+'</div><div class="kpi-sub">'+k.s+'</div></div>'
+  ).join("") + '</div>' +
+
+  '<div class="grid-2" style="grid-template-columns:1.35fr 1fr">' +
+    '<div class="card" id="cardManchetes" style="margin:0">' +
+      '<div class="card-title"><span class="dot"></span>Principais manchetes<span class="hint">abra o Radar para o ângulo completo</span></div>' +
+      (manchetes.length ? manchetes.map(m=>
+        '<div class="mh">' +
+          '<span class="badge bp">'+esc(rotuloInd(m))+'</span> <span class="badge b1">'+m.offering+'</span> '+seloEdicao(m.data) +
+          '<h3>'+esc(m.manchete)+'</h3><p>'+esc(m.resumo)+'</p>' +
+        '</div>').join("")
+       : '<div class="vazio">Nenhuma manchete para este recorte.</div>') +
+    '</div>' +
+    '<div id="colunaDireita" style="display:flex;flex-direction:column;gap:18px">' +
+      '<div class="card" style="margin:0">' +
+        '<div class="card-title"><span class="dot"></span>Movimentos recentes</div>' +
+        (movsRecentes.length ? '<ul class="mini">' + movsRecentes.map(m=>
+          '<li><span class="d">'+formatarData(m.data).slice(0,5)+'</span><span><b>'+esc(m.player)+'</b> · '+esc(m.tese)+'</span></li>'
+        ).join("") + '</ul>' : '<div class="vazio">Nenhum movimento para este recorte.</div>') +
+      '</div>' +
+      '<div class="card" style="margin:0">' +
+        '<div class="card-title"><span class="dot"></span>Agenda — próximos 30 dias</div>' +
+        (agenda30.length ? '<ul class="mini">' + agenda30.map(e=>
+          '<li><span class="d">'+formatarData(e.data).slice(0,5)+'</span><span>'+esc(e.titulo)+'</span></li>'
+        ).join("") + '</ul>' : '<div class="vazio">Nada agendado nos próximos 30 dias.</div>') +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+/* =========================================================
+   RADAR
+   ========================================================= */
+// O tema só filtra aqui: é a única seção em que a notícia é marcada por tema.
+function passaTema(item){
+  return !estado.temas.size || item.temas.some(t=>estado.temas.has(t));
+}
+
+function renderRadar(){
+  const itens = DADOS.radar.filter(passaFiltro).filter(passaTema).filter(passaClientes(textoRadar))
+    .sort((a,b)=>b.data.localeCompare(a.data));
+  return '' +
+  '<div class="sec-head"><h2>Radar</h2>' +
+  '<p>O que aconteceu, com manchete, trecho e link para a fonte. Os itens de coleta automática são marcados por palavras-chave; os escritos com IA trazem também o Ângulo Peers: qual oportunidade o fato abre e qual offering entra. ' +
+  'O tema diz que tipo de fato é; a offering diz que conversa ele abre — por isso uma notícia pode ter mais de um tema.</p></div>' +
+  (itens.length ? itens.map(renderCardRadar).join("")
+   : '<div class="card"><div class="vazio">Nenhum item de Radar para este recorte.</div></div>');
+}
+
+function renderCardRadar(item){
+  const marcado = estado.selecionados.has("radar:"+item.id);
+  const av = estado.avaliacoes[item.id];
+  return '' +
+  '<div class="rcard '+(item.relevancia==='alta'?'alta':'')+'">' +
+    '<div class="rcard-top">' +
+      '<label class="cbx"><input type="checkbox" class="chk" data-tipo="radar" data-id="'+item.id+'" '+(marcado?'checked':'')+'> incluir no briefing</label>' +
+      '<span>'+seloEdicao(item.data)+(item.ia===false ? ' <span class="selo-ia">Coleta automática</span>' : ' <span class="selo-ia">Gerado por IA</span>')+'</span>' +
+    '</div>' +
+    '<h3>'+esc(item.manchete)+'</h3>' +
+    '<p class="resumo">'+esc(item.resumo)+'</p>' +
+    (item.porQueImporta ? '<p class="linha-rot"><span class="rot">Por que importa:</span> '+esc(item.porQueImporta)+'</p>' : '') +
+    (item.anguloPeers ? '<div class="box-angulo"><span class="rot">Ângulo Peers:</span> '+esc(item.anguloPeers)+'</div>' : '') +
+    (estado.modoVisualizacao==="comercial" && item.oportunidade
+      ? '<div class="box-com"><span class="rot">Oportunidade comercial:</span> '+item.oportunidade+'</div>' : '') +
+    caixaClientes(textoRadar(item)) +
+    '<div>' +
+      '<span class="chip">'+esc(rotuloInd(item))+'</span>' +
+      (item.offering ? '<span class="chip">'+item.offering+'</span>' : '') +
+      item.temas.map(t=>'<span class="chip neutro'+(estado.temas.has(t)?' marcado':'')+'">'+esc(t)+'</span>').join("") +
+      '<span class="badge '+(item.relevancia==='alta'?'bp':'bg-n')+'" style="margin-left:3px">Relevância '+item.relevancia+'</span>' +
+    '</div>' +
+    '<div class="rcard-foot">' +
+      '<span>'+linkFonte(item.fonte, item.url)+' · '+formatarData(item.data)+'</span>' +
+      (item.anguloPeers ? '<div class="btns-util">' : '<div class="btns-util" style="display:none">') +
+        '<button class="btn-util '+(av==='util'?'on':'')+'" data-av="util" data-id="'+item.id+'">Ângulo útil</button>' +
+        '<button class="btn-util '+(av==='naoUtil'?'on':'')+'" data-av="naoUtil" data-id="'+item.id+'">Não útil</button>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+/* =========================================================
+   FINANÇAS DOS PLAYERS
+   ========================================================= */
+// Converte as linhas do Valor 1000 no formato de players/segmentos usado pelo painel.
+// O ranking traz o consolidado da empresa: cada uma vira um player com um único segmento.
+function playersValor1000(){
+  return VALOR1000.map(linha=>{
+    const v = {};
+    VALOR1000_CAMPOS.forEach((c,i)=>{ v[c] = linha[i]; });
+    return { id:v.id, nome:v.nome, segmentos:[{
+      id:v.id+"-seg", industria:v.ind, divisao:v.div, nomeExibicao:v.nome, semAberturaPorSegmento:false,
+      financeiro:{ receitaLiquida:v.rol, crescimentoAnual:v.varRol, margemEbitda:v.mEb, margemLiquida:v.ml,
+                   alavancagem:v.alav, varVsSetorEbitda:v.vsSetor },
+      // Cada linha diz de onde vem e a que período se refere: o painel pode misturar bases
+      // anuais (Valor 1000) e trimestrais (reports de resultado).
+      fonte:{ nome:"Valor 1000", periodo:"Ed. 2026 · ano 2025", url:"https://infograficos.valor.globo.com/valor1000/2026" },
+      valor:v
+    }]};
+  });
+}
+// Formatação pt-BR; null (o "-" / "ND" da planilha) vira travessão.
+function fmtN(v, casas){
+  if(v===null || v===undefined) return '—';
+  return v.toLocaleString('pt-BR', {minimumFractionDigits:casas||0, maximumFractionDigits:casas===undefined?1:casas});
+}
+function fmtPct(v, sinal){ return v===null || v===undefined ? '—' : (sinal && v>0?'+':'')+fmtN(v,1)+'%'; }
+function classeSinal(v){ return v===null || v===undefined ? 'num' : (v>0?'pos':(v<0?'neg':'num')); }
+
+// Mediana da margem EBITDA da indústria: a mesma referência da coluna "vs. mediana do setor".
+// Mediana de um indicador dentro da divisão (banco se compara com banco, não com seguradora).
+// A mediana evita que empresas com números extremos distorçam a referência.
+function medianaSetor(industria, divisao, campo){
+  const v = segmentosDaIndustria(industria).filter(s=>s.divisao===divisao)
+    .map(s=>s.financeiro[campo]).filter(x=>x!==null && x!==undefined).sort((a,b)=>a-b);
+  if(!v.length) return null;
+  const m = Math.floor(v.length/2);
+  return v.length%2 ? v[m] : (v[m-1]+v[m])/2;
+}
+function medianaEbitda(industria, divisao){ return medianaSetor(industria, divisao, "margemEbitda"); }
+
+// Linha pequena sob o número: distância para a mediana do setor.
+// Em alavancagem, ficar acima do setor é pior, então a cor se inverte.
+const linhaVsSetorBase = (...a) => linhaVsSetor(...a);
+function linhaVsSetor(valor, mediana, unidade, inverter){
+  if(valor===null || valor===undefined || mediana===null) return '';
+  const d = Math.round((valor-mediana)*10)/10;
+  const bom = inverter ? d<0 : d>0, ruim = inverter ? d>0 : d<0;
+  return '<span class="vs-setor '+(bom?'pos':(ruim?'neg':''))+'">'+(d>0?'+':'')+fmtN(d,1)+unidade+' vs. divisão</span>';
+}
+
+function segmentosDaIndustria(industria){
+  const segs = [];
+  DADOS.players.forEach(p=>{
+    p.segmentos.forEach(s=>{
+      if(s.industria===industria) segs.push({ playerId:p.id, playerNome:p.nome, multiSegmento:p.segmentos.length>1, ...s });
+    });
+  });
+  return segs;
+}
+
+const COLUNAS_FIN = [
+  {c:"nome", l:"Player / segmento"},
+  {c:"receitaLiquida", l:"Receita líquida (R$ mi)"},
+  {c:"crescimentoAnual", l:"Cresc. anual"},
+  {c:"margemEbitda", l:"Margem EBITDA"},
+  {c:"margemLiquida", l:"Margem líquida"},
+  {c:"alavancagem", l:"Alavancagem", dica:"Endividamento oneroso / EBITDA"},
+  {c:"fonte", l:"Fonte e período", semOrdem:true}
+];
+
+function ordenarSegmentos(segs){
+  return segs.sort((a,b)=>{
+    let va, vb;
+    if(estadoFinancas.ordenarPor==="nome"){ va=a.nomeExibicao; vb=b.nomeExibicao; }
+    else { va=a.financeiro[estadoFinancas.ordenarPor]; vb=b.financeiro[estadoFinancas.ordenarPor]; }
+    // Sem dado vai sempre para o fim, em qualquer sentido de ordenação.
+    if(va===null || vb===null) return (va===null) - (vb===null);
+    if(typeof va==="string") return estadoFinancas.ordemAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    return estadoFinancas.ordemAsc ? va-vb : vb-va;
+  });
+}
+
+// Explica divisões sem empresa no ranking, para o vazio não parecer erro.
+const NOTAS_DIVISAO = {
+  "Financial Services": "O Valor 1000 não inclui bancos, que têm ranking próprio no Valor. Em Banking aparecem as demais empresas de serviços financeiros: bolsa, registradoras e administradoras de consórcio.",
+  "Health": "As operadoras de planos de saúde não entram no Valor 1000, por isso a divisão Saúde suplementar não aparece aqui."
+};
+
+function linhaFinanceira(s, med){
+  const f = s.financeiro;
+  return '<tr data-player="'+s.playerId+'" data-seg="'+s.id+'">' +
+    '<td><div style="display:flex;gap:10px;align-items:flex-start">' +
+      '<label class="cbx" title="Incluir no briefing" style="margin-top:2px"><input type="checkbox" class="chk" data-tipo="financas" data-id="'+s.id+'" ' +
+        (estado.selecionados.has("financas:"+s.id)?'checked':'')+'></label>' +
+      '<div><span class="nome-p">'+esc(s.nomeExibicao)+'</span>' +
+      (s.multiSegmento ? '<span class="subnome">segmento de '+s.playerNome+'</span>' : '') +
+      (s.semAberturaPorSegmento ? '<span class="subnome">sem abertura por segmento</span>' : '') +
+      (s.valor ? '<span class="subnome">'+esc(s.valor.setor)+' · nº '+s.valor.pos+' no Valor 1000</span>' : '') +
+    '</div></div></td>' +
+    '<td class="num">'+fmtN(f.receitaLiquida)+'</td>' +
+    '<td><span class="'+classeSinal(f.crescimentoAnual)+'">'+fmtPct(f.crescimentoAnual,true)+'</span>' +
+      linhaVsSetor(f.crescimentoAnual, med.crescimentoAnual, ' p.p.') + '</td>' +
+    '<td><span class="num">'+fmtPct(f.margemEbitda)+'</span>' +
+      linhaVsSetor(f.margemEbitda, med.margemEbitda, ' p.p.') + '</td>' +
+    '<td><span class="'+(f.margemLiquida<0?'neg':'num')+'">'+fmtPct(f.margemLiquida)+'</span>' +
+      linhaVsSetor(f.margemLiquida, med.margemLiquida, ' p.p.') + '</td>' +
+    '<td><span class="num">'+(f.alavancagem===null ? '—' : fmtN(f.alavancagem,1)+'x')+'</span>' +
+      linhaVsSetor(f.alavancagem, med.alavancagem, 'x', true) + '</td>' +
+    '<td style="white-space:nowrap">'+linkFonte(s.fonte.nome, s.fonte.url)+'<span class="subnome">'+esc(s.fonte.periodo)+'</span></td>' +
+  '</tr>';
+}
+
+function painelIndustria(ind){
+  const segs = segmentosDaIndustria(ind);
+  if(!segs.length){
+    return '<div class="card">' +
+      '<div class="card-title"><span class="dot"></span>'+esc(ind)+'</div>' +
+      '<div class="vazio">Ainda não há cobertura de Finanças para '+esc(ind)+'.<br><br>' +
+      '<button class="btn">Solicitar benchmark ao PeersHub</button></div></div>';
+  }
+  const seta = k => estadoFinancas.ordenarPor===k ? (estadoFinancas.ordemAsc?' ▲':' ▼') : '';
+  // Divisões na ordem da taxonomia; as que não têm empresa no ranking ficam de fora da tabela.
+  const divisoes = (TAXONOMIA.find(t=>t[0]===ind) || [ind, []])[1];
+  const comEmpresa = divisoes.filter(d=>segs.some(s=>s.divisao===d));
+  const vazias = divisoes.filter(d=>!comEmpresa.includes(d));
+
+  const blocos = comEmpresa.map(div=>{
+    const doGrupo = ordenarSegmentos(segs.filter(s=>s.divisao===div));
+    const med = {};
+    ["receitaLiquida","crescimentoAnual","margemEbitda","margemLiquida","alavancagem"].forEach(c=>{ med[c] = medianaSetor(ind, div, c); });
+    // Linha de mediana abre o bloco da divisão e fica fixa em qualquer ordenação.
+    return '<tr class="linha-mediana">' +
+        '<td><div style="padding-left:25px"><span class="nome-p">'+esc(div)+'</span><span class="subnome">mediana de '+doGrupo.length+(doGrupo.length===1?' empresa':' empresas')+'</span></div></td>' +
+        '<td class="num">'+fmtN(med.receitaLiquida)+'</td>' +
+        '<td class="num">'+fmtPct(med.crescimentoAnual,true)+'</td>' +
+        '<td class="num">'+fmtPct(med.margemEbitda)+'</td>' +
+        '<td class="num">'+fmtPct(med.margemLiquida)+'</td>' +
+        '<td class="num">'+(med.alavancagem===null ? '—' : fmtN(med.alavancagem,1)+'x')+'</td>' +
+        '<td></td>' +
+      '</tr>' +
+      doGrupo.map(s=>linhaFinanceira(s, med)).join("");
+  }).join("");
+
+  return '<div class="card">' +
+    '<div class="card-title"><span class="dot"></span>'+esc(ind) +
+      '<span class="hint">'+segs.length+' empresas · '+comEmpresa.length+(comEmpresa.length===1?' divisão':' divisões')+'</span></div>' +
+    '<p class="cardnote">Números consolidados de cada empresa no ranking Valor 1000 (edição 2026), em R$ milhões. Margem EBITDA e alavancagem (endividamento oneroso / EBITDA) são calculadas a partir dos números publicados. As empresas aparecem agrupadas por divisão da taxonomia Peers: cada bloco abre com a mediana da divisão e, abaixo de cada número, aparece a distância da empresa para essa mediana (verde quando melhor; em alavancagem, menor é melhor). Travessão indica dado não divulgado. Marque a caixa ao lado do nome para levar a empresa ao briefing.</p>' +
+    (NOTAS_DIVISAO[ind] || vazias.length
+      ? '<div class="srcnote">' + (NOTAS_DIVISAO[ind] ? NOTAS_DIVISAO[ind] + ' ' : '') +
+          (vazias.length && !NOTAS_DIVISAO[ind] ? 'Sem empresas no Valor 1000 nesta indústria: ' + vazias.map(esc).join(', ') + '.' : '') + '</div>'
+      : '') +
+    '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+      COLUNAS_FIN.map(c=>{
+        const dica = c.dica ? ' title="'+esc(c.dica)+'"' : '';
+        return c.semOrdem ? '<th'+dica+'>'+c.l+'</th>' : '<th data-ord="'+c.c+'"'+dica+'>'+c.l+seta(c.c)+'</th>';
+      }).join("") +
+    '</tr></thead><tbody>' + blocos + '</tbody></table></div>' +
+  '</div>';
+}
+
+/* =========================================================
+   FINANÇAS · COMPANHIAS ABERTAS (resultados trimestrais)
+   ========================================================= */
+// Base trimestral: todas as companhias abertas, com o trimestre mais recente de cada uma.
+// fonte "cvm": números contábeis dos dados abertos da CVM (ITR); fonte "release": números ajustados dos releases das empresas.
+
+function empresasTrimestrais(){
+  return TRIMESTRAL_2T26.map(e=>({
+    id:e.id, nome:e.nome, industria:e.ind, divisao:e.div, valorId:e.valorId, m:e.metr, fin:e.fin, op:e.op,
+    banco: e.div==="Banking",
+    opPeriodo: e.opPeriodo || e.periodo,
+    fonte:{ tipo:e.fonte||"release", nome:(e.fonte==="cvm" ? "CVM · contábil" : "Release · ajustado"), periodo:e.periodo||PERIODO_TRI, release:e.release }
+  }));
+}
+
+// Colunas: bancos têm indicadores próprios, porque margem EBITDA não se aplica.
+const COLUNAS_TRI = [
+  {c:"nome", l:"Empresa"},
+  {c:"receita", l:"Receita (R$ mi)", dica:"Receita líquida do trimestre; no varejo farmacêutico, receita bruta, como divulgado"},
+  {c:"cresc", l:"Cresc. a/a"},
+  {c:"margemEbitda", l:"Margem EBITDA", dica:"Ajustada nos releases das empresas acompanhadas; na CVM, contábil (resultado operacional + depreciação e amortização)"},
+  {c:"margemLiquida", l:"Margem líquida", dica:"Ajustada nos releases das empresas acompanhadas; contábil na CVM"},
+  {c:"lucroLiquido", l:"Lucro líquido (R$ mi)", dica:"Ajustado nos releases das empresas acompanhadas; contábil consolidado na CVM"},
+  {c:"fonte", l:"Fonte e período", semOrdem:true}
+];
+const COLUNAS_BANCO = [
+  {c:"nome", l:"Banco"},
+  {c:"margemFinanceira", l:"Margem fin. bruta (R$ mi)"},
+  {c:"lucroLiquido", l:"Lucro líquido (R$ mi)", dica:"Recorrente nos releases; contábil na CVM"},
+  {c:"roe", l:"ROE"},
+  {c:"carteira", l:"Carteira (R$ bi)"},
+  {c:"inadimplencia", l:"Inadimpl. +90d"},
+  {c:"cet1", l:"CET1"},
+  {c:"fonte", l:"Fonte e período", semOrdem:true}
+];
+
+function mediana(valores){
+  const v = valores.filter(x=>x!==null && x!==undefined).sort((a,b)=>a-b);
+  if(!v.length) return null;
+  const k = Math.floor(v.length/2);
+  return v.length%2 ? v[k] : (v[k-1]+v[k])/2;
+}
+
+// Na temporada de resultados, uma divisão pode ter empresas em trimestres diferentes.
+// A mediana usa só as do trimestre predominante (empate: o mais recente); as demais ficam na tabela, fora da conta.
+function baseMediana(lista){
+  const cont = {};
+  lista.forEach(e=>{ cont[e.fonte.periodo] = (cont[e.fonte.periodo]||0) + 1; });
+  const chave = r => { const m = /^(\d)T(\d\d)$/.exec(r||""); return m ? +m[2]*10 + +m[1] : 0; };
+  const periodo = Object.keys(cont).sort((a,b)=>cont[b]-cont[a] || chave(b)-chave(a))[0];
+  const dentro = lista.filter(e=>e.fonte.periodo===periodo);
+  return {periodo, dentro, fora: lista.length - dentro.length};
+}
+function rotuloMediana(b){
+  const n = b.dentro.length + (b.dentro.length===1 ? ' empresa' : ' empresas');
+  return b.fora ? 'mediana de ' + n + ' no ' + b.periodo + '; ' + b.fora + ' em outro trimestre, fora da conta' : 'mediana de ' + n;
+}
+
+function ordenarTri(lista, banco){
+  let k = estadoFinancas.ordenarPor;
+  const cols = banco ? COLUNAS_BANCO : COLUNAS_TRI;
+  if(!cols.some(c=>c.c===k)) k = banco ? "margemFinanceira" : "receita";   // chave de outra base: usa a padrão
+  return lista.sort((a,b)=>{
+    if(k==="nome") return estadoFinancas.ordemAsc ? a.nome.localeCompare(b.nome) : b.nome.localeCompare(a.nome);
+    const va = a.m[k], vb = b.m[k];
+    if(va==null || vb==null) return (va==null) - (vb==null);
+    return estadoFinancas.ordemAsc ? va-vb : vb-va;
+  });
+}
+
+function cabecalho(cols){
+  const seta = k => estadoFinancas.ordenarPor===k ? (estadoFinancas.ordemAsc?' ▲':' ▼') : '';
+  return '<thead><tr>' + cols.map(c=>{
+    const dica = c.dica ? ' title="'+esc(c.dica)+'"' : '';
+    return c.semOrdem ? '<th'+dica+'>'+c.l+'</th>' : '<th data-ord="'+c.c+'"'+dica+'>'+c.l+seta(c.c)+'</th>';
+  }).join("") + '</tr></thead>';
+}
+
+function celulaNome(e){
+  return '<td><div style="display:flex;gap:10px;align-items:flex-start">' +
+    '<label class="cbx" title="Incluir no briefing" style="margin-top:2px"><input type="checkbox" class="chk" data-tipo="trimestral" data-id="'+e.id+'" ' +
+      (estado.selecionados.has("trimestral:"+e.id)?'checked':'')+'></label>' +
+    '<div><span class="nome-p">'+esc(e.nome)+'</span>' + tagCliente(e.nome) +
+    '<span class="subnome">'+(e.valorId ? 'também no Valor 1000' : 'fora do Valor 1000')+'</span></div></div></td>';
+}
+function celulaFonte(e){
+  const dica = e.fonte.tipo==="cvm" ? 'Dados abertos da CVM (ITR), números contábeis' : 'Release de resultados da empresa, números ajustados';
+  return '<td style="white-space:nowrap" title="'+esc(dica)+'">'+esc(e.fonte.nome)+'<span class="subnome">'+esc(e.fonte.periodo)+'</span></td>';
+}
+const pct = (v, sinal) => fmtPct(v, sinal);
+const mil = v => v==null ? '—' : fmtN(v);
+
+function tabelaTri(ind, div, lista){
+  const banco = div==="Banking";
+  ordenarTri(lista, banco);
+  const bm = baseMediana(lista);
+  const med = {};
+  let corpo;
+  if(banco){
+    ["margemFinanceira","lucroLiquido","roe","carteira","inadimplencia","cet1","crescLL"].forEach(c=>{ med[c] = mediana(bm.dentro.map(e=>e.m[c])); });
+    corpo = lista.map(e=>{ const m = e.m, linhaVsSetor = (v, md, u, inv) => e.fonte.periodo===bm.periodo ? linhaVsSetorBase(v, md, u, inv) : '';
+      return '<tr data-tri="'+e.id+'">' + celulaNome(e) +
+        '<td class="num">'+mil(m.margemFinanceira)+'<span class="subnome">'+pct(m.crescMFB,true)+' a/a</span></td>' +
+        '<td><span class="num">'+mil(m.lucroLiquido)+'</span><span class="subnome">'+pct(m.crescLL,true)+' a/a</span></td>' +
+        '<td><span class="num">'+pct(m.roe)+'</span>'+linhaVsSetor(m.roe, med.roe, ' p.p.')+'</td>' +
+        '<td class="num">'+mil(m.carteira)+'<span class="subnome">'+pct(m.crescCarteira,true)+' a/a</span></td>' +
+        '<td><span class="num">'+pct(m.inadimplencia)+'</span>'+linhaVsSetor(m.inadimplencia, med.inadimplencia, ' p.p.', true)+'</td>' +
+        '<td class="num">'+pct(m.cet1)+'</td>' + celulaFonte(e) + '</tr>';
+    }).join("");
+  } else {
+    ["receita","cresc","margemEbitda","margemLiquida","lucroLiquido"].forEach(c=>{ med[c] = mediana(bm.dentro.map(e=>e.m[c])); });
+    corpo = lista.map(e=>{ const m = e.m, linhaVsSetor = (v, md, u, inv) => e.fonte.periodo===bm.periodo ? linhaVsSetorBase(v, md, u, inv) : '';
+      return '<tr data-tri="'+e.id+'">' + celulaNome(e) +
+        '<td class="num">'+mil(m.receita)+(m.receitaTipo==="bruta" ? '<span class="subnome">receita bruta</span>' : '')+'</td>' +
+        '<td><span class="'+classeSinal(m.cresc)+'">'+pct(m.cresc,true)+'</span>'+linhaVsSetor(m.cresc, med.cresc, ' p.p.')+'</td>' +
+        '<td><span class="num">'+pct(m.margemEbitda)+'</span>'+linhaVsSetor(m.margemEbitda, med.margemEbitda, ' p.p.')+'</td>' +
+        '<td><span class="'+(m.margemLiquida<0?'neg':'num')+'">'+pct(m.margemLiquida)+'</span>'+linhaVsSetor(m.margemLiquida, med.margemLiquida, ' p.p.')+'</td>' +
+        '<td class="'+(m.lucroLiquido<0?'neg':'num')+'">'+mil(m.lucroLiquido)+'</td>' + celulaFonte(e) + '</tr>';
+    }).join("");
+  }
+  const qtd = rotuloMediana(bm);
+  const linhaMed = banco
+    ? '<tr class="linha-mediana"><td><div style="padding-left:25px"><span class="nome-p">'+esc(div)+'</span><span class="subnome">'+qtd+'</span></div></td>' +
+        '<td class="num">'+mil(med.margemFinanceira)+'</td><td class="num">'+mil(med.lucroLiquido)+'</td><td class="num">'+pct(med.roe)+'</td>' +
+        '<td class="num">'+mil(med.carteira)+'</td><td class="num">'+pct(med.inadimplencia)+'</td><td class="num">'+pct(med.cet1)+'</td><td></td></tr>'
+    : '<tr class="linha-mediana"><td><div style="padding-left:25px"><span class="nome-p">'+esc(div)+'</span><span class="subnome">'+qtd+'</span></div></td>' +
+        '<td class="num">'+mil(med.receita)+'</td><td class="num">'+pct(med.cresc,true)+'</td><td class="num">'+pct(med.margemEbitda)+'</td>' +
+        '<td class="num">'+pct(med.margemLiquida)+'</td><td class="num">'+mil(med.lucroLiquido)+'</td><td></td></tr>';
+  return '<div class="table-wrap" style="margin-bottom:16px"><table class="data-table">' + cabecalho(banco ? COLUNAS_BANCO : COLUNAS_TRI) +
+    '<tbody>' + linhaMed + corpo + '</tbody></table></div>';
+}
+
+// Caixa com a leitura escrita pela rotina de IA (vazia quando não há leitura).
+function caixaAnalise(a){
+  return a && a.texto ? '<p class="analise-ia"><span class="selo-ia">Gerado por IA</span>' + esc(a.texto) + '</p>' : '';
+}
+
+function painelTrimestral(ind){
+  const lista = DADOS.trimestral.filter(e=>e.industria===ind);
+  if(!lista.length){
+    return '<div class="card">' +
+      '<div class="card-title"><span class="dot"></span>'+esc(ind)+'</div>' +
+      '<div class="vazio">Nenhuma companhia aberta de '+esc(ind)+' na base trimestral.<br><br>' +
+      '<button class="btn" data-base-ir="valor">Ver '+esc(ind)+' em Maiores empresas · Valor 1000</button></div></div>';
+  }
+  const divisoes = (TAXONOMIA.find(t=>t[0]===ind) || [ind, []])[1].filter(d=>lista.some(e=>e.divisao===d));
+  return '<div class="card">' +
+    '<div class="card-title"><span class="dot"></span>'+esc(ind) +
+      '<span class="hint">'+lista.length+' companhias abertas · trimestre mais recente de cada uma</span></div>' +
+    '<p class="cardnote">Resultados do trimestre mais recente, em R$ milhões. As empresas acompanhadas trazem os números ajustados dos releases; as demais, os números contábeis da CVM (a coluna Fonte indica qual). Cada empresa aparece no último trimestre que já divulgou; na temporada de resultados, quando uma divisão mistura trimestres, a mediana usa só o trimestre predominante. O crescimento é sobre o mesmo trimestre do ano anterior. Cada divisão abre com a mediana e, abaixo dos números, a distância para ela. Clique na linha para abrir a ficha.</p>' +
+    divisoes.map(d=>caixaAnalise(DADOS.analises.financas[ind+"|"+d]) + tabelaTri(ind, d, lista.filter(e=>e.divisao===d))).join("") +
+  '</div>';
+}
+
+function abrirFichaTrimestral(id){
+  const e = DADOS.trimestral.find(x=>x.id===id);
+  const v = e.valorId ? (DADOS.players.find(p=>p.id===e.valorId)||{segmentos:[]}).segmentos[0] : null;
+  const m = document.getElementById("mFicha");
+  m.innerHTML = '' +
+    '<div class="modal-head">' +
+      '<div><h3>'+esc(e.nome)+'</h3>' +
+      '<p>'+esc(e.industria+' · '+e.divisao)+' · companhia aberta · '+esc(e.fonte.periodo)+'</p></div>' +
+      '<button class="modal-close" onclick="fecharModal(\'Ficha\')">Fechar</button>' +
+    '</div>' +
+    '<div class="modal-tools">' +
+      '<button class="tbtn on" data-t="fin">Resultados '+esc(e.fonte.periodo)+'</button>' +
+      '<button class="tbtn" data-t="op">Indicadores operacionais</button>' +
+      (v ? '<button class="tbtn" data-t="valor">No Valor 1000</button>' : '') +
+    '</div>' +
+    '<div class="modal-body"><div id="tabFicha"></div>' +
+      '<p class="cardnote" style="margin:14px 0 0">'+(e.fonte.tipo==="cvm"
+        ? 'Fonte: dados abertos da CVM (ITR do '+esc(e.fonte.periodo)+'), números contábeis consolidados; o EBITDA é o resultado operacional mais depreciação e amortização.'
+        : 'Fonte: release de resultados do '+esc(e.fonte.periodo)+' da empresa, com os números ajustados divulgados'+(e.fonte.release ? ' (<a href="'+esc(e.fonte.release)+'" target="_blank" rel="noopener">abrir release</a>)' : '')+'.')+' Valores em R$ milhões, salvo indicação.</p>' +
+    '</div>';
+  const tabela = (linhas, per) => '<table class="simple"><tr><th>Indicador</th><th style="text-align:right">'+esc(per||e.fonte.periodo)+'</th></tr>' +
+    linhas.map(([k,val])=>'<tr><td>'+esc(k)+'</td><td>'+esc(val)+'</td></tr>').join("") + '</table>';
+  function renderTab(t){
+    const alvo = document.getElementById("tabFicha");
+    if(t==="fin") alvo.innerHTML = tabela(e.fin);
+    else if(t==="op") alvo.innerHTML = e.op.length ? tabela(e.op, e.opPeriodo) : '<div class="vazio">Indicadores operacionais vêm dos releases das empresas acompanhadas e não estão disponíveis para esta empresa.</div>';
+    else {
+      const f = v.financeiro;
+      alvo.innerHTML = '<p class="cardnote" style="margin:0 0 12px">Números anuais (ano 2025) do ranking Valor 1000, para comparar com o trimestre. ' +
+        (e.id==="slc-agricola" ? 'No Valor 1000, a SLC aparece como SLC Participações, a holding.' : '') + '</p>' +
+        '<table class="simple"><tr><th>Indicador</th><th style="text-align:right">Ano 2025</th></tr>' +
+        '<tr><td>Posição no Valor 1000</td><td>nº '+v.valor.pos+'</td></tr>' +
+        '<tr><td>Receita líquida</td><td>R$ '+fmtN(f.receitaLiquida)+' mi</td></tr>' +
+        '<tr><td>Crescimento da receita</td><td>'+fmtPct(f.crescimentoAnual,true)+'</td></tr>' +
+        '<tr><td>Margem EBITDA</td><td>'+fmtPct(f.margemEbitda)+'</td></tr>' +
+        '<tr><td>Margem líquida</td><td>'+fmtPct(f.margemLiquida)+'</td></tr></table>';
+    }
+  }
+  renderTab("fin");
+  m.querySelectorAll(".tbtn").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      m.querySelectorAll(".tbtn").forEach(x=>x.classList.remove("on"));
+      b.classList.add("on");
+      renderTab(b.dataset.t);
+    });
+  });
+  abrirModal("Ficha");
+}
+
+// Bloco do briefing para a base trimestral: só números da base, agrupados por indústria e divisão.
+function briefingTrimestral(L, ids){
+  const lista = ids.map(id=>DADOS.trimestral.find(e=>e.id===id)).filter(Boolean);
+  if(!lista.length) return;
+  L.push("--- FINANÇAS · COMPANHIAS ABERTAS (último trimestre de cada empresa; R$ milhões) ---");
+  [...new Set(lista.map(e=>e.industria+"|"+e.divisao))].forEach(g=>{
+    const [ind, div] = g.split("|");
+    const doGrupo = DADOS.trimestral.filter(e=>e.industria===ind && e.divisao===div);
+    const banco = div==="Banking";
+    const bm = baseMediana(doGrupo);
+    const med = mediana(bm.dentro.map(e=>banco ? e.m.roe : e.m.margemEbitda));
+    L.push(ind + " · " + div + (med===null ? "" : (banco ? " · mediana do ROE: " : " · mediana da margem EBITDA: ") + fmtPct(med) + " (" + rotuloMediana(bm) + ")"));
+    const aFin = DADOS.analises.financas[ind+"|"+div];
+    if(aFin && aFin.texto) L.push("Leitura da divisão (gerada por IA): " + aFin.texto);
+    L.push("");
+    lista.filter(e=>e.industria===ind && e.divisao===div).forEach(e=>{
+      const m = e.m;
+      L.push("• " + e.nome + " — " + e.fonte.periodo);
+      if(banco){
+        L.push("  Margem financeira bruta: R$ " + mil(m.margemFinanceira) + " mi (" + pct(m.crescMFB,true) + " a/a) · Lucro líquido recorrente: R$ " + mil(m.lucroLiquido) + " mi (" + pct(m.crescLL,true) + " a/a)");
+        L.push("  ROE: " + pct(m.roe) + " · Carteira: R$ " + mil(m.carteira) + " bi (" + pct(m.crescCarteira,true) + " a/a) · Inadimplência +90d: " + pct(m.inadimplencia) + " · CET1: " + pct(m.cet1));
+      } else {
+        const aj = e.fonte.tipo==="cvm" ? " (contábil)" : " ajustado";
+        L.push("  Receita " + (m.receitaTipo||"líquida") + ": R$ " + mil(m.receita) + " mi (" + pct(m.cresc,true) + " a/a) · EBITDA" + aj + ": R$ " + mil(m.ebitda) + " mi");
+        L.push("  Margem EBITDA: " + pct(m.margemEbitda) + " · Margem líquida: " + pct(m.margemLiquida) + " · Lucro líquido" + aj + ": R$ " + mil(m.lucroLiquido) + " mi");
+      }
+      L.push(e.fonte.tipo==="cvm" ? "  Fonte: dados abertos da CVM (ITR " + e.fonte.periodo + "), números contábeis" : "  Fonte: release de resultados do " + e.fonte.periodo + " da empresa (números ajustados)");
+      L.push("");
+    });
+  });
+}
+
+function renderFinancas(){
+  const sel = [...estado.industrias];
+  // Um painel por indústria: margem de Financial Services e de Varejo não se comparam na mesma tabela.
+  const alvos = sel.length ? sel : ["Varejo"];
+  const abertas = estadoFinancas.base==="abertas";
+  const nomeBase = abertas ? 'Companhias abertas · último trimestre' : 'Maiores empresas · Valor 1000';
+  const titulo = (alvos.length===1 ? 'Finanças dos players — ' + esc(alvos[0]) : 'Finanças dos players') +
+    ' <span style="font-weight:600;color:var(--grey);font-size:.8em">· ' + nomeBase + '</span>';
+
+  return '' +
+  '<div class="sec-head"><h2>'+titulo+'</h2>' +
+  '<p>Painel do setor: quem está bem e quem está mal. Clique no cabeçalho para ordenar e na linha para abrir a ficha da empresa. ' +
+    (abertas ? 'Esta base traz o trimestre mais recente das companhias abertas; para ver também as empresas fechadas, em base anual, troque para Maiores empresas · Valor 1000 no seletor Base.'
+             : 'Esta base traz o ranking anual das 1.000 maiores empresas do país; para o trimestre mais recente das companhias abertas, troque para Companhias abertas no seletor Base.') +
+    (alvos.length>1 ? ' Um painel por indústria selecionada — os indicadores de setores diferentes não são comparáveis entre si.' : '') +
+  '</p></div>' +
+  (!sel.length
+    ? '<div class="warn" style="margin-bottom:18px">Nenhuma indústria marcada no filtro acima: exibindo <b>Varejo</b> como padrão.</div>' : '') +
+  (estado.offerings.size
+    ? '<div class="srcnote">O filtro de offering não se aplica a esta seção: o cadastro de players é marcado apenas pelo eixo de indústria.</div>' : '') +
+  alvos.map(abertas ? painelTrimestral : painelIndustria).join("");
+}
+
+function abrirFicha(playerId, segId){
+  const player = DADOS.players.find(p=>p.id===playerId);
+  const seg = player.segmentos.find(s=>s.id===segId);
+  const outros = player.segmentos.filter(s=>s.id!==segId);
+  const v = seg.valor;
+
+  const m = document.getElementById("mFicha");
+  m.innerHTML = '' +
+    '<div class="modal-head">' +
+      '<div><h3>'+esc(seg.nomeExibicao)+'</h3>' +
+      '<p>'+esc(rotuloInd(seg))+' · '+esc(v.razao)+' · sede '+esc(v.sede)+'</p></div>' +
+      '<button class="modal-close" onclick="fecharModal(\'Ficha\')">Fechar</button>' +
+    '</div>' +
+    '<div class="modal-tools">' +
+      '<button class="tbtn on" data-t="kpis">Destaques</button>' +
+      '<button class="tbtn" data-t="dre">DRE simplificado</button>' +
+      '<button class="tbtn" data-t="balanco">Balanço e endividamento</button>' +
+    '</div>' +
+    '<div class="modal-body">' +
+      (outros.length ? '<div class="srcnote"><b>'+player.nome+'</b> também atua em: ' +
+        outros.map(s=>s.nomeExibicao+' ('+s.industria+')').join(', ') +
+        '. A visão consolidada do player considera todos os segmentos.</div>' : '') +
+      '<div id="tabFicha"></div>' +
+      '<p class="cardnote" style="margin:14px 0 0">Fonte: '+linkFonte(seg.fonte.nome, seg.fonte.url)+' · '+esc(seg.fonte.periodo)+'. Valores consolidados, em R$ milhões; travessão indica dado não divulgado.</p>' +
+    '</div>';
+
+  const mi = x => x===null ? '—' : 'R$ '+fmtN(x)+' mi';
+  const linhas = pares => '<table class="simple"><tr><th>Indicador</th><th style="text-align:right">Valor</th></tr>' +
+    pares.map(([k,val])=>'<tr><td>'+k+'</td><td>'+val+'</td></tr>').join("") + '</table>';
+
+  function renderTab(t){
+    const alvo = document.getElementById("tabFicha");
+    const f = seg.financeiro;
+    if(t==="kpis"){
+      const pos = 'nº '+v.pos + (typeof v.pos24==="number" ? ' (nº '+v.pos24+' em 2024)' : ' (entrou em 2025)');
+      const kpis = [
+        [pos, "Posição no Valor 1000"],
+        [mi(f.receitaLiquida), "Receita líquida"],
+        [fmtPct(f.crescimentoAnual,true), "Crescimento da receita"],
+        [fmtPct(f.margemEbitda), "Margem EBITDA"],
+        [fmtPct(f.margemLiquida), "Margem líquida"],
+        [fmtPct(v.roe), "Rentabilidade do PL médio"],
+        [esc(v.setor), "Setor de atividade (Valor)"],
+        [esc(v.cap), "Origem do capital"]
+      ];
+      alvo.innerHTML = '<div class="kgrid">' + kpis.map(([val,k])=>
+        '<div class="kbox"><div class="v">'+val+'</div><div class="l">'+k+'</div></div>').join("") + '</div>';
+    } else if(t==="dre"){
+      alvo.innerHTML = linhas([
+        ["Receita operacional líquida", mi(f.receitaLiquida)],
+        ["Variação da receita", fmtPct(f.crescimentoAnual,true)],
+        ["EBITDA", mi(v.ebitda)],
+        ["Variação do EBITDA", fmtPct(v.varEb,true)],
+        ["Margem EBITDA", fmtPct(f.margemEbitda)],
+        ["Lucro da atividade", mi(v.latv)],
+        ["Resultado financeiro", mi(v.lfin)],
+        ["Lucro líquido", mi(v.ll)],
+        ["Variação do lucro líquido", fmtPct(v.varLl,true)],
+        ["Margem líquida", fmtPct(f.margemLiquida)]
+      ]);
+    } else {
+      alvo.innerHTML = linhas([
+        ["Ativo total", mi(v.ativo)],
+        ["Patrimônio líquido", mi(v.pl)],
+        ["Endividamento oneroso", mi(v.divOn)],
+        ["Alavancagem (dívida onerosa / EBITDA)", f.alavancagem===null ? '—' : fmtN(f.alavancagem,1)+'x'],
+        ["Endividamento geral (passivo / PL)", fmtPct(v.endG)],
+        ["Endividamento oneroso (dívida onerosa / PL)", fmtPct(v.endO)],
+        ["Liquidez corrente", v.liq===null ? '—' : fmtN(v.liq,2)]
+      ]);
+    }
+  }
+  renderTab("kpis");
+  m.querySelectorAll(".tbtn").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      m.querySelectorAll(".tbtn").forEach(x=>x.classList.remove("on"));
+      b.classList.add("on");
+      renderTab(b.dataset.t);
+    });
+  });
+  abrirModal("Ficha");
+}
+
+/* =========================================================
+   INDICADORES SETORIAIS
+   ========================================================= */
+// Até cinco indicadores agregados por segmento da taxonomia, escolhidos na planilha de análise de indústrias
+// (R&I, 15/07/2026). Valores fictícios nesta versão: a pesquisa real substitui só os números.
+function rotuloSegmento(s){ return s.industria + ' · ' + s.divisao + ' · ' + s.segmento; }
+
+// Ordem da taxonomia: indústria, depois divisão.
+function ordemTaxonomia(s){
+  const i = TAXONOMIA.findIndex(t=>t[0]===s.industria);
+  const j = i>=0 ? TAXONOMIA[i][1].indexOf(s.divisao) : 99;
+  return i*100 + j;
+}
+
+function fmtIndicador(x){
+  const v = Math.abs(x.valor)>=100 ? fmtN(x.valor,0) : (Math.abs(x.valor)>=10 ? fmtN(x.valor,1) : fmtN(x.valor,2));
+  const varTxt = x.var==null ? 'sem comparação anual'
+    : (x.var>0?'+':'') + fmtN(x.var,1) + (x.varUnidade ? ' '+x.varUnidade : (x.varPP ? ' p.p.' : '%')) + ' ' + (x.comparacao || 'a/a');
+  return {v, varTxt};
+}
+
+function renderIndicadores(){
+  const doRecorte = DADOS.indicadores.filter(s=>!estado.industrias.size || estado.industrias.has(s.industria))
+    .sort((a,b)=>ordemTaxonomia(a)-ordemTaxonomia(b));
+  const divisoes = [...new Set(doRecorte.map(s=>s.industria+' · '+s.divisao))];
+  if(estadoIndicadores.divisao!=="todas" && !divisoes.includes(estadoIndicadores.divisao)) estadoIndicadores.divisao = "todas";
+  const daDivisao = doRecorte.filter(s=>estadoIndicadores.divisao==="todas" || s.industria+' · '+s.divisao===estadoIndicadores.divisao);
+  if(estadoIndicadores.segmento!=="todos" && !daDivisao.some(s=>s.id===estadoIndicadores.segmento)) estadoIndicadores.segmento = "todos";
+  const itens = daDivisao.filter(s=>estadoIndicadores.segmento==="todos" || s.id===estadoIndicadores.segmento);
+
+  const filtros = '<div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:18px">' +
+    '<span class="flt-label">Divisão</span>' +
+    '<select class="flt" id="fltDivInd"><option value="todas">Todas as divisões</option>' +
+      divisoes.map(d=>'<option value="'+esc(d)+'" '+(estadoIndicadores.divisao===d?'selected':'')+'>'+esc(d)+'</option>').join("") +
+    '</select>' +
+    '<span class="flt-label" style="margin-left:8px">Segmento</span>' +
+    '<select class="flt" id="fltSegInd"><option value="todos">Todos os segmentos</option>' +
+      daDivisao.map(s=>'<option value="'+s.id+'" '+(estadoIndicadores.segmento===s.id?'selected':'')+'>'+esc(s.segmento)+'</option>').join("") +
+    '</select></div>';
+
+  const porIndustria = [...new Set(itens.map(s=>s.industria))];
+  return '' +
+  '<div class="sec-head"><h2>Indicadores setoriais</h2>' +
+  '<p>Como está o setor em números: até cinco indicadores-chave por segmento, cada um da fonte oficial com melhor disponibilidade. Filtre a indústria no recorte acima e a divisão e o segmento aqui embaixo; marque o segmento para levá-lo ao briefing.</p></div>' +
+  (function(){
+    const todos = DADOS.indicadores.flatMap(s=>s.indicadores);
+    const reais = todos.filter(x=>x.status==="real").length;
+    return '<div class="warn" style="margin-bottom:18px"><b>' + reais + ' de ' + todos.length + ' indicadores com valor real</b>, tirados das fontes públicas e das associações de cada setor. ' +
+      'Os marcados como <b>atualização manual</b> vêm de publicações sem API e mudam só quando alguém os atualiza; os marcados como <b>série equivalente</b> usam um dado próximo ao original, com a explicação ao passar o mouse.' +
+      (reais < todos.length ? ' Os marcados como <b>valor de exemplo</b> ainda não foram ligados à fonte e não devem ser usados com cliente.' : '') + '</div>';
+  })() +
+  (estado.offerings.size
+    ? '<div class="srcnote">O filtro de offering não se aplica a esta seção: os indicadores são marcados apenas pelo eixo de indústria.</div>' : '') +
+  filtros +
+  (porIndustria.length ? porIndustria.map(ind=>{
+    const segs = itens.filter(s=>s.industria===ind);
+    return '<div class="card">' +
+      '<div class="card-title"><span class="dot"></span>'+esc(ind)+'<span class="hint">'+segs.length+(segs.length===1?' segmento':' segmentos')+'</span></div>' +
+      segs.map(s=>{
+        const marcado = estado.selecionados.has("indicador:"+s.id);
+        return '<div class="ind-seg">' +
+          '<div class="ind-seg-top">' +
+            '<div><h4>'+esc(s.segmento)+'</h4>' +
+            '<p>'+esc(s.divisao) +
+              (s.origem==="sugestao" ? ' · <span class="badge bg-n">indicadores sugeridos pela R&I, a validar</span>' : '') + '</p></div>' +
+            '<label class="cbx"><input type="checkbox" class="chk" data-tipo="indicador" data-id="'+s.id+'" '+(marcado?'checked':'')+'> incluir no briefing</label>' +
+          '</div>' + caixaAnalise(DADOS.analises.indicadores[s.id]) +
+          '<div class="kgrid ind">' + s.indicadores.map(x=>{
+            const f = fmtIndicador(x);
+            return '<div class="kbox"><div class="v">'+f.v+' <span class="u">'+esc(x.unidade)+'</span></div>' +
+              '<div class="l">'+esc(x.nome)+'</div>' +
+              '<div class="m"><span class="'+(x.var>0?'pos':(x.var<0?'neg':'num'))+'"'+(x.notaVar?' title="'+esc(x.notaVar)+'"':'')+'>'+f.varTxt+'</span> · '+esc(x.periodo)+'<br>'+esc(x.fonte)+' · '+esc(x.periodicidade.toLowerCase())+'</div>' +
+              (x.auto===false && x.status==="real" ? '<div class="sem-auto" title="Valor tirado da publicação oficial (a fonte não tem API): muda quando alguém atualizar à mão, a cada nova edição">atualização manual</div>'
+                : x.auto===false ? '<div class="sem-auto" title="A fonte não tem API: o valor só muda se alguém atualizar manualmente">sem atualização automática</div>'
+                : (x.status!=="real" ? '<div class="sem-auto" title="Ainda não ligado à fonte: valor ilustrativo">valor de exemplo</div>' : '')) +
+              (x.equivalente ? '<div class="sem-auto" title="'+esc(x.equivalente)+'">série equivalente</div>' : '') +
+              '</div>';
+          }).join("") + '</div>' +
+        '</div>';
+      }).join("") +
+    '</div>';
+  }).join("") : '<div class="card"><div class="vazio">Nenhum segmento para este recorte.</div></div>');
+}
+
+// Bloco do briefing: cada segmento marcado com seus indicadores, valor, variação, período e fonte.
+function briefingIndicadores(L, ids){
+  const segs = ids.map(id=>DADOS.indicadores.find(s=>s.id===id)).filter(Boolean).sort((a,b)=>ordemTaxonomia(a)-ordemTaxonomia(b));
+  if(!segs.length) return;
+  L.push("--- INDICADORES SETORIAIS (valores de exemplo marcados em cada linha) ---");
+  segs.forEach(s=>{
+    L.push("• " + rotuloSegmento(s));
+    const aInd = DADOS.analises.indicadores[s.id];
+    if(aInd && aInd.texto) L.push("  Leitura (gerada por IA): " + aInd.texto);
+    s.indicadores.forEach(x=>{
+      const f = fmtIndicador(x);
+      L.push("  " + x.nome + ": " + f.v + " " + x.unidade + " (" + f.varTxt + ") · " + x.periodo + " · " + x.fonte +
+        (x.auto===false ? (x.status==="real" ? " · atualização manual" : " · sem atualização automática") : (x.status!=="real" ? " · valor de exemplo" : "")) + (x.equivalente ? " · série equivalente" : ""));
+    });
+    L.push("");
+  });
+}
+
+/* =========================================================
+   MOVIMENTOS ESTRATÉGICOS
+   ========================================================= */
+function renderMovimentos(){
+  const base = DADOS.movimentos.filter(passaFiltro).filter(passaClientes(textoMov));
+  const tipos = [...new Set(DADOS.movimentos.map(m=>m.tipo))].sort();
+  // players do recorte, dos mais ativos para os menos
+  const cont = {};
+  base.forEach(m=>{ cont[m.player] = (cont[m.player]||0) + 1; });
+  const players = Object.keys(cont).sort((a,b)=>cont[b]-cont[a] || a.localeCompare(b));
+  if(estadoMovimentos.filtroPlayer!=="todos" && !cont[estadoMovimentos.filtroPlayer]) estadoMovimentos.filtroPlayer = "todos";
+  const itens = base
+    .filter(m=>estadoMovimentos.filtroTipo==="todos" || m.tipo===estadoMovimentos.filtroTipo)
+    .filter(m=>estadoMovimentos.filtroPlayer==="todos" || m.player===estadoMovimentos.filtroPlayer)
+    .sort((a,b)=>b.data.localeCompare(a.data));
+  const visao = estadoMovimentos.visao;
+  const abas = '<div style="display:flex;gap:7px;margin-bottom:16px">' +
+    [["linha","Linha do tempo"],["matriz","Matriz player × tipo"]].map(([k,l])=>
+      '<button class="tbtn'+(visao===k?' on':'')+'" data-visaomov="'+k+'">'+l+'</button>').join("") + '</div>';
+
+  const linha = '<div class="card">' +
+    '<div class="card-title"><span class="dot"></span>Linha do tempo' +
+      '<span class="hint">'+itens.length+' de '+base.length+' movimentos no recorte</span></div>' +
+    '<div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:18px">' +
+      '<span class="flt-label">Tipo</span>' +
+      '<select class="flt" id="fltTipoMov"><option value="todos">Todos os tipos</option>' +
+        tipos.map(t=>'<option value="'+t+'" '+(estadoMovimentos.filtroTipo===t?'selected':'')+'>'+t+'</option>').join("") +
+      '</select>' +
+      '<span class="flt-label" style="margin-left:8px">Player</span>' +
+      '<select class="flt" id="fltPlayerMov"><option value="todos">Todos os players</option>' +
+        players.map(pl=>'<option value="'+esc(pl)+'" '+(estadoMovimentos.filtroPlayer===pl?'selected':'')+'>'+esc(pl)+' ('+cont[pl]+')</option>').join("") +
+      '</select></div>' +
+    (itens.length ? '<div class="tl">' + itens.map(itemMovimento).join("") + '</div>'
+     : '<div class="vazio">Nenhum movimento para este filtro.</div>') +
+  '</div>';
+
+  const matriz = '<div class="card">' +
+    '<div class="card-title"><span class="dot"></span>Matriz player × tipo' +
+      '<span class="hint">'+players.length+' players · '+base.length+' movimentos no recorte</span></div>' +
+    '<p class="cardnote">Quantos movimentos de cada tipo cada player fez no período guardado (até 12 meses). Clique no player para ver a ficha.</p>' +
+    (players.length ? '<div class="table-wrap"><table class="data-table mx"><thead><tr><th>Player</th>' +
+      tipos.map(t=>'<th class="t">'+esc(t)+'</th>').join("") + '<th class="t">Total</th></tr></thead><tbody>' +
+      players.map(pl=>{
+        const doPl = base.filter(m=>m.player===pl);
+        return '<tr><td><span class="nome-p lnk-player" data-player="'+esc(pl)+'">'+esc(pl)+'</span>' +
+            '<span class="subnome">'+esc([...new Set(doPl.map(rotuloInd))].join(", "))+'</span></td>' +
+          tipos.map(t=>{ const n = doPl.filter(m=>m.tipo===t).length; return n ? '<td class="n">'+n+'</td>' : '<td class="z">·</td>'; }).join("") +
+          '<td class="n">'+doPl.length+'</td></tr>';
+      }).join("") + '</tbody></table></div>'
+     : '<div class="vazio">Nenhum movimento no recorte.</div>') +
+  '</div>';
+
+  return '' +
+  '<div class="sec-head"><h2>Movimentos estratégicos</h2>' +
+  '<p>O Radar registra o que foi noticiado; esta seção registra o que foi decidido. Os movimentos são identificados automaticamente nas notícias e nos fatos relevantes da CVM, e ficam guardados por 12 meses. Clique no nome de um player para ver a ficha com a trajetória dele.</p></div>' +
+  abas + (visao==="matriz" ? matriz : linha);
+}
+
+function itemMovimento(m){
+  return '<div class="tl-item">' +
+    '<div class="tl-head"><span class="tl-data">'+formatarData(m.data)+'</span>' +
+    '<span class="badge bp">'+m.tipo+'</span>' +
+    '<span class="badge bg-n">'+esc(rotuloInd(m))+'</span>' +
+    (m.ia ? '<span class="selo-ia">Gerado por IA</span>' : '') + '</div>' +
+    '<h4><span class="lnk-player" data-player="'+esc(m.player)+'">'+esc(m.player)+'</span></h4>' +
+    '<p class="tese">'+esc(m.tese)+(m.valor && m.valor!=='—' && m.valor!=='Não divulgado' ? ' <b>('+esc(m.valor)+')</b>' : '')+'</p>' +
+    (m.leitura ? '<p class="leitura"><span class="rot">Leitura Peers:</span> '+esc(m.leitura)+'</p>' : '') +
+    caixaClientes(textoMov(m)) +
+    '<p class="cardnote" style="margin:4px 0 8px">Fonte: '+linkFonte(m.fonte, m.url)+'</p>' +
+    '<label class="cbx"><input type="checkbox" class="chk" data-tipo="movimento" data-id="'+m.id+'" ' +
+      (estado.selecionados.has("movimento:"+m.id)?'checked':'')+'> incluir no briefing</label>' +
+  '</div>';
+}
+
+// Ficha do player: a trajetória de um concorrente no período guardado, pronta para uma proposta.
+function abrirFichaPlayer(pl){
+  const lista = DADOS.movimentos.filter(m=>m.player===pl).sort((a,b)=>b.data.localeCompare(a.data));
+  const porTipo = {};
+  lista.forEach(m=>{ porTipo[m.tipo] = (porTipo[m.tipo]||0) + 1; });
+  const empresa = DADOS.trimestral.find(e=>e.nome.toLowerCase()===pl.toLowerCase());
+  const m = document.getElementById("mFicha");
+  m.innerHTML = '' +
+    '<div class="modal-head">' +
+      '<div><h3>'+esc(pl)+'</h3>' +
+      '<p>'+esc([...new Set(lista.map(rotuloInd))].join(" · "))+' · '+lista.length+(lista.length===1?' movimento':' movimentos')+' em até 12 meses</p></div>' +
+      '<button class="modal-close" onclick="fecharModal(\'Ficha\')">Fechar</button>' +
+    '</div>' +
+    '<div class="modal-body">' +
+      '<div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px">' +
+        Object.entries(porTipo).sort((a,b)=>b[1]-a[1]).map(([t,n])=>'<span class="badge bp">'+esc(t)+': '+n+'</span>').join("") + '</div>' +
+      (empresa ? '<p class="cardnote" style="margin:0 0 14px">Companhia aberta: os resultados do '+esc(empresa.fonte.periodo)+' estão em Finanças dos players.</p>' : '') +
+      '<div class="tl">' + lista.map(itemMovimento).join("") + '</div>' +
+    '</div>';
+  m.querySelectorAll(".chk").forEach(c=>c.addEventListener("change", ()=>{
+    const k = c.dataset.tipo+":"+c.dataset.id;
+    if(c.checked) estado.selecionados.add(k); else estado.selecionados.delete(k);
+    atualizarContador();
+  }));
+  abrirModal("Ficha");
+}
+
+/* =========================================================
+   ACERVO PEERS
+   ========================================================= */
+function renderAcervo(){
+  const itens = DADOS.acervo.filter(passaFiltro).sort((a,b)=>b.ano-a.ano);
+  const cls = t => t==="POV" ? "bp" : (t==="Benchmark" ? "b1" : "b2");
+  return '' +
+  '<div class="sec-head"><h2>Acervo Peers</h2>' +
+  '<p>O que a Peers já produziu para este recorte. Material de projeto de cliente nunca fica legível no portal: aparece o metadado e quem conduziu o trabalho.</p></div>' +
+  '<div class="warn" style="margin-bottom:18px"><b>Conteúdo ilustrativo.</b> Os títulos abaixo são exemplos. Na versão final, o Acervo vem do Kx e do agente de benchmark do PeersHub.</div>' +
+  '<div class="card">' +
+    '<div class="card-title"><span class="dot"></span>Conteúdo disponível<span class="hint">'+itens.length+' itens no recorte</span></div>' +
+    (itens.length ? itens.map(i=>
+      '<div class="arow"><div>' +
+        '<span class="badge '+cls(i.tipo)+'">'+i.tipo+'</span>' +
+        '<h4>'+i.titulo+'</h4>' +
+        '<p>'+esc(rotuloInd(i))+' · '+i.offering+' · '+i.ano+'</p>' +
+        '<p style="margin-top:3px;opacity:.85">'+i.fonte+(i.responsavel ? ' · '+i.responsavel : '')+'</p>' +
+      '</div>' +
+      '<label class="cbx"><input type="checkbox" class="chk" data-tipo="acervo" data-id="'+i.id+'" ' +
+        (estado.selecionados.has("acervo:"+i.id)?'checked':'')+'> incluir</label></div>').join("")
+     : '<div class="vazio">Nada no acervo para este recorte.</div>') +
+  '</div>' +
+  '<div class="card" style="text-align:center">' +
+    '<p class="cardnote" style="margin:0 0 12px">Sem cobertura suficiente para este recorte? O pedido já sai preenchido com a indústria, a offering e os players desta tela.</p>' +
+    '<button class="btn">Solicitar benchmark ao PeersHub</button>' +
+  '</div>';
+}
+
+/* =========================================================
+   AGENDA SETORIAL
+   ========================================================= */
+function renderAgenda(){
+  const itens = DADOS.agenda.filter(passaFiltro).sort((a,b)=>a.data.localeCompare(b.data));
+  const MESES = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+  const cls = t => t==="Evento" ? "bp" : (t==="Divulgação de resultado" ? "b1" : (t==="Data regulatória" ? "b3" : "b2"));
+  return '' +
+  '<div class="sec-head"><h2>Agenda setorial</h2>' +
+  '<p>A única seção que olha para a frente: onde a Peers precisa estar nos próximos 90 dias.</p></div>' +
+  '<div class="card">' +
+    '<div class="card-title"><span class="dot"></span>Próximas datas<span class="hint">'+itens.length+' entradas no recorte</span></div>' +
+    (itens.length ? itens.map(e=>{
+      const parte = e.data.split("-");
+      const d = diasEntre(e.data);
+      return '<div class="erow">' +
+        '<div class="edate">'+parte[2]+'<small>'+MESES[parseInt(parte[1],10)-1]+'</small></div>' +
+        '<div style="flex:1">' +
+          '<span class="badge '+cls(e.tipo)+'">'+e.tipo+'</span>' +
+          (d>=0 && d<=30 ? ' <span class="badge bg-n">em '+d+' dias</span>' : '') +
+          '<h4>'+esc(e.titulo)+'</h4>' +
+          '<p>'+esc(e.local)+' · '+esc(rotuloInd(e))+' · '+e.offering+'</p>' +
+          '<p style="margin-top:4px;color:#334">'+esc(e.detalhe)+(e.url ? ' · '+linkFonte('fonte', e.url) : '')+'</p>' +
+        '</div>' +
+        '<label class="cbx"><input type="checkbox" class="chk" data-tipo="agenda" data-id="'+e.id+'" ' +
+          (estado.selecionados.has("agenda:"+e.id)?'checked':'')+'> incluir</label>' +
+      '</div>';
+    }).join("") : '<div class="vazio">Nada agendado para este recorte.</div>') +
+  '</div>';
+}
+
+/* =========================================================
+   EVENTOS PÓS-RENDER
+   ========================================================= */
+function ligarEventos(){
+  document.querySelectorAll(".chk").forEach(chk=>{
+    chk.addEventListener("change", ()=>{
+      const key = chk.dataset.tipo+":"+chk.dataset.id;
+      if(chk.checked) estado.selecionados.add(key); else estado.selecionados.delete(key);
+      atualizarContador();
+    });
+  });
+  document.querySelectorAll("[data-av]").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      estado.avaliacoes[b.dataset.id] = estado.avaliacoes[b.dataset.id]===b.dataset.av ? null : b.dataset.av;
+      renderizar();
+    });
+  });
+  document.querySelectorAll("tr[data-player]").forEach(tr=>{
+    tr.addEventListener("click", e=>{
+      if(e.target.closest(".cbx") || e.target.closest("a")) return;   // a caixinha marca para o briefing; o resto da linha abre a ficha
+      abrirFicha(tr.dataset.player, tr.dataset.seg);
+    });
+  });
+  document.querySelectorAll("tr[data-tri]").forEach(tr=>{
+    tr.addEventListener("click", e=>{
+      if(e.target.closest(".cbx")) return;
+      abrirFichaTrimestral(tr.dataset.tri);
+    });
+  });
+  document.querySelectorAll("[data-base-ir]").forEach(b=>{
+    b.addEventListener("click", ()=>{ estadoFinancas.base = b.dataset.baseIr; renderizar(); });
+  });
+  document.querySelectorAll("th[data-ord]").forEach(th=>{
+    th.addEventListener("click", ()=>{
+      const k = th.dataset.ord;
+      if(estadoFinancas.ordenarPor===k) estadoFinancas.ordemAsc = !estadoFinancas.ordemAsc;
+      else { estadoFinancas.ordenarPor = k; estadoFinancas.ordemAsc = false; }
+      renderizar();
+    });
+  });
+  const fDiv = document.getElementById("fltDivInd");
+  if(fDiv) fDiv.addEventListener("change", e=>{ estadoIndicadores.divisao = e.target.value; estadoIndicadores.segmento = "todos"; renderizar(); });
+  const fSeg = document.getElementById("fltSegInd");
+  if(fSeg) fSeg.addEventListener("change", e=>{ estadoIndicadores.segmento = e.target.value; renderizar(); });
+  const sel = document.getElementById("fltTipoMov");
+  if(sel) sel.addEventListener("change", e=>{ estadoMovimentos.filtroTipo = e.target.value; renderizar(); });
+  const soCit = document.getElementById("chkSoCitados");
+  if(soCit) soCit.addEventListener("change", e=>{ CLIENTES.soCitados = e.target.checked; renderizar(); });
+  const selPl = document.getElementById("fltPlayerMov");
+  if(selPl) selPl.addEventListener("change", e=>{ estadoMovimentos.filtroPlayer = e.target.value; renderizar(); });
+  document.querySelectorAll("[data-visaomov]").forEach(b=>b.addEventListener("click", ()=>{ estadoMovimentos.visao = b.dataset.visaomov; renderizar(); }));
+  document.querySelectorAll(".lnk-player").forEach(el=>el.addEventListener("click", ()=>abrirFichaPlayer(el.dataset.player)));
+}
+
+function atualizarContador(){
+  document.getElementById("cntBriefing").textContent = estado.selecionados.size;
+}
+
+/* =========================================================
+   RESUMO FALADO DA EDIÇÃO DO DIA
+   Usa a voz do próprio navegador (Web Speech API): não depende de
+   serviço externo, não precisa de chave e o conteúdo não sai da máquina.
+   ========================================================= */
+const PALAVRAS_POR_MINUTO = 155;   // ritmo médio de locução em português
+const LIMITE_SEGUNDOS = 300;       // teto de 5 minutos pedido
+
+const audio = { fila:[], indice:0, tocando:false, pausado:false, blocos:[], batida:null };
+
+const MESES_EXT = ["janeiro","fevereiro","março","abril","maio","junho",
+                   "julho","agosto","setembro","outubro","novembro","dezembro"];
+const DIAS_EXT  = ["domingo","segunda-feira","terça-feira","quarta-feira",
+                   "quinta-feira","sexta-feira","sábado"];
+
+const ORD_TRI   = ["","primeiro","segundo","terceiro","quarto"];
+
+function dataLocal(iso){ const p = iso.split("-"); return new Date(+p[0], +p[1]-1, +p[2]); }
+function dataFalada(iso, comDiaSemana){
+  const d = dataLocal(iso);
+  // No Brasil o dia 1 se fala "primeiro", não "um".
+  const dia = d.getDate()===1 ? "primeiro" : d.getDate();
+  return (comDiaSemana ? DIAS_EXT[d.getDay()] + ", " : "") + dia + " de " + MESES_EXT[d.getMonth()];
+}
+
+// Ajustes para a voz não tropeçar em abreviação, sigla e símbolo.
+function paraFala(t){
+  return String(t)
+    .replace(/R\$\s*([\d.,]+)\s*bilhões/gi, '$1 bilhões de reais')
+    .replace(/R\$\s*([\d.,]+)\s*milhões/gi, '$1 milhões de reais')
+    .replace(/R\$\s*([\d.,]+)\s*bi\b/gi, '$1 bilhões de reais')
+    .replace(/R\$\s*([\d.,]+)\s*mi\b/gi, '$1 milhões de reais')
+    .replace(/R\$\s*([\d.,]+)/g, '$1 reais')
+    .replace(/(\d)T(\d\d)\b/g, function(m,q,a){ return ORD_TRI[+q] + " trimestre de 20" + a; })
+    .replace(/\bp\.\s?p\.?/g, 'pontos percentuais')
+    .replace(/%/g, ' por cento')
+    .replace(/Strategy \+ M&A/g, 'Strategy M e A')   // evita o "e" duplicado ao falar
+    .replace(/M&A/g, 'M e A')
+    .replace(/\s\+\s/g, ' e ')
+    .replace(/\bPOVs\b/g, 'P O Vs')
+    .replace(/\bPOV\b/g, 'P O V')
+    .replace(/\bTPV\b/g, 'T P V')
+    .replace(/\bCTO\b/g, 'C T O')
+    .replace(/\bCDO\b/g, 'C D O')
+    .replace(/\bPJ\b/g, 'pessoa jurídica')
+    .replace(/\bPF\b/g, 'pessoa física')
+    .replace(/\bIVA\b/g, 'I V A')
+    .replace(/\bCVM\b/g, 'C V M')
+    .replace(/S\.A\./g, 'S A')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+/* ---------------------------------------------------------
+   CRUZAMENTOS
+   O que faz o resumo soar como conversa, e não como leitura, é trazer
+   coisa que NÃO está escrita na aba. Tudo aqui é calculado a partir dos
+   dados do portal (Finanças, Acervo, Agenda, Movimentos) — nada é inventado.
+   --------------------------------------------------------- */
+function acervoRelacionado(item){
+  return DADOS.acervo.find(a=>a.industria===item.industria && a.offering===item.offering)
+      || DADOS.acervo.find(a=>a.industria===item.industria);
+}
+function agendaRelacionada(item){
+  return DADOS.agenda.filter(e=>(e.industria===item.industria || (e.industrias||[]).includes(item.industria)) && diasEntre(e.data)>=0)
+    .sort((a,b)=>a.data.localeCompare(b.data))[0];
+}
+function movimentoRelacionado(item){
+  return DADOS.movimentos.filter(m=>m.industria===item.industria)
+    .sort((a,b)=>b.data.localeCompare(a.data))[0];
+}
+function piorMargem(industria){
+  const segs = segmentosDaIndustria(industria).filter(s=>s.financeiro.margemEbitda);
+  return segs.length ? segs.reduce((p,s)=> s.financeiro.margemEbitda < p.financeiro.margemEbitda ? s : p) : null;
+}
+function maiorCrescimento(industria){
+  const segs = segmentosDaIndustria(industria);
+  return segs.length ? segs.reduce((t,s)=> s.financeiro.crescimentoAnual > t.financeiro.crescimentoAnual ? s : t) : null;
+}
+function temaDominante(lista){
+  const c = {};
+  lista.forEach(r=>r.temas.forEach(t=>{ c[t] = (c[t]||0)+1; }));
+  let tema = null, vezes = 0;
+  Object.keys(c).forEach(t=>{ if(c[t] > vezes){ vezes = c[t]; tema = t; } });
+  return {tema:tema, vezes:vezes};
+}
+
+// Varia as falas de um dia para o outro sem ficar aleatório demais.
+function semente(){ const d = dataLocal(HOJE); return d.getDate() + d.getMonth(); }
+function variante(opcoes, n){ return opcoes[Math.abs(n) % opcoes.length]; }
+
+// Evita dizer duas vezes a mesma coisa: se o Ângulo Peers já cita aquele material,
+// o cruzamento com o Acervo vira repetição e é descartado.
+function jaCitado(angulo, titulo){
+  const limpa = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+  const chave = limpa(titulo).split(/\s+/).slice(0,4).join(" ");
+  return limpa(angulo).indexOf(chave) >= 0;
+}
+
+// Monta uma observação a partir de OUTRA aba do portal. Só entra se o dado existir,
+// e prefere um tipo de cruzamento que ainda não foi usado no mesmo episódio.
+function comentarioCruzado(r, n, usados){
+  const ops = [];
+
+  // Finanças e Acervo são ilustrativos nesta edição: o áudio só cruza com Agenda e Movimentos.
+  const ev = agendaRelacionada(r);
+  if(ev){
+    ops.push({tipo:"agenda", txt:"E isso não fica no abstrato: dia " + dataFalada(ev.data, false) + " tem " +
+      ev.titulo + ", que já é uma janela para puxar o assunto."});
+  }
+  const mv = movimentoRelacionado(r);
+  if(mv){
+    ops.push({tipo:"movimento", txt:"Aliás, casa com o que a " + mv.player + " fez em " +
+      dataFalada(mv.data, false) + ": " + mv.tese.charAt(0).toLowerCase() + mv.tese.slice(1)});
+  }
+  if(!ops.length) return null;
+  const inéditos = ops.filter(o=>!usados.has(o.tipo));
+  return variante(inéditos.length ? inéditos : ops, n);
+}
+
+/* ---------------------------------------------------------
+   ROTEIRO
+   Formatos do mais rico ao mais enxuto. Usa o primeiro que couber
+   nos 5 minutos — e prefere perder uma manchete a perder profundidade,
+   porque o cruzamento com as outras abas é o que dá liga à conversa.
+   --------------------------------------------------------- */
+const FORMATOS = [
+  {manchetes:3, resumo:true,  cruza:true,  movimentos:2},
+  {manchetes:2, resumo:true,  cruza:true,  movimentos:2},
+  {manchetes:3, resumo:false, cruza:true,  movimentos:1},
+  {manchetes:2, resumo:false, cruza:false, movimentos:1}
+];
+
+function montarRoteiro(cfg){
+  const radar = DADOS.radar.filter(passaFiltro).sort((a,b)=>b.data.localeCompare(a.data));
+  const movs  = DADOS.movimentos.filter(passaFiltro).sort((a,b)=>b.data.localeCompare(a.data));
+  const agenda = DADOS.agenda.filter(passaFiltro)
+    .filter(e=>diasEntre(e.data)>=0 && diasEntre(e.data)<=30)
+    .sort((a,b)=>a.data.localeCompare(b.data));
+  const comercial = estado.modoVisualizacao==="comercial";
+  const S = semente();
+  const nManch = cfg.manchetes;
+  const nMov   = cfg.movimentos;
+  const usados = new Set();   // tipos de cruzamento já usados neste episódio
+  const B = [];
+
+  // ---- Abertura: fala com quem está ouvindo, não anuncia um relatório
+  B.push(variante([
+    "Bom dia! Aqui é o resumo do dia do Portal de Inteligência Peers. É " + dataFalada(HOJE, true) +
+      ", e em uns cinco minutos eu te conto o que mudou nas suas indústrias.",
+    "Bom dia! " + dataFalada(HOJE, true).charAt(0).toUpperCase() + dataFalada(HOJE, true).slice(1) +
+      ". Senta aí que em cinco minutos eu te atualizo do que aconteceu no seu setor."
+  ], S));
+
+  if(!radar.length && !movs.length && !agenda.length){
+    B.push("Só que hoje eu não tenho muito o que te contar: com esse recorte, o portal não trouxe nada. " +
+      "Se quiser ouvir de novo com mais conteúdo, limpa o filtro de indústria ou de offering lá em cima. Até a próxima!");
+    return B;
+  }
+
+  const alta = radar.filter(r=>r.relevancia==="alta").length;
+  const cheio = alta >= 4 || radar.length >= 8;
+  const ind = estado.industrias.size ? [...estado.industrias].join(" e ") : "";
+
+  B.push((cheio ? "E já adianto: o dia veio cheio. " : "Dia mais calmo hoje, o que também é uma informação. ") +
+    "São " + radar.length + (radar.length===1 ? " notícia" : " notícias") + " no radar" +
+    (alta ? ", " + alta + (alta===1 ? " de peso" : " delas de peso") : "") +
+    (ind ? ", e o seu recorte está em " + ind : "") + ".");
+
+  if(comercial){
+    B.push("Um aviso: você está no modo do time comercial, mas nesta edição ainda não há oportunidades com nome de cliente, porque o agente comercial não está ligado.");
+  }
+
+  // ---- O fio do dia: leitura que só aparece olhando o conjunto, não item por item
+  const dom = temaDominante(radar.slice(0, Math.max(nManch, 4)));
+  if(dom.tema && dom.vezes >= 2){
+    B.push(variante([
+      "E tem uma coisa que eu quero que você repare antes da gente entrar nelas: " + dom.vezes +
+        " das principais manchetes batem no mesmo ponto, que é " + dom.tema.toLowerCase() +
+        ". Quando repete assim, normalmente não é coincidência. É o setor inteiro se mexendo na mesma direção, e isso é bem mais interessante de levar para um cliente do que uma notícia solta.",
+      "Repara num padrão antes da gente começar: " + dom.tema.toLowerCase() + " aparece em " + dom.vezes +
+        " das principais manchetes de hoje. Isso deixa de ser notícia avulsa e começa a virar tendência — que é o tipo de coisa que abre conversa de board."
+    ], S+1));
+  }
+
+  // ---- Manchetes, contadas em vez de lidas
+  radar.slice(0, nManch).forEach(function(r, i){
+    const abre = variante([
+      "Vamos à primeira. ", "Começando por essa. ", "A próxima. ", "Agora essa, que eu acho a mais forte do dia. ",
+      "Deixa eu te contar essa. ", "E tem essa também. "
+    ], S + i*3);
+
+    B.push((i===0 ? abre : variante(["Segunda. ","Indo para a próxima. ","E tem mais essa. ","Terceira e última. "], S+i)) +
+      r.manchete + "." + (cfg.resumo ? " " + r.resumo : ""));
+
+    if(r.porQueImporta) B.push(variante([
+      "E por que isso te importa? " + r.porQueImporta,
+      "O efeito prático é esse: " + r.porQueImporta.charAt(0).toLowerCase() + r.porQueImporta.slice(1),
+      "Traduzindo: " + r.porQueImporta.charAt(0).toLowerCase() + r.porQueImporta.slice(1)
+    ], S + i + 1));
+
+    const cruzado = cfg.cruza ? comentarioCruzado(r, S + i, usados) : null;
+    if(cruzado) usados.add(cruzado.tipo);
+    if(r.anguloPeers) B.push(variante([
+      "Onde a gente entra nisso: ", "E o gancho para a Peers é esse: ", "Agora, o que isso abre: "
+    ], S + i + 2) + r.anguloPeers.charAt(0).toLowerCase() + r.anguloPeers.slice(1) +
+      (cruzado ? " " + cruzado.txt : ""));
+    else if(cruzado) B.push(cruzado.txt);
+
+    if(comercial && r.oportunidade){
+      B.push("E no comercial: " + r.oportunidade.charAt(0).toLowerCase() + r.oportunidade.slice(1));
+    }
+  });
+
+  if(radar.length > nManch){
+    const resto = radar.length - nManch;
+    B.push("Ficaram mais " + resto + (resto===1 ? " notícia" : " notícias") +
+      " no radar. Não vou te prender aqui com todas, mas vale uma passada de olho no portal.");
+  }
+
+  // ---- Movimentos
+  if(movs.length){
+    const lista = movs.slice(0, nMov);
+    B.push(variante([
+      "Mudando de assunto rapidinho, para os movimentos dos players.",
+      "Agora, o que os players fizeram — que é diferente do que saiu na imprensa."
+    ], S+4));
+    lista.forEach(function(m, i){
+      let t = (i===0 ? "Em " : "E em ") + dataFalada(m.data, false) + ", " + m.player + ": " +
+        m.tese.charAt(0).toLowerCase() + m.tese.slice(1);
+      if(m.valor && m.valor !== "—" && m.valor !== "Não divulgado") t += " " + m.valor + ".";
+      if(m.leitura) t += " " + variante([
+        "A leitura aqui é que ", "O que isso revela é que ", "Na prática, isso mostra que "
+      ], S + i + 5) + m.leitura.charAt(0).toLowerCase() + m.leitura.slice(1);
+      B.push(t);
+    });
+  }
+
+  // ---- Agenda
+  if(agenda.length){
+    const l = agenda.slice(0, 3);
+    B.push("E olha para frente comigo: " +
+      l.map(function(e){ return "dia " + dataFalada(e.data, false) + " tem " + e.titulo; }).join("; ") + ". " +
+      variante([
+        "Essas datas são boas desculpas para você procurar o cliente antes, e não depois que todo mundo já comentou.",
+        "Chegar antes dessas datas é o que separa a conversa boa da conversa atrasada."
+      ], S+6));
+  }
+
+  // ---- Fecho, falando com a pessoa
+  B.push(variante([
+    "Resumindo: " + (dom.tema ? "o dia girou em torno de " + dom.tema.toLowerCase() + ", " : "") +
+      "e tem data marcada nas próximas semanas para transformar isso em conversa. " +
+      "Se algum desses pontos te serviu, marca o item aqui no portal e gera o briefing. Bom dia de trabalho!",
+    "É isso por hoje. " + (dom.tema ? dom.tema.charAt(0).toUpperCase() + dom.tema.slice(1) + " foi o assunto que mais se repetiu. " : "") +
+      "Marca no portal o que fizer sentido, gera o briefing e leva para a conversa. Até amanhã!"
+  ], S+7));
+
+  return B;
+}
+
+function contarPalavras(txt){ return txt.split(/\s+/).filter(Boolean).length; }
+function duracaoSegundos(blocos, velocidade){
+  return contarPalavras(blocos.join(" ")) / (PALAVRAS_POR_MINUTO * (velocidade||1)) * 60;
+}
+function rotuloDuracao(seg){
+  const min = Math.max(1, Math.round(seg/60));
+  return "≈ " + min + " min";
+}
+// Escolhe o formato mais rico que ainda cabe no teto de 5 minutos.
+function roteiroQueCabe(velocidade){
+  for(let i=0; i<FORMATOS.length; i++){
+    const b = montarRoteiro(FORMATOS[i]);
+    if(duracaoSegundos(b, velocidade) <= LIMITE_SEGUNDOS) return b;
+  }
+  return montarRoteiro(FORMATOS[FORMATOS.length-1]);
+}
+
+function vozesPt(){
+  if(!window.speechSynthesis) return [];
+  const pt = speechSynthesis.getVoices().filter(function(v){ return /^pt/i.test(v.lang); });
+  // Só a Francisca: é a que soa menos robótica. Quando a máquina tem as duas
+  // variantes, a "Natural"/"Online" vem na frente.
+  const fran = pt.filter(function(v){ return /francisca/i.test(v.name); })
+    .sort(function(a,b){
+      const na = /natural|online/i.test(a.name) ? 0 : 1;
+      const nb = /natural|online/i.test(b.name) ? 0 : 1;
+      return na - nb;
+    });
+  // Máquina sem a Francisca instalada cai nas outras vozes pt, senão o resumo fica mudo.
+  return fran.length ? fran : pt;
+}
+
+function abrirAudio(){
+  const m = document.getElementById("mAudio");
+
+  if(!window.speechSynthesis || typeof SpeechSynthesisUtterance === "undefined"){
+    m.innerHTML =
+      '<div class="modal-head"><div><h3>Resumo falado</h3>' +
+      '<p>Recurso indisponível neste navegador</p></div>' +
+      '<button class="modal-close" onclick="fecharModal(\'Audio\')">Fechar</button></div>' +
+      '<div class="modal-body"><div class="vazio">Este navegador não tem leitura em voz. ' +
+      'Abra o portal no Edge ou no Chrome, ou copie o roteiro e use um gerador de áudio.</div></div>';
+    abrirModal("Audio");
+    return;
+  }
+
+  audio.blocos = roteiroQueCabe(1);
+  const seg = duracaoSegundos(audio.blocos, 1);
+
+  m.innerHTML =
+    '<div class="modal-head">' +
+      '<div><h3>Resumo falado da edição do dia</h3>' +
+      '<p>' + rotuloDuracao(seg) + ' · gerado a partir do que está na tela, no recorte de ' + esc(rotuloRecorte()) + '</p></div>' +
+      '<button class="modal-close" onclick="fecharModal(\'Audio\')">Fechar</button>' +
+    '</div>' +
+    '<div class="modal-tools">' +
+      '<span class="flt-label">Voz</span><select class="flt" id="audioVoz"></select>' +
+      '<span class="flt-label">Ritmo</span>' +
+      '<select class="flt" id="audioVel">' +
+        '<option value="0.9">Calmo</option>' +
+        '<option value="1" selected>Normal</option>' +
+        '<option value="1.15">Rápido</option>' +
+      '</select>' +
+    '</div>' +
+    '<div class="modal-body">' +
+      '<div class="audio-ctrls">' +
+        '<button class="btn" id="audioPlay" onclick="tocarFala()">▶ Ouvir</button>' +
+        '<button class="tbtn" id="audioPause" onclick="pausarFala()">Pausar</button>' +
+        '<button class="tbtn" onclick="pararFala()">Parar</button>' +
+        '<button class="tbtn" onclick="copiarRoteiro()">Copiar roteiro</button>' +
+        '<span class="ok" id="msgRoteiro">Copiado</span>' +
+      '</div>' +
+      '<div class="audio-prog"><i id="audioBarra"></i></div>' +
+      '<div class="audio-status" id="audioStatus">Pronto para tocar.</div>' +
+      '<div class="audio-txt" id="audioTxt">' +
+        audio.blocos.map(function(b,i){ return '<p data-b="'+i+'">'+esc(b)+'</p>'; }).join("") +
+      '</div>' +
+      '<p class="cardnote" style="margin:14px 0 0">A voz é a do próprio navegador, então a qualidade muda de máquina para máquina — ' +
+      'no Edge costuma sair bem mais natural. Nada é enviado para fora: o texto é lido localmente. ' +
+      'Para um áudio de produção, copie o roteiro e use um gerador de voz.</p>' +
+    '</div>';
+
+  preencherVozes();
+  document.getElementById("audioVel").addEventListener("change", function(){
+    if(audio.tocando) tocarFala();
+  });
+  abrirModal("Audio");
+}
+
+function preencherVozes(){
+  const sel = document.getElementById("audioVoz");
+  if(!sel) return;
+  const vs = vozesPt();
+  if(!vs.length){
+    sel.innerHTML = '<option>Nenhuma voz em português encontrada</option>';
+    return;
+  }
+  // Com a Francisca disponível a lista tem um item só; esta ordem vale para o fallback.
+  const preferidas = /francisca|maria|thalita|brenda|leila|yara/i;
+  const ordenadas = vs.map(function(v,i){ return {v:v, i:i}; })
+    .sort(function(a,b){
+      const pa = preferidas.test(a.v.name) ? 0 : 1;
+      const pb = preferidas.test(b.v.name) ? 0 : 1;
+      return pa - pb || a.i - b.i;
+    });
+  sel.innerHTML = ordenadas.map(function(o){
+    return '<option value="'+o.i+'">'+esc(o.v.name.replace(/^Microsoft\s/,''))+'</option>';
+  }).join("");
+}
+
+function tocarFala(){
+  if(!audio.blocos.length) return;
+  audio.tocando = false;
+  speechSynthesis.cancel();
+  audio.geracao = (audio.geracao || 0) + 1;
+  const ger = audio.geracao;
+  audio.fila = [];
+  // Agrupa as frases do parágrafo num trecho só. Cada utterance nova abre um
+  // silêncio seco; quebrar frase a frase era o que fazia a leitura soar picada.
+  audio.blocos.forEach(function(b, iBloco){
+    const frases = paraFala(b).split(/(?<=[.!?])\s+/)
+      .map(function(f){ return f.trim(); }).filter(Boolean);
+    let atual = "";
+    frases.forEach(function(f){
+      if(atual && (atual + " " + f).length > 460){
+        audio.fila.push({txt:atual, bloco:iBloco});
+        atual = f;
+      } else {
+        atual = atual ? atual + " " + f : f;
+      }
+    });
+    if(atual) audio.fila.push({txt:atual, bloco:iBloco});
+  });
+  audio.indice = 0;
+  audio.tocando = true;
+  audio.pausado = false;
+  clearInterval(audio.batida);
+  // O Chrome interrompe locuções longas; um resume periódico segura a fila.
+  audio.batida = setInterval(function(){
+    if(audio.tocando && !audio.pausado) speechSynthesis.resume();
+  }, 5000);
+  marcarBloco();
+  enfileirarFala(ger);
+}
+
+// Entrega todos os trechos de uma vez para a fila do próprio navegador: ele
+// emenda um no outro. Encadear no onend obrigava o JS a dar a volta a cada
+// frase, e é essa volta que o ouvinte percebe como pausa.
+function enfileirarFala(ger){
+  const sel = document.getElementById("audioVoz");
+  const vs = vozesPt();
+  const voz = sel ? vs[parseInt(sel.value,10)] : null;
+  const velEl = document.getElementById("audioVel");
+  const vel = velEl ? parseFloat(velEl.value) : 1;
+  const total = audio.fila.length;
+
+  audio.fila.forEach(function(item, i){
+    const u = new SpeechSynthesisUtterance(item.txt);
+    if(voz) u.voice = voz;
+    u.lang = (voz && voz.lang) || "pt-BR";
+    u.rate = vel;
+    u.pitch = 1.05;   // levemente acima do padrão: soa mais leve, menos institucional
+    u.onstart = function(){
+      if(!audio.tocando || ger !== audio.geracao) return;
+      audio.indice = i;
+      marcarBloco();
+      atualizarProgresso();
+    };
+    const encerrar = function(){
+      if(!audio.tocando || ger !== audio.geracao) return;
+      if(i === total - 1){
+        audio.indice = total;
+        encerrarFala("Resumo concluído.");
+      }
+    };
+    u.onend = encerrar;
+    u.onerror = encerrar;
+    speechSynthesis.speak(u);
+  });
+  definirStatus("Tocando...");
+  atualizarProgresso();
+}
+
+function pausarFala(){
+  const b = document.getElementById("audioPause");
+  if(!audio.tocando) return;
+  if(audio.pausado){
+    speechSynthesis.resume();
+    audio.pausado = false;
+    if(b) b.textContent = "Pausar";
+    definirStatus("Tocando...");
+  } else {
+    speechSynthesis.pause();
+    audio.pausado = true;
+    if(b) b.textContent = "Continuar";
+    definirStatus("Pausado.");
+  }
+}
+
+function pararFala(){ encerrarFala("Parado."); }
+
+function encerrarFala(msg){
+  audio.tocando = false;
+  audio.pausado = false;
+  clearInterval(audio.batida);
+  if(window.speechSynthesis) speechSynthesis.cancel();
+  const b = document.getElementById("audioPause");
+  if(b) b.textContent = "Pausar";
+  const barra = document.getElementById("audioBarra");
+  if(barra && msg==="Resumo concluído.") barra.style.width = "100%";
+  document.querySelectorAll("#audioTxt p").forEach(function(p){ p.classList.remove("on"); });
+  definirStatus(msg);
+}
+
+function definirStatus(txt){
+  const s = document.getElementById("audioStatus");
+  if(s) s.textContent = txt;
+}
+
+function atualizarProgresso(){
+  const barra = document.getElementById("audioBarra");
+  if(!barra || !audio.fila.length) return;
+  barra.style.width = Math.min(100, (audio.indice / audio.fila.length) * 100) + "%";
+  if(audio.tocando && !audio.pausado){
+    definirStatus("Tocando — trecho " + Math.min(audio.indice+1, audio.fila.length) + " de " + audio.fila.length + ".");
+  }
+}
+
+function marcarBloco(){
+  const caixa = document.getElementById("audioTxt");
+  if(!caixa || !audio.fila.length) return;
+  const item = audio.fila[Math.min(audio.indice, audio.fila.length-1)];
+  caixa.querySelectorAll("p").forEach(function(p){ p.classList.remove("on"); });
+  const alvo = caixa.querySelector('p[data-b="' + item.bloco + '"]');
+  if(alvo){
+    alvo.classList.add("on");
+    const topo = alvo.offsetTop - caixa.offsetTop - 40;
+    caixa.scrollTo({ top: Math.max(0, topo), behavior: "smooth" });
+  }
+}
+
+function copiarRoteiro(){
+  const txt = audio.blocos.join("\n\n");
+  if(navigator.clipboard) navigator.clipboard.writeText(txt).catch(function(){});
+  const msg = document.getElementById("msgRoteiro");
+  if(msg){
+    msg.style.display = "inline";
+    setTimeout(function(){ msg.style.display = "none"; }, 2200);
+  }
+}
+
+if(window.speechSynthesis) speechSynthesis.onvoiceschanged = preencherVozes;
+
+/* =========================================================
+   TIME COMERCIAL · lista de clientes carregada no navegador
+   A lista nunca sai do computador: é lida aqui, fica só na memória da página e some ao fechá-la.
+   ========================================================= */
+const CLIENTES = { nomes: [], arquivo: "", soCitados: false };
+const normTxt = s => (" " + String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g," ") + " ").replace(/\s+/g," ");
+const SUFIXOS = new Set(["sa","s","a","ltda","me","eireli","cia","companhia","holding"]);
+function chaveNome(nome){
+  let t = normTxt(nome).trim().split(" ").filter(Boolean);
+  if(t[0]==="grupo" && t.length>1) t = t.slice(1);
+  while(t.length>1 && SUFIXOS.has(t[t.length-1])) t.pop();
+  const k = t.join(" ");
+  return k.length>=3 ? k : "";
+}
+function clientesCitados(texto){
+  if(!CLIENTES.nomes.length) return [];
+  const t = normTxt(texto);
+  return CLIENTES.nomes.filter(c=>t.includes(" "+c.chave+" "));
+}
+const textoRadar = i => [i.manchete, i.resumo, i.porQueImporta, i.anguloPeers].join(" ");
+const textoMov = m => [m.player, m.tese, m.leitura].join(" ");
+function passaClientes(textoDe){
+  return item => !(estado.modoVisualizacao==="comercial" && CLIENTES.soCitados && CLIENTES.nomes.length) || clientesCitados(textoDe(item)).length>0;
+}
+function caixaClientes(texto){
+  if(estado.modoVisualizacao!=="comercial") return "";
+  const c = clientesCitados(texto);
+  return c.length ? '<div class="box-com"><span class="rot">Clientes citados:</span> ' + c.map(x=>esc(x.nome)+' ('+x.tipo.toLowerCase()+')').join(" · ") + '</div>' : "";
+}
+function tagCliente(nome){
+  if(estado.modoVisualizacao!=="comercial" || !CLIENTES.nomes.length) return "";
+  const k = chaveNome(nome);
+  const c = CLIENTES.nomes.find(x=>x.chave===k);
+  return c ? '<span class="tag-cli">'+esc(c.tipo.toLowerCase())+'</span>' : "";
+}
+function barraComercial(){
+  const ajuda = 'A lista fica só no seu navegador: não é enviada a lugar nenhum e some ao fechar a página. Formato: uma empresa por linha (CSV ou Excel); segunda coluna opcional com “Cliente” ou “Prospect”.';
+  if(!CLIENTES.nomes.length) return '<div class="barra-com">' +
+    '<span><b>Time comercial.</b> Carregue sua lista de clientes e prospects para ver onde eles aparecem no Radar, em Movimentos e em Finanças. ' + ajuda + '</span>' +
+    '<button class="btn-sec" onclick="document.getElementById(\'arqClientes\').click()">Carregar lista de clientes</button>' +
+    '<input type="file" id="arqClientes" accept=".csv,.txt,.xlsx,.xls" style="display:none" onchange="lerListaClientes(this.files[0])"></div>';
+  const nCli = CLIENTES.nomes.filter(c=>c.tipo==="Cliente").length;
+  return '<div class="barra-com">' +
+    '<span><b>Lista carregada:</b> '+esc(CLIENTES.arquivo)+' · '+nCli+' clientes e '+(CLIENTES.nomes.length-nCli)+' prospects. Só neste navegador.</span>' +
+    '<label class="cbx"><input type="checkbox" id="chkSoCitados" '+(CLIENTES.soCitados?'checked':'')+'> mostrar só itens com clientes citados</label>' +
+    '<button class="btn-sec" onclick="limparListaClientes()">Limpar lista</button></div>';
+}
+function carregarScript(url){
+  return new Promise((ok, erro)=>{ const s = document.createElement("script"); s.src = url; s.onload = ok; s.onerror = erro; document.head.appendChild(s); });
+}
+async function lerListaClientes(arq){
+  if(!arq) return;
+  let linhas;
+  try{
+    if(/\.xlsx?$/i.test(arq.name)){
+      if(!window.XLSX) await carregarScript("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js");
+      const wb = XLSX.read(await arq.arrayBuffer(), {type:"array"});
+      linhas = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1, defval:""});
+    } else {
+      linhas = (await arq.text()).split(/\r?\n/).map(l=>l.split(/[;,\t]/));
+    }
+  }catch(e){ alert("Não foi possível ler o arquivo: " + e.message); return; }
+  const vistos = new Set(), nomes = [];
+  linhas.forEach((l, i)=>{
+    const nome = String(l[0]||"").trim();
+    if(!nome || (i===0 && /^(nome|empresa|cliente|conta|razao social)$/.test(normTxt(nome).trim()))) return;
+    const chave = chaveNome(nome);
+    if(!chave || vistos.has(chave)) return;
+    vistos.add(chave);
+    nomes.push({nome, chave, tipo: /^prosp/.test(normTxt(l[1]).trim()) ? "Prospect" : "Cliente"});
+  });
+  if(!nomes.length){ alert("Nenhum nome encontrado no arquivo."); return; }
+  CLIENTES.nomes = nomes; CLIENTES.arquivo = arq.name;
+  renderizar();
+}
+function limparListaClientes(){ CLIENTES.nomes = []; CLIENTES.arquivo = ""; CLIENTES.soCitados = false; renderizar(); }
+
+/* =========================================================
+   BRIEFING DE CONTA · tudo o que o portal tem sobre uma empresa
+   ========================================================= */
+function abrirConta(){
+  const nomes = new Set();
+  DADOS.trimestral.forEach(e=>nomes.add(e.nome));
+  DADOS.players.forEach(p=>nomes.add(p.nome));
+  DADOS.movimentos.forEach(m=>nomes.add(m.player));
+  document.getElementById("dlContas").innerHTML = [...nomes].sort((a,b)=>a.localeCompare(b)).map(n=>'<option value="'+esc(n)+'">').join("");
+  document.getElementById("msgContaCopiado").style.display = "none";
+  abrirModal("Conta");
+  setTimeout(()=>document.getElementById("inpConta").focus(), 50);
+}
+function montarConta(){
+  const nome = document.getElementById("inpConta").value.trim();
+  const k = chaveNome(nome);
+  const ta = document.getElementById("txtConta");
+  if(!k){ ta.value = "Digite o nome de uma empresa."; return; }
+  const cita = texto => normTxt(texto).includes(" "+k+" ");
+  const tri = DADOS.trimestral.find(e=>chaveNome(e.nome)===k);
+  const v1000 = DADOS.players.find(p=>chaveNome(p.nome)===k);
+  const movs = DADOS.movimentos.filter(m=>chaveNome(m.player)===k || cita(textoMov(m))).sort((a,b)=>b.data.localeCompare(a.data));
+  const radar = DADOS.radar.filter(i=>cita(textoRadar(i))).sort((a,b)=>b.data.localeCompare(a.data)).slice(0,10);
+  const agenda = DADOS.agenda.filter(a=>cita([a.titulo, a.detalhe].join(" "))).sort((a,b)=>a.data.localeCompare(b.data));
+  const cli = CLIENTES.nomes.find(c=>c.chave===k);
+  const seg = tri ? tri.industria+" · "+tri.divisao : (v1000 ? v1000.segmentos[0].industria+" · "+v1000.segmentos[0].divisao : "");
+  const L = [];
+  L.push("BRIEFING DE CONTA · " + nome.toUpperCase());
+  L.push("Portal de Inteligência Peers · edição de " + formatarData(HOJE) + (seg ? " · " + seg : "") + (cli ? " · " + cli.tipo : ""));
+  L.push("");
+  L.push("--- FINANÇAS ---");
+  if(tri){
+    const m = tri.m;
+    L.push("Último trimestre (" + tri.fonte.periodo + ", " + tri.fonte.nome + "; R$ milhões):");
+    if(tri.banco) L.push("  Margem financeira: " + mil(m.margemFinanceira) + " (" + pct(m.crescMFB,true) + " a/a) · Lucro líquido: " + mil(m.lucroLiquido) + " (" + pct(m.crescLL,true) + " a/a) · ROE: " + pct(m.roe) + " · Inadimplência: " + pct(m.inadimplencia));
+    else L.push("  Receita: " + mil(m.receita) + " (" + pct(m.cresc,true) + " a/a) · Margem EBITDA: " + pct(m.margemEbitda) + " · Margem líquida: " + pct(m.margemLiquida) + " · Lucro líquido: " + mil(m.lucroLiquido));
+  }
+  if(v1000){
+    const f = v1000.segmentos[0].financeiro, vv = v1000.segmentos[0].valor || {};
+    L.push("Valor 1000 (ano 2025)" + (vv.pos ? ", posição nº " + vv.pos : "") + ":");
+    L.push("  Receita líquida: R$ " + fmtN(f.receitaLiquida) + " mi (" + fmtPct(f.crescimentoAnual,true) + ") · Margem EBITDA: " + fmtPct(f.margemEbitda) + " · Margem líquida: " + fmtPct(f.margemLiquida));
+  }
+  if(!tri && !v1000) L.push("Sem dados financeiros no portal (fora das companhias abertas e do Valor 1000).");
+  L.push("");
+  L.push("--- MOVIMENTOS (até 12 meses) ---");
+  if(movs.length) movs.forEach(m=>{ L.push("• " + formatarData(m.data) + " · " + m.tipo + ": " + m.tese); if(m.leitura) L.push("  Leitura Peers: " + m.leitura); L.push("  Fonte: " + m.fonte + " · " + m.url); });
+  else L.push("Nenhum movimento registrado.");
+  L.push("");
+  L.push("--- RADAR (notícias recentes que citam a empresa) ---");
+  if(radar.length) radar.forEach(i=>{ L.push("• " + formatarData(i.data) + " · " + i.manchete); if(i.porQueImporta) L.push("  Por que importa: " + i.porQueImporta); if(i.anguloPeers) L.push("  Ângulo Peers: " + i.anguloPeers); L.push("  Fonte: " + i.fonte + " · " + i.url); });
+  else L.push("Nenhuma notícia recente no Radar.");
+  L.push("");
+  L.push("--- AGENDA ---");
+  if(agenda.length) agenda.forEach(a=>L.push("• " + formatarData(a.data) + " · " + a.titulo));
+  else L.push("Nenhuma data na Agenda.");
+  L.push("");
+  L.push("Antes de enviar ao cliente, confira os números na fonte indicada em cada item (período e fonte ao lado do valor).");
+  ta.value = L.join("\n");
+}
+function copiarConta(){
+  const ta = document.getElementById("txtConta");
+  ta.select();
+  try{ document.execCommand("copy"); }catch(e){}
+  if(navigator.clipboard) navigator.clipboard.writeText(ta.value).catch(()=>{});
+  const msg = document.getElementById("msgContaCopiado");
+  msg.style.display = "inline";
+  setTimeout(()=>{ msg.style.display = "none"; }, 2200);
+}
+
+/* =========================================================
+   MODAIS
+   ========================================================= */
+function abrirModal(nome){
+  document.getElementById("bg"+nome).classList.add("open");
+  document.getElementById("m"+nome).classList.add("open");
+}
+function fecharModal(nome){
+  if(nome==="Audio") pararFala();
+  document.getElementById("bg"+nome).classList.remove("open");
+  document.getElementById("m"+nome).classList.remove("open");
+}
+document.addEventListener("keydown", e=>{
+  if(e.key==="Escape"){ fecharModal("Ficha"); fecharModal("Briefing"); fecharModal("Audio"); fecharModal("Conta"); }
+});
+
+/* =========================================================
+   BRIEFING
+   ========================================================= */
+function abrirBriefing(){
+  if(estado.selecionados.size===0){
+    alert("Marque ao menos um item (Radar, Finanças, Movimentos, Acervo ou Agenda) para gerar o briefing.");
+    return;
+  }
+  const L = [];
+  L.push("BRIEFING · PORTAL DE INTELIGÊNCIA PEERS (edição de " + formatarData(HOJE) + "; Acervo ilustrativo)");
+  L.push("Recorte: " + rotuloRecorte());
+  L.push("Visualização: " + (estado.modoVisualizacao==='comercial' ? "Time comercial" : "Consultor"));
+  if(estado.modoVisualizacao==='comercial'){
+    L.push("CONFIDENCIAL — contém nomes de clientes e prospects. Uso restrito ao grupo comercial.");
+  }
+  L.push("");
+
+  const sel = t => [...estado.selecionados].filter(k=>k.startsWith(t+":")).map(k=>k.split(":")[1]);
+
+  const radarSel = sel("radar");
+  if(radarSel.length){
+    L.push("--- RADAR ---");
+    radarSel.forEach(id=>{
+      const i = DADOS.radar.find(r=>r.id===id);
+      L.push("• " + i.manchete + " (" + rotuloInd(i) + " / " + i.offering + ", " + formatarData(i.data) + ")");
+      L.push("  Resumo: " + i.resumo);
+      if(i.porQueImporta) L.push("  Por que importa: " + i.porQueImporta);
+      if(i.anguloPeers) L.push("  Ângulo Peers: " + i.anguloPeers);
+      if(estado.modoVisualizacao==="comercial" && i.oportunidade) L.push("  Oportunidade comercial: " + i.oportunidade);
+      const cli = clientesCitados(textoRadar(i));
+      if(cli.length) L.push("  Clientes citados: " + cli.map(c=>c.nome+" ("+c.tipo.toLowerCase()+")").join(", "));
+      L.push("  Fonte: " + i.fonte + (i.url ? " · " + i.url : ""));
+      L.push("");
+    });
+  }
+
+  // Finanças: um bloco por empresa, agrupado por indústria e divisão, com a mediana da divisão como referência.
+  // Só números da base; nenhuma leitura é escrita sobre eles.
+  briefingTrimestral(L, sel("trimestral"));
+
+  const finSel = sel("financas").map(id=>{
+    for(const p of DADOS.players){ const s = p.segmentos.find(x=>x.id===id); if(s) return s; }
+  }).filter(Boolean);
+  if(finSel.length){
+    L.push("--- FINANÇAS · MAIORES EMPRESAS (Valor 1000, ano 2025; R$ milhões) ---");
+    const grupos = [...new Set(finSel.map(s=>s.industria+"|"+s.divisao))];
+    grupos.forEach(g=>{
+      const [ind, div] = g.split("|");
+      const med = medianaEbitda(ind, div);
+      L.push(ind + " · " + div + (med===null ? "" : " · mediana da margem EBITDA da divisão: " + fmtPct(med)));
+      L.push("");
+      finSel.filter(s=>s.industria===ind && s.divisao===div)
+        .sort((a,b)=>(b.financeiro.receitaLiquida||0)-(a.financeiro.receitaLiquida||0))
+        .forEach(s=>{
+          const f = s.financeiro, v = s.valor;
+          L.push("• " + s.nomeExibicao + " — nº " + v.pos + " no Valor 1000 (" + v.setor + ", " + v.sede + ")");
+          L.push("  Receita líquida: R$ " + fmtN(f.receitaLiquida) + " mi" +
+            (f.crescimentoAnual===null ? "" : " (" + fmtPct(f.crescimentoAnual,true) + " no ano)"));
+          L.push("  Margem EBITDA: " + fmtPct(f.margemEbitda) +
+            (f.varVsSetorEbitda===null ? "" : " (" + (f.varVsSetorEbitda>0?"+":"") + fmtN(f.varVsSetorEbitda,1) + " p.p. vs. mediana da divisão)") +
+            " · Margem líquida: " + fmtPct(f.margemLiquida));
+          L.push("  Lucro líquido: " + (v.ll===null ? "—" : "R$ " + fmtN(v.ll) + " mi") +
+            " · Alavancagem (dív. onerosa/EBITDA): " + (f.alavancagem===null ? "—" : fmtN(f.alavancagem,1) + "x"));
+          L.push("  Fonte: " + s.fonte.nome + " · " + s.fonte.periodo + " · " + s.fonte.url);
+          L.push("");
+        });
+    });
+  }
+
+  briefingIndicadores(L, sel("indicador"));
+
+  const movSel = sel("movimento");
+  if(movSel.length){
+    L.push("--- MOVIMENTOS ESTRATÉGICOS ---");
+    movSel.forEach(id=>{
+      const i = DADOS.movimentos.find(m=>m.id===id);
+      L.push("• [" + formatarData(i.data) + "] " + i.player + " — " + i.tipo + ": " + i.tese +
+        (i.valor && i.valor!=='—' ? " (" + i.valor + ")" : ""));
+      if(i.leitura) L.push("  Leitura Peers: " + i.leitura);
+      L.push("  Fonte: " + i.fonte + (i.url ? " · " + i.url : ""));
+      L.push("");
+    });
+  }
+
+  const acSel = sel("acervo");
+  if(acSel.length){
+    L.push("--- ACERVO PEERS ---");
+    acSel.forEach(id=>{
+      const i = DADOS.acervo.find(a=>a.id===id);
+      L.push("• [" + i.tipo + "] " + i.titulo + " (" + rotuloInd(i) + " / " + i.offering + ", " + i.ano + ") — " + i.fonte);
+    });
+    L.push("");
+  }
+
+  const agSel = sel("agenda");
+  if(agSel.length){
+    L.push("--- AGENDA SETORIAL ---");
+    agSel.forEach(id=>{
+      const i = DADOS.agenda.find(a=>a.id===id);
+      L.push("• [" + formatarData(i.data) + "] " + i.titulo + " — " + i.local + " (" + rotuloInd(i) + " / " + i.offering + ")");
+    });
+    L.push("");
+  }
+
+  L.push("Antes de enviar ao cliente, confira os números na fonte indicada em cada item (período e fonte ao lado do valor).");
+  document.getElementById("txtBriefing").value = L.join("\n");
+  document.getElementById("msgCopiado").style.display = "none";
+  abrirModal("Briefing");
+}
+
+function copiarBriefing(){
+  const ta = document.getElementById("txtBriefing");
+  ta.select();
+  try{ document.execCommand("copy"); }catch(e){}
+  if(navigator.clipboard) navigator.clipboard.writeText(ta.value).catch(()=>{});
+  const msg = document.getElementById("msgCopiado");
+  msg.style.display = "inline";
+  setTimeout(()=>{ msg.style.display = "none"; }, 2200);
+}
+
+document.getElementById("inpConta").addEventListener("keydown", e=>{ if(e.key==="Enter") montarConta(); });
+
+iniciarAcesso();
+</script>
+</body>
+</html>

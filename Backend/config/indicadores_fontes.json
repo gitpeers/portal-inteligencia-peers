@@ -1,0 +1,1556 @@
+{
+ "_como_usar": "Liga cada indicador do portal a uma série pública. 'segmento' e 'indicador' precisam ser iguais aos nomes em Frontend/dados/indicadores.json. Conectores: 'sgs' (Banco Central; 'codigo' ou lista de códigos somados), 'sidra' (IBGE, caminho da consulta sem o período; 'freq' mensal, trimestral ou anual), 'mpv' (Banco Central, meios de pagamento: 'recurso' e 'campos' somados), 'spi' (disponibilidade do Pix) 'ifdata' (Banco Central, 'metrica' do sistema ou dos bancos públicos), 'comex' (Comex Stat: 'partes' com fluxo, nível, códigos e sinal), 'rtn' (planilha do Resultado do Tesouro: 'tabela' e início da 'linha'), 'fpm' (Tesouro, FPM), 'finame' (BNDES, 'campos'), 'capag' ('esfera') e 'siconfi' (27 estados: 'metrica'). 'acumulado_no_ano' converte série acumulada no ano em mensal. 'escala' divide o valor bruto. 'var': 'pct' = variação % sobre o mesmo período do ano anterior; 'pp' = diferença em pontos; 'abs' = diferença na unidade de 'var_unidade' (ex.: R$ bi). 'acumular_12m' compõe variações mensais em 12 meses; 'somar_12m' soma os últimos 12 meses. Indicadores fora desta lista continuam com valor de exemplo. 'equivalente': texto da etiqueta “série equivalente” no portal, para séries que substituem o dado original do setor. 'caged' (Novo Caged, estoque de empregos formais: 'linha' é o início do nome do grupamento ou seção na Tabela 6.1; 'escala' divide o valor). 'anatel' (Anatel, dados abertos de acessos: 'arquivo' é o zip e 'membro' o CSV de totais Ano;Mês;Acessos). 'cnes' (Ministério da Saúde, CSV anual de leitos do CNES: 'metrica' leitos, uti ou estabelecimentos). 'anatel_col' (Anatel, arquivos por município: 'metrica' fibra_pct, municipios_5g ou prestadoras_pp). 'sih' (SIH/SUS pelo TabNet: 'metrica' internacoes ou permanencia, sempre em 12 meses).",
+ "series": [
+  {
+   "segmento": "Bancos",
+   "indicador": "Carteira de crédito do SFN",
+   "conector": "sgs",
+   "codigo": 20539,
+   "escala": 1000000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Bancos",
+   "indicador": "Inadimplência acima de 90 dias",
+   "conector": "sgs",
+   "codigo": 21082,
+   "var": "pp"
+  },
+  {
+   "segmento": "Bancos",
+   "indicador": "Spread médio das operações de crédito",
+   "conector": "sgs",
+   "codigo": 20783,
+   "var": "pp"
+  },
+  {
+   "segmento": "Administração pública",
+   "indicador": "Dívida bruta do governo geral",
+   "conector": "sgs",
+   "codigo": 13762,
+   "var": "pp"
+  },
+  {
+   "segmento": "Construção civil, construção pesada e engenharia",
+   "indicador": "INCC",
+   "conector": "sgs",
+   "codigo": 192,
+   "acumular_12m": true,
+   "var": "pp"
+  },
+  {
+   "segmento": "Indústria de transformação",
+   "indicador": "Produção física da indústria de transformação",
+   "conector": "sidra",
+   "consulta": "t/8888/n1/all/v/12606/c544/129316",
+   "var": "pct"
+  },
+  {
+   "segmento": "Alimentos",
+   "indicador": "Produção física da indústria de alimentos",
+   "conector": "sidra",
+   "consulta": "t/8888/n1/all/v/12606/c544/129317",
+   "var": "pct",
+   "equivalente": "Índice do IBGE usado no lugar do dado da associação do setor: unidade e recorte diferentes."
+  },
+  {
+   "segmento": "Bebidas",
+   "indicador": "Produção física de bebidas",
+   "conector": "sidra",
+   "consulta": "t/8888/n1/all/v/12606/c544/129318",
+   "var": "pct",
+   "equivalente": "Índice do IBGE usado no lugar do dado da associação do setor: unidade e recorte diferentes."
+  },
+  {
+   "segmento": "Química e petroquímica",
+   "indicador": "Produção física da indústria química",
+   "conector": "sidra",
+   "consulta": "t/8888/n1/all/v/12606/c544/56689",
+   "var": "pct",
+   "equivalente": "Índice do IBGE usado no lugar do dado da associação do setor: unidade e recorte diferentes."
+  },
+  {
+   "segmento": "Farmacêutica, dispositivos e diagnóstico",
+   "indicador": "Produção física farmacêutica",
+   "conector": "sidra",
+   "consulta": "t/8888/n1/all/v/12606/c544/129330",
+   "var": "pct",
+   "equivalente": "Índice do IBGE usado no lugar do dado da associação do setor: unidade e recorte diferentes."
+  },
+  {
+   "segmento": "Papel e celulose",
+   "indicador": "Produção física de celulose e papel",
+   "conector": "sidra",
+   "consulta": "t/8888/n1/all/v/12606/c544/129324",
+   "var": "pct",
+   "equivalente": "Índice do IBGE usado no lugar do dado da associação do setor: unidade e recorte diferentes."
+  },
+  {
+   "segmento": "Siderurgia",
+   "indicador": "Produção física da metalurgia",
+   "conector": "sidra",
+   "consulta": "t/8888/n1/all/v/12606/c544/129333",
+   "var": "pct",
+   "equivalente": "Índice do IBGE usado no lugar do dado da associação do setor: unidade e recorte diferentes."
+  },
+  {
+   "segmento": "Automotivo",
+   "indicador": "Produção física de veículos automotores",
+   "conector": "sidra",
+   "consulta": "t/8888/n1/all/v/12606/c544/129338",
+   "var": "pct",
+   "equivalente": "Índice do IBGE usado no lugar do dado da associação do setor: unidade e recorte diferentes."
+  },
+  {
+   "segmento": "Eletroeletrônicos",
+   "indicador": "Produção física de eletroeletrônicos",
+   "conector": "sidra",
+   "consulta": "t/8888/n1/all/v/12606/c544/129335",
+   "var": "pct",
+   "equivalente": "Índice do IBGE usado no lugar do dado da associação do setor: unidade e recorte diferentes."
+  },
+  {
+   "segmento": "Hardware, dispositivos e componentes",
+   "indicador": "Produção física de informática e eletrônicos",
+   "conector": "sidra",
+   "consulta": "t/8888/n1/all/v/12606/c544/129335",
+   "var": "pct",
+   "equivalente": "Índice do IBGE usado no lugar do dado da associação do setor: unidade e recorte diferentes."
+  },
+  {
+   "segmento": "Construção civil, construção pesada e engenharia",
+   "indicador": "Produção física de minerais não metálicos",
+   "conector": "sidra",
+   "consulta": "t/8888/n1/all/v/12606/c544/129332",
+   "var": "pct",
+   "equivalente": "Índice do IBGE usado no lugar do dado da associação do setor: unidade e recorte diferentes."
+  },
+  {
+   "segmento": "Vestuário",
+   "indicador": "Produção física têxtil e de vestuário",
+   "conector": "sidra",
+   "consulta": "t/8888/n1/all/v/12606/c544/129321",
+   "var": "pct",
+   "equivalente": "Índice do IBGE usado no lugar do dado da associação do setor: unidade e recorte diferentes."
+  },
+  {
+   "segmento": "Varejo geral",
+   "indicador": "Volume de vendas do varejo restrito",
+   "conector": "sidra",
+   "consulta": "t/8880/n1/all/v/7169/c11046/56734",
+   "var": "pct"
+  },
+  {
+   "segmento": "Varejo geral",
+   "indicador": "Volume de vendas do varejo ampliado",
+   "conector": "sidra",
+   "consulta": "t/8881/n1/all/v/7169/c11046/56736",
+   "var": "pct"
+  },
+  {
+   "segmento": "Supermercados e hipermercados",
+   "indicador": "Volume de vendas de hiper e supermercados",
+   "conector": "sidra",
+   "consulta": "t/8882/n1/all/v/7169/c11046/56734/c85/103154",
+   "var": "pct",
+   "equivalente": "Índice do IBGE usado no lugar do dado da associação do setor: unidade e recorte diferentes."
+  },
+  {
+   "segmento": "Supermercados e hipermercados",
+   "indicador": "Receita nominal de hiper e supermercados",
+   "conector": "sidra",
+   "consulta": "t/8882/n1/all/v/7169/c11046/56733/c85/103154",
+   "var": "pct",
+   "equivalente": "Índice do IBGE usado no lugar do dado da associação do setor: unidade e recorte diferentes."
+  },
+  {
+   "segmento": "Farmácias e drogarias",
+   "indicador": "Volume de vendas de artigos farmacêuticos",
+   "conector": "sidra",
+   "consulta": "t/8882/n1/all/v/7169/c11046/56734/c85/103155",
+   "var": "pct",
+   "equivalente": "Índice do IBGE usado no lugar do dado da associação do setor: unidade e recorte diferentes."
+  },
+  {
+   "segmento": "Farmácias e drogarias",
+   "indicador": "Receita nominal de artigos farmacêuticos",
+   "conector": "sidra",
+   "consulta": "t/8882/n1/all/v/7169/c11046/56733/c85/103155",
+   "var": "pct",
+   "equivalente": "Índice do IBGE usado no lugar do dado da associação do setor: unidade e recorte diferentes."
+  },
+  {
+   "segmento": "Vestuário",
+   "indicador": "Volume de vendas de tecidos, vestuário e calçados",
+   "conector": "sidra",
+   "consulta": "t/8882/n1/all/v/7169/c11046/56734/c85/90673",
+   "var": "pct",
+   "equivalente": "Índice do IBGE usado no lugar do dado da associação do setor: unidade e recorte diferentes."
+  },
+  {
+   "segmento": "Alimentos",
+   "indicador": "IPCA de alimentação e bebidas",
+   "conector": "sidra",
+   "consulta": "t/7060/n1/all/v/2265/c315/7170",
+   "var": "pp"
+  },
+  {
+   "segmento": "Supermercados e hipermercados",
+   "indicador": "IPCA de alimentação no domicílio",
+   "conector": "sidra",
+   "consulta": "t/7060/n1/all/v/2265/c315/7171",
+   "var": "pp"
+  },
+  {
+   "segmento": "Vestuário",
+   "indicador": "IPCA de vestuário",
+   "conector": "sidra",
+   "consulta": "t/7060/n1/all/v/2265/c315/7558",
+   "var": "pp"
+  },
+  {
+   "segmento": "Grãos & Insumos (Row Crops)",
+   "indicador": "Crédito rural concedido",
+   "conector": "sgs",
+   "codigo": [
+    20701,
+    20689
+   ],
+   "somar_12m": true,
+   "escala": 1000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Proteína Animal (Carnes)",
+   "indicador": "Abate de bovinos",
+   "conector": "sidra",
+   "freq": "trimestral",
+   "consulta": "t/1092/n1/all/v/284/c12716/115236/c18/992/c12529/118225",
+   "escala": 1000000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Proteína Animal (Carnes)",
+   "indicador": "Peso total das carcaças",
+   "conector": "sidra",
+   "freq": "trimestral",
+   "consulta": "t/1092/n1/all/v/285/c12716/115236/c18/992/c12529/118225",
+   "escala": 1000000000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Proteína Animal (Carnes)",
+   "indicador": "Efetivo do rebanho bovino",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/3939/n1/all/v/105/c79/2670",
+   "escala": 1000000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Alimentos",
+   "indicador": "Pessoal ocupado na indústria de alimentos",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/10451/n1/all/v/631/c12762/116911",
+   "escala": 1000000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Bebidas",
+   "indicador": "IPCA de bebidas",
+   "conector": "sidra",
+   "consulta": "t/7060/n1/all/v/2265/c315/7389",
+   "var": "pp"
+  },
+  {
+   "segmento": "Bancos",
+   "indicador": "Índice de Basileia do sistema",
+   "conector": "ifdata",
+   "metrica": "basileia_sistema",
+   "freq": "trimestral",
+   "var": "pp"
+  },
+  {
+   "segmento": "Bancos",
+   "indicador": "Lucro líquido do sistema bancário",
+   "conector": "ifdata",
+   "metrica": "lucro_sistema",
+   "freq": "trimestral",
+   "escala": 1000000000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Meios de pagamento",
+   "indicador": "Transações via Pix",
+   "conector": "mpv",
+   "freq": "mensal",
+   "campos": [
+    "quantidadePix"
+   ],
+   "escala": 1000000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Meios de pagamento",
+   "indicador": "Valor transacionado via Pix",
+   "conector": "mpv",
+   "freq": "mensal",
+   "campos": [
+    "valorPix"
+   ],
+   "escala": 1000000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Meios de pagamento",
+   "indicador": "Valor transacionado com cartões",
+   "conector": "mpv",
+   "freq": "trimestral",
+   "recurso": "MeiosdePagamentosTrimestralDA",
+   "campos": [
+    "valorCartaoCredito",
+    "valorCartaoDebito",
+    "valorCartaoPrePago"
+   ],
+   "escala": 1000000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Meios de pagamento",
+   "indicador": "Disponibilidade do SPI",
+   "conector": "spi",
+   "var": "pp"
+  },
+  {
+   "segmento": "Indústria de transformação",
+   "indicador": "Índice de preços ao produtor",
+   "conector": "sidra",
+   "consulta": "t/6904/n1/all/v/1394/c543/33586",
+   "var": "pp"
+  },
+  {
+   "segmento": "Automotivo",
+   "indicador": "Volume de vendas de veículos e peças",
+   "conector": "sidra",
+   "consulta": "t/8883/n1/all/v/7169/c11046/56736/c85/103159",
+   "var": "pct",
+   "equivalente": "Índice do IBGE usado no lugar do dado da associação do setor: unidade e recorte diferentes."
+  },
+  {
+   "segmento": "Máquinas e equipamentos",
+   "indicador": "Produção física de máquinas e equipamentos",
+   "conector": "sidra",
+   "consulta": "t/8888/n1/all/v/12606/c544/129337",
+   "var": "pct",
+   "equivalente": "Índice do IBGE usado no lugar do dado da associação do setor: unidade e recorte diferentes."
+  },
+  {
+   "segmento": "Papel e celulose",
+   "indicador": "Área de florestas plantadas",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/5930/n1/all/v/6549/c734/0",
+   "escala": 1000000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Bancos comerciais, bancos de desenvolvimento e agências de fomento públicas",
+   "indicador": "Carteira de crédito dos bancos públicos",
+   "conector": "ifdata",
+   "metrica": "carteira_publicos",
+   "freq": "trimestral",
+   "escala": 1000000000000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Bancos comerciais, bancos de desenvolvimento e agências de fomento públicas",
+   "indicador": "Participação no crédito do SFN",
+   "conector": "ifdata",
+   "metrica": "participacao_publicos",
+   "freq": "trimestral",
+   "var": "pp"
+  },
+  {
+   "segmento": "Bancos comerciais, bancos de desenvolvimento e agências de fomento públicas",
+   "indicador": "Lucro líquido dos bancos públicos",
+   "conector": "ifdata",
+   "metrica": "lucro_publicos",
+   "freq": "trimestral",
+   "escala": 1000000000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Bancos comerciais, bancos de desenvolvimento e agências de fomento públicas",
+   "indicador": "Índice de Basileia médio",
+   "conector": "ifdata",
+   "metrica": "basileia_publicos",
+   "freq": "trimestral",
+   "var": "pp"
+  },
+  {
+   "segmento": "Varejo geral",
+   "indicador": "Inadimplência das pessoas físicas",
+   "conector": "sgs",
+   "codigo": 21084,
+   "var": "pp"
+  },
+  {
+   "segmento": "Perfumaria e cosméticos",
+   "indicador": "Produção física de higiene e cosméticos",
+   "conector": "sidra",
+   "consulta": "t/8885/n1/all/v/12606/c542/129221",
+   "var": "pct",
+   "equivalente": "Índice do IBGE usado no lugar do dado da associação do setor: unidade e recorte diferentes."
+  },
+  {
+   "segmento": "Operadores logísticos, armazenagem, entregas e comércio exterior",
+   "indicador": "Receita do setor de transporte e armazenagem",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/10758/n1/all/v/643/c12355/106846",
+   "escala": 1000000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Operadores logísticos, armazenagem, entregas e comércio exterior",
+   "indicador": "Volume de serviços de transporte e armazenagem",
+   "conector": "sidra",
+   "consulta": "t/8688/n1/all/v/7167/c11046/56726/c12355/106876",
+   "var": "pct"
+  },
+  {
+   "segmento": "Operadoras de telefonia, banda larga e fibra",
+   "indicador": "Receita de serviços de telecomunicações",
+   "conector": "sidra",
+   "consulta": "t/8688/n1/all/v/7167/c11046/56725/c12355/39321",
+   "var": "pct"
+  },
+  {
+   "segmento": "Software, SaaS e plataformas digitais",
+   "indicador": "Receita de serviços de tecnologia da informação",
+   "conector": "sidra",
+   "consulta": "t/8688/n1/all/v/7167/c11046/56725/c12355/39322",
+   "var": "pct"
+  },
+  {
+   "segmento": "Software, SaaS e plataformas digitais",
+   "indicador": "Unidades locais de serviços de TI (CNAE 62)",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/9510/n1/all/v/706/c12762/117594",
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "O IBGE não divulga o número de empresas de software; o portal usa as unidades locais da CNAE 62."
+  },
+  {
+   "segmento": "Software, SaaS e plataformas digitais",
+   "indicador": "Exportações de serviços de TI",
+   "conector": "sgs",
+   "codigo": 22780,
+   "somar_12m": true,
+   "escala": 1000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Integração, outsourcing e consultoria em TI",
+   "indicador": "Volume de serviços de informação e comunicação",
+   "conector": "sidra",
+   "consulta": "t/8688/n1/all/v/7167/c11046/56726/c12355/106874",
+   "var": "pct"
+  },
+  {
+   "segmento": "Facilities, terceirização, BPO, segurança e serviços ao consumidor",
+   "indicador": "Volume de serviços prestados às empresas",
+   "conector": "sidra",
+   "consulta": "t/8688/n1/all/v/7167/c11046/56726/c12355/31399",
+   "var": "pct"
+  },
+  {
+   "segmento": "Facilities, terceirização, BPO, segurança e serviços ao consumidor",
+   "indicador": "Receita dos serviços prestados às empresas",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/10758/n1/all/v/643/c12355/9282",
+   "escala": 1000000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Construção civil, construção pesada e engenharia",
+   "indicador": "PIB da construção",
+   "conector": "sidra",
+   "freq": "trimestral",
+   "consulta": "t/5932/n1/all/v/6562/c11255/90694",
+   "var": "pp"
+  },
+  {
+   "segmento": "Incorporação, shoppings e propriedades",
+   "indicador": "Financiamento imobiliário",
+   "conector": "sgs",
+   "codigo": 20704,
+   "somar_12m": true,
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "Concessões de crédito do Banco Central no lugar dos dados da Abecip."
+  },
+  {
+   "segmento": "Mídia, publicidade, editorial e gráfica",
+   "indicador": "Volume de serviços audiovisuais e de edição",
+   "conector": "sidra",
+   "consulta": "t/8688/n1/all/v/7167/c11046/56726/c12355/31398",
+   "var": "pct"
+  },
+  {
+   "segmento": "Proteína Animal (Carnes)",
+   "indicador": "Exportações de carnes",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "export",
+     "codigos": [
+      "02"
+     ]
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Alimentos",
+   "indicador": "Exportações de alimentos industrializados",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "export",
+     "codigos": [
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "23"
+     ]
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000000.0,
+   "var": "pct",
+   "equivalente": "Soma de capítulos ou posições do NCM no Comex Stat: pode diferir do número divulgado pela associação do setor."
+  },
+  {
+   "segmento": "Bebidas",
+   "indicador": "Exportações de bebidas",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "export",
+     "codigos": [
+      "22"
+     ]
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Bebidas",
+   "indicador": "Importações de bebidas",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "import",
+     "codigos": [
+      "22"
+     ]
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Farmacêutica, dispositivos e diagnóstico",
+   "indicador": "Importações de medicamentos",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "import",
+     "codigos": [
+      "30"
+     ]
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Indústria de transformação",
+   "indicador": "Exportações de manufaturados",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "export",
+     "nivel": "ISICSection",
+     "codigos": [
+      "C"
+     ]
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Automotivo",
+   "indicador": "Exportações de veículos",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "export",
+     "codigos": [
+      "87"
+     ]
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Máquinas e equipamentos",
+   "indicador": "Exportações",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "export",
+     "codigos": [
+      "84"
+     ]
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Química e petroquímica",
+   "indicador": "Déficit da balança comercial de químicos",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "import",
+     "codigos": [
+      "28",
+      "29",
+      "30",
+      "31",
+      "32",
+      "33",
+      "34",
+      "35",
+      "36",
+      "37",
+      "38"
+     ]
+    },
+    {
+     "fluxo": "export",
+     "codigos": [
+      "28",
+      "29",
+      "30",
+      "31",
+      "32",
+      "33",
+      "34",
+      "35",
+      "36",
+      "37",
+      "38"
+     ],
+     "sinal": -1
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000000.0,
+   "var": "pct",
+   "equivalente": "Soma de capítulos ou posições do NCM no Comex Stat: pode diferir do número divulgado pela associação do setor."
+  },
+  {
+   "segmento": "Química e petroquímica",
+   "indicador": "Importações de químicos",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "import",
+     "codigos": [
+      "28",
+      "29",
+      "30",
+      "31",
+      "32",
+      "33",
+      "34",
+      "35",
+      "36",
+      "37",
+      "38"
+     ]
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000000.0,
+   "var": "pct",
+   "equivalente": "Soma de capítulos ou posições do NCM no Comex Stat: pode diferir do número divulgado pela associação do setor."
+  },
+  {
+   "segmento": "Papel e celulose",
+   "indicador": "Exportações de papel",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "export",
+     "codigos": [
+      "48"
+     ]
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Papel e celulose",
+   "indicador": "Exportações de celulose",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "export",
+     "codigos": [
+      "47"
+     ]
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Eletroeletrônicos",
+   "indicador": "Exportações de eletroeletrônicos",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "export",
+     "codigos": [
+      "85"
+     ]
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000000.0,
+   "var": "pct",
+   "equivalente": "Soma de capítulos ou posições do NCM no Comex Stat: pode diferir do número divulgado pela associação do setor."
+  },
+  {
+   "segmento": "Eletroeletrônicos",
+   "indicador": "Déficit comercial do setor",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "import",
+     "codigos": [
+      "85"
+     ]
+    },
+    {
+     "fluxo": "export",
+     "codigos": [
+      "85"
+     ],
+     "sinal": -1
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000000.0,
+   "var": "pct",
+   "equivalente": "Soma de capítulos ou posições do NCM no Comex Stat: pode diferir do número divulgado pela associação do setor."
+  },
+  {
+   "segmento": "Siderurgia",
+   "indicador": "Importações de aço",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "import",
+     "codigos": [
+      "72"
+     ]
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000000.0,
+   "var": "pct",
+   "equivalente": "Soma de capítulos ou posições do NCM no Comex Stat: pode diferir do número divulgado pela associação do setor."
+  },
+  {
+   "segmento": "Siderurgia",
+   "indicador": "Exportações de aço",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "export",
+     "codigos": [
+      "72"
+     ]
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000000.0,
+   "var": "pct",
+   "equivalente": "Soma de capítulos ou posições do NCM no Comex Stat: pode diferir do número divulgado pela associação do setor."
+  },
+  {
+   "segmento": "Mineração",
+   "indicador": "Exportações minerais",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "export",
+     "codigos": [
+      "26"
+     ]
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000000.0,
+   "var": "pct",
+   "equivalente": "Soma de capítulos ou posições do NCM no Comex Stat: pode diferir do número divulgado pela associação do setor."
+  },
+  {
+   "segmento": "Perfumaria e cosméticos",
+   "indicador": "Exportações do setor",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "export",
+     "codigos": [
+      "33"
+     ]
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000.0,
+   "var": "pct",
+   "equivalente": "Soma de capítulos ou posições do NCM no Comex Stat: pode diferir do número divulgado pela associação do setor."
+  },
+  {
+   "segmento": "Vestuário",
+   "indicador": "Importações de vestuário",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "import",
+     "codigos": [
+      "61",
+      "62"
+     ]
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Operadores logísticos, armazenagem, entregas e comércio exterior",
+   "indicador": "Corrente de comércio exterior",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "export"
+    },
+    {
+     "fluxo": "import"
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Hardware, dispositivos e componentes",
+   "indicador": "Importações de equipamentos de informática",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "import",
+     "nivel": "heading",
+     "codigos": [
+      "8471"
+     ]
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Hardware, dispositivos e componentes",
+   "indicador": "Importações de componentes eletrônicos",
+   "conector": "comex",
+   "partes": [
+    {
+     "fluxo": "import",
+     "nivel": "heading",
+     "codigos": [
+      "8541",
+      "8542"
+     ]
+    }
+   ],
+   "somar_12m": true,
+   "escala": 1000000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Administração pública",
+   "indicador": "Resultado primário do governo central",
+   "conector": "rtn",
+   "tabela": "1.1",
+   "linha": "5. RESULTADO PRIMÁRIO GOVERNO CENTRAL",
+   "somar_12m": true,
+   "escala": 1000,
+   "var": "abs",
+   "var_unidade": "R$ bi"
+  },
+  {
+   "segmento": "Administração pública",
+   "indicador": "Despesa com pessoal",
+   "conector": "rtn",
+   "tabela": "1.1",
+   "linha": "4.2",
+   "somar_12m": true,
+   "escala": 1000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Administração pública",
+   "indicador": "Investimentos",
+   "conector": "rtn",
+   "tabela": "1.3",
+   "linha": "1. INVESTIMENTO TOTAL",
+   "somar_12m": true,
+   "escala": 1000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Administração pública municipal",
+   "indicador": "Receita do FPM",
+   "conector": "fpm",
+   "somar_12m": true,
+   "escala": 1000000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Bancos comerciais, bancos de desenvolvimento e agências de fomento públicas",
+   "indicador": "Desembolsos do BNDES",
+   "conector": "sgs",
+   "codigo": 7415,
+   "somar_12m": true,
+   "escala": 1000,
+   "var": "pct",
+   "acumulado_no_ano": true
+  },
+  {
+   "segmento": "Máquinas e equipamentos",
+   "indicador": "Desembolsos do BNDES para máquinas",
+   "conector": "finame",
+   "campos": [
+    "transporte",
+    "demais_bens_de_capital",
+    "agricola"
+   ],
+   "somar_12m": true,
+   "escala": 1000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Administração pública estadual",
+   "indicador": "Estados com Capag A ou B",
+   "conector": "capag",
+   "esfera": "estados",
+   "freq": "anual",
+   "var": "pct"
+  },
+  {
+   "segmento": "Administração pública municipal",
+   "indicador": "Municípios com Capag A ou B",
+   "conector": "capag",
+   "esfera": "municipios",
+   "freq": "anual",
+   "var": "pp"
+  },
+  {
+   "segmento": "Administração pública estadual",
+   "indicador": "Receita de ICMS",
+   "conector": "siconfi",
+   "metrica": "icms_12m",
+   "freq": "trimestral",
+   "escala": 1000000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Administração pública estadual",
+   "indicador": "Despesa com pessoal sobre a RCL",
+   "conector": "siconfi",
+   "metrica": "pessoal_rcl",
+   "freq": "trimestral",
+   "var": "pp"
+  },
+  {
+   "segmento": "Administração pública estadual",
+   "indicador": "Dívida consolidada sobre a RCL",
+   "conector": "siconfi",
+   "metrica": "dc_rcl",
+   "freq": "trimestral",
+   "var": "pp"
+  },
+  {
+   "segmento": "Exploração, produção, refino e distribuição",
+   "indicador": "Produção de petróleo",
+   "conector": "anp",
+   "arquivo": "ppgn-el/producao-petroleo-m3.csv",
+   "fator": 6.2898,
+   "por_dia": true,
+   "escala": 1000000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Exploração, produção, refino e distribuição",
+   "indicador": "Produção de gás natural",
+   "conector": "anp",
+   "arquivo": "ppgn-el/producao-gas-natural-1000m3.csv",
+   "fator": 1000,
+   "por_dia": true,
+   "escala": 1000000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Exploração, produção, refino e distribuição",
+   "indicador": "Vendas de combustíveis",
+   "conector": "anp",
+   "arquivo": "vdpb/vendas-derivados-petroleo-e-etanol/vendas-combustiveis-m3-1990-2025.csv",
+   "fator": 1000,
+   "somar_12m": true,
+   "escala": 1000000000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Sucroalcooleiro (Cana-de-açúcar)",
+   "indicador": "Produção de etanol",
+   "conector": "anp",
+   "arquivo": "arquivos-producao-de-biocombustiveis/producao-etanol-anidro-hidratado-m3-2012-2026.csv",
+   "fator": 1000,
+   "somar_12m": true,
+   "escala": 1000000000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Sucroalcooleiro (Cana-de-açúcar)",
+   "indicador": "Preço do etanol hidratado ao consumidor",
+   "conector": "anp",
+   "preco": "ETANOL HIDRATADO",
+   "var": "pct"
+  },
+  {
+   "segmento": "Rodoviário, ferroviário, aéreo e cabotagem",
+   "indicador": "Preço médio do diesel",
+   "conector": "anp",
+   "preco": "OLEO DIESEL S10",
+   "var": "pct"
+  },
+  {
+   "segmento": "Geração, transmissão e distribuição",
+   "indicador": "Carga de energia do SIN",
+   "conector": "ons",
+   "escala": 1000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Geração, transmissão e distribuição",
+   "indicador": "Capacidade instalada de geração",
+   "conector": "siga",
+   "metrica": "total",
+   "escala": 1000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Solar, Eólica e Biomassa e biogás",
+   "indicador": "Capacidade instalada solar, eólica e biomassa",
+   "conector": "siga",
+   "metrica": "renovavel",
+   "escala": 1000,
+   "var": "pct"
+  },
+  {
+   "segmento": "Solar, Eólica e Biomassa e biogás",
+   "indicador": "Participação na matriz elétrica",
+   "conector": "siga",
+   "metrica": "participacao",
+   "var": "pp"
+  },
+  {
+   "segmento": "Indústria de transformação",
+   "indicador": "Emprego formal na indústria",
+   "conector": "caged",
+   "linha": "Indústrias de Transformação",
+   "escala": 1000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Mineração",
+   "indicador": "Empregos diretos na mineração",
+   "conector": "caged",
+   "linha": "Indústrias Extrativas",
+   "escala": 1000.0,
+   "var": "pct",
+   "equivalente": "Estoque do Novo Caged nas indústrias extrativas: inclui petróleo e gás, além da mineração."
+  },
+  {
+   "segmento": "Varejo geral",
+   "indicador": "Emprego formal no comércio",
+   "conector": "caged",
+   "linha": "Comércio",
+   "escala": 1000000.0,
+   "var": "pct",
+   "equivalente": "Estoque do Novo Caged no comércio: inclui atacado e reparação de veículos, além do varejo."
+  },
+  {
+   "segmento": "Construção civil, construção pesada e engenharia",
+   "indicador": "Emprego formal na construção",
+   "conector": "caged",
+   "linha": "Construção",
+   "escala": 1000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Operadores logísticos, armazenagem, entregas e comércio exterior",
+   "indicador": "Emprego formal em transporte e armazenagem",
+   "conector": "caged",
+   "linha": "Transporte, armazenagem e correio",
+   "escala": 1000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Educação básica",
+   "indicador": "Emprego formal em educação privada",
+   "conector": "caged",
+   "linha": "Educação",
+   "escala": 1000000.0,
+   "var": "pct",
+   "equivalente": "Estoque do Novo Caged na seção Educação: conta todos os empregos com carteira (inclui ensino superior e celetistas públicos)."
+  },
+  {
+   "segmento": "Facilities, terceirização, BPO, segurança e serviços ao consumidor",
+   "indicador": "Emprego formal em serviços administrativos",
+   "conector": "caged",
+   "linha": "Atividades Administrativas",
+   "escala": 1000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Software, SaaS e plataformas digitais",
+   "indicador": "Emprego formal em TI",
+   "conector": "caged",
+   "linha": "Informação e Comunicação",
+   "escala": 1000000.0,
+   "var": "pct",
+   "equivalente": "Estoque do Novo Caged na seção Informação e comunicação: inclui telecomunicações e mídia, além de TI."
+  },
+  {
+   "segmento": "Operadoras de telefonia, banda larga e fibra",
+   "indicador": "Acessos móveis",
+   "conector": "anatel",
+   "arquivo": "acessos_telefonia_movel",
+   "membro": "Acessos_Telefonia_Movel_Total.csv",
+   "escala": 1000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Operadoras de telefonia, banda larga e fibra",
+   "indicador": "Acessos de banda larga fixa",
+   "conector": "anatel",
+   "arquivo": "acessos_banda_larga_fixa",
+   "membro": "Acessos_Banda_Larga_Fixa_Total.csv",
+   "escala": 1000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Mídia, publicidade, editorial e gráfica",
+   "indicador": "Assinantes de TV por assinatura",
+   "conector": "anatel",
+   "arquivo": "acessos_tv_por_assinatura",
+   "membro": "Acessos_TV_Assinatura_Total.csv",
+   "escala": 1000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Hospitais públicos e privados",
+   "indicador": "Leitos totais",
+   "conector": "cnes",
+   "metrica": "leitos",
+   "escala": 1000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Hospitais públicos e privados",
+   "indicador": "Leitos de UTI",
+   "conector": "cnes",
+   "metrica": "uti",
+   "escala": 1000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Hospitais públicos e privados",
+   "indicador": "Estabelecimentos hospitalares",
+   "conector": "cnes",
+   "metrica": "estabelecimentos",
+   "escala": 1000.0,
+   "var": "pct",
+   "equivalente": "Estabelecimentos com leitos cadastrados no CNES (hospitais e outras unidades com internação)."
+  },
+  {
+   "segmento": "Solar, Eólica e Biomassa e biogás",
+   "indicador": "Geração eólica e solar",
+   "conector": "ons",
+   "metrica": "eolica_solar",
+   "somar_12m": true,
+   "escala": 1000000.0,
+   "var": "pct",
+   "equivalente": "Geração eólica e solar centralizada do SIN (ONS): não inclui a micro e minigeração distribuída."
+  },
+  {
+   "segmento": "Bebidas",
+   "indicador": "Pessoal ocupado no setor",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/9528/n1/all/v/707/c12762/116952",
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "Pessoal ocupado em 31/12 (inclui sócios e assalariados), do cadastro anual do IBGE: o Caged mensal não abre este recorte."
+  },
+  {
+   "segmento": "Farmacêutica, dispositivos e diagnóstico",
+   "indicador": "Pessoal ocupado na indústria farmacêutica",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/9528/n1/all/v/707/c12762/117082",
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "Pessoal ocupado em 31/12 (inclui sócios e assalariados), do cadastro anual do IBGE: o Caged mensal não abre este recorte."
+  },
+  {
+   "segmento": "Automotivo",
+   "indicador": "Pessoal ocupado na fabricação de veículos",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/9528/n1/all/v/707/c12762/117229",
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "Pessoal ocupado em 31/12 (inclui sócios e assalariados), do cadastro anual do IBGE: o Caged mensal não abre este recorte."
+  },
+  {
+   "segmento": "Química e petroquímica",
+   "indicador": "Pessoal ocupado no setor",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/9528/n1/all/v/707/c12762/117048",
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "Pessoal ocupado em 31/12 (inclui sócios e assalariados), do cadastro anual do IBGE: o Caged mensal não abre este recorte."
+  },
+  {
+   "segmento": "Papel e celulose",
+   "indicador": "Pessoal ocupado no setor",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/9528/n1/all/v/707/c12762/117015",
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "Pessoal ocupado em 31/12 (inclui sócios e assalariados), do cadastro anual do IBGE: o Caged mensal não abre este recorte."
+  },
+  {
+   "segmento": "Eletroeletrônicos",
+   "indicador": "Pessoal ocupado no setor",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/9528/n1/all/v/707/c12762/117179",
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "Pessoal ocupado em 31/12 (inclui sócios e assalariados), do cadastro anual do IBGE: o Caged mensal não abre este recorte."
+  },
+  {
+   "segmento": "Hardware, dispositivos e componentes",
+   "indicador": "Pessoal ocupado no setor",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/9528/n1/all/v/707/c12762/117159",
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "Pessoal ocupado em 31/12 (inclui sócios e assalariados), do cadastro anual do IBGE: o Caged mensal não abre este recorte."
+  },
+  {
+   "segmento": "Perfumaria e cosméticos",
+   "indicador": "Pessoal ocupado na indústria de cosméticos",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/9528/n1/all/v/707/c12762/117071",
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "Classe 20.63 da CNAE (cosméticos, perfumaria e higiene pessoal)."
+  },
+  {
+   "segmento": "Farmácias e drogarias",
+   "indicador": "Pessoal ocupado em farmácias",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/9528/n1/all/v/707/c12762/117471",
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "Classe 47.71 da CNAE (varejo de produtos farmacêuticos)."
+  },
+  {
+   "segmento": "Supermercados e hipermercados",
+   "indicador": "Pessoal ocupado em hiper e supermercados",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/9528/n1/all/v/707/c12762/117440",
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "Classe 47.11 da CNAE (varejo com predominância de alimentos, hiper e supermercados)."
+  },
+  {
+   "segmento": "Vestuário",
+   "indicador": "Pessoal ocupado na cadeia têxtil",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/9528/n1/all/v/707/c12762/116965,116985",
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "Soma das divisões 13 (têxteis) e 14 (vestuário) da CNAE."
+  },
+  {
+   "segmento": "Integração, outsourcing e consultoria em TI",
+   "indicador": "Pessoal ocupado em serviços de TI",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/9528/n1/all/v/707/c12762/117594",
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "Pessoal ocupado em 31/12 (inclui sócios e assalariados), do cadastro anual do IBGE: o Caged mensal não abre este recorte."
+  },
+  {
+   "segmento": "Mídia, publicidade, editorial e gráfica",
+   "indicador": "Pessoal ocupado em mídia e publicidade",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/9528/n1/all/v/707/c12762/117556,117567,117575,117697",
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "Soma das divisões 58 a 60 (edição, audiovisual, rádio e TV) e 73 (publicidade) da CNAE."
+  },
+  {
+   "segmento": "Integração, outsourcing e consultoria em TI",
+   "indicador": "Salário médio mensal em TI",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/9510/n1/all/v/10143/c12762/117594",
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "Salário médio mensal da CNAE 62 no cadastro do IBGE, no lugar da remuneração média da Rais."
+  },
+  {
+   "segmento": "Alimentos",
+   "indicador": "Preços ao produtor de alimentos",
+   "conector": "sidra",
+   "freq": "mensal",
+   "consulta": "t/6903/n1/all/v/10008/c842/46611",
+   "escala": 1,
+   "var": "pct",
+   "equivalente": "Índice de preços ao produtor do IBGE no lugar da utilização da capacidade da CNI, que não divulga a série por setor."
+  },
+  {
+   "segmento": "Máquinas e equipamentos",
+   "indicador": "Preços ao produtor de máquinas",
+   "conector": "sidra",
+   "freq": "mensal",
+   "consulta": "t/6903/n1/all/v/10008/c842/46650",
+   "escala": 1,
+   "var": "pct",
+   "equivalente": "Índice de preços ao produtor do IBGE no lugar do consumo aparente da Abimaq, que não divulga o valor."
+  },
+  {
+   "segmento": "Siderurgia",
+   "indicador": "Preços ao produtor da metalurgia",
+   "conector": "sidra",
+   "freq": "mensal",
+   "consulta": "t/6903/n1/all/v/10008/c842/46641",
+   "escala": 1,
+   "var": "pct",
+   "equivalente": "Índice de preços ao produtor do IBGE no lugar da utilização da capacidade do Aço Brasil, que não divulga a série."
+  },
+  {
+   "segmento": "Perfumaria e cosméticos",
+   "indicador": "Preços ao produtor de higiene e cosméticos",
+   "conector": "sidra",
+   "freq": "mensal",
+   "consulta": "t/6903/n1/all/v/10008/c842/46633",
+   "escala": 1,
+   "var": "pct",
+   "equivalente": "Índice de preços ao produtor do IBGE (sabões, limpeza, cosméticos e perfumaria) no lugar do faturamento da ABIHPEC."
+  },
+  {
+   "segmento": "Perfumaria e cosméticos",
+   "indicador": "Lojas de cosméticos e perfumaria",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/9528/n1/all/v/706/c12762/117472",
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "Unidades locais da classe 47.72 da CNAE (varejo de cosméticos), no lugar das franquias da ABF."
+  },
+  {
+   "segmento": "Farmácias e drogarias",
+   "indicador": "Farmácias em funcionamento",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/9528/n1/all/v/706/c12762/117471",
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "Unidades locais da classe 47.71 da CNAE (varejo farmacêutico), no lugar das autorizações da Anvisa."
+  },
+  {
+   "segmento": "Farmácias e drogarias",
+   "indicador": "Preços ao produtor de medicamentos",
+   "conector": "sidra",
+   "freq": "mensal",
+   "consulta": "t/6903/n1/all/v/10008/c842/46634",
+   "escala": 1,
+   "var": "pct",
+   "equivalente": "Índice de preços ao produtor farmacêutico do IBGE no lugar da participação dos genéricos da Abrafarma."
+  },
+  {
+   "segmento": "Rodoviário, ferroviário, aéreo e cabotagem",
+   "indicador": "Volume do transporte de cargas",
+   "conector": "sidra",
+   "freq": "mensal",
+   "consulta": "t/8695/n1/all/v/7167/c11046/56726/c12355/56724",
+   "escala": 1,
+   "var": "pct",
+   "equivalente": "Volume do transporte de cargas da PMS (2022 = 100) no lugar do índice ABCR de veículos pesados."
+  },
+  {
+   "segmento": "Facilities, terceirização, BPO, segurança e serviços ao consumidor",
+   "indicador": "Pessoal ocupado em terceirização",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/9528/n1/all/v/707/c12762/117731,117744,117752,117762",
+   "escala": 1000000.0,
+   "var": "pct",
+   "equivalente": "Soma das divisões 78, 80, 81 e 82 da CNAE (mão de obra, vigilância, serviços para edifícios e apoio administrativo), no lugar da Febrac."
+  },
+  {
+   "segmento": "Data centers, redes neutras e torres",
+   "indicador": "Pessoal ocupado em data centers e hospedagem",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/9528/n1/all/v/707/c12762/117603",
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "Classe 63.11 da CNAE (tratamento de dados e hospedagem), no lugar da capacidade em MW da ABDC, que não é divulgada."
+  },
+  {
+   "segmento": "Data centers, redes neutras e torres",
+   "indicador": "Empresas de data centers e hospedagem",
+   "conector": "sidra",
+   "freq": "anual",
+   "consulta": "t/9528/n1/all/v/706/c12762/117603",
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "Unidades locais da classe 63.11 da CNAE, no lugar do investimento anunciado da ABDC, que não tem série oficial."
+  },
+  {
+   "segmento": "Operadoras de telefonia, banda larga e fibra",
+   "indicador": "Participação da fibra na banda larga fixa",
+   "conector": "anatel_col",
+   "arquivo": "acessos_banda_larga_fixa",
+   "metrica": "fibra_pct",
+   "escala": 1,
+   "var": "pp"
+  },
+  {
+   "segmento": "Operadoras de telefonia, banda larga e fibra",
+   "indicador": "Municípios com 5G",
+   "conector": "anatel_col",
+   "arquivo": "acessos_telefonia_movel",
+   "metrica": "municipios_5g",
+   "escala": 1,
+   "var": "pct",
+   "equivalente": "Municípios com ao menos um acesso móvel 5G ativo no mês, nos dados abertos da Anatel."
+  },
+  {
+   "segmento": "Data centers, redes neutras e torres",
+   "indicador": "Prestadoras regionais de banda larga",
+   "conector": "anatel_col",
+   "arquivo": "acessos_banda_larga_fixa",
+   "metrica": "prestadoras_pp",
+   "escala": 1000,
+   "var": "pct",
+   "equivalente": "Prestadoras de pequeno porte com ao menos um acesso de banda larga fixa ativo no mês."
+  },
+  {
+   "segmento": "Meios de pagamento",
+   "indicador": "Credenciamentos de estabelecimentos",
+   "conector": "mpv",
+   "freq": "trimestral",
+   "recurso": "INFRESTADA",
+   "campos": [
+    "qtdEstabTotal"
+   ],
+   "escala": 1000000.0,
+   "var": "pct",
+   "equivalente": "Soma dos estabelecimentos informados por cada credenciadora ao Banco Central: o mesmo estabelecimento conta uma vez por credenciadora."
+  },
+  {
+   "segmento": "Hospitais públicos e privados",
+   "indicador": "Internações no SUS",
+   "conector": "sih",
+   "metrica": "internacoes",
+   "escala": 1000000.0,
+   "var": "pct"
+  },
+  {
+   "segmento": "Hospitais públicos e privados",
+   "indicador": "Permanência média no SUS",
+   "conector": "sih",
+   "metrica": "permanencia",
+   "escala": 1,
+   "var": "abs",
+   "var_unidade": "dias"
+  },
+  {
+   "segmento": "Administração pública estadual",
+   "indicador": "Investimentos",
+   "conector": "siconfi",
+   "metrica": "investimentos_ano",
+   "escala": 1000000000.0,
+   "var": "pct",
+   "equivalente": "Investimentos liquidados pelos 27 estados no ano até o último bimestre publicado (RREO, Anexo 1), contra o mesmo bimestre do ano anterior."
+  }
+ ]
+}

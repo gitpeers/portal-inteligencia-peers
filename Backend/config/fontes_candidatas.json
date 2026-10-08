@@ -1,0 +1,755 @@
+{
+ "_como_usar": "Fontes testadas por validar_fontes.py. 'papel': 'anexo' = fonte diária do Anexo A do documento; 'transversal' = fonte transversal; 'alternativa' = candidata a substituir uma fonte sem feed; 'reforco' = fonte que completa o mínimo de 5 fontes setoriais por indústria; 'movimentos' = fonte incluída para alimentar Movimentos. 'feed' é opcional: sem ele, o script procura o endereço no site.",
+ "fontes": [
+  {
+   "nome": "Notícias Agrícolas",
+   "site": "https://www.noticiasagricolas.com.br",
+   "industria": "A&B + Agro · Agro",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Canal Rural",
+   "site": "https://www.canalrural.com.br",
+   "feed": "https://www.canalrural.com.br/feed/",
+   "industria": "A&B + Agro · Agro",
+   "papel": "anexo"
+  },
+  {
+   "nome": "AgFeed",
+   "site": "https://agfeed.com.br",
+   "feed": "https://agfeed.com.br/feed/",
+   "industria": "A&B + Agro · Agro",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Food Connection",
+   "site": "https://www.foodconnection.com.br",
+   "feed": "https://www.foodconnection.com.br/feed/",
+   "industria": "A&B + Agro · A&B",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Mercado&Consumo",
+   "site": "https://mercadoeconsumo.com.br",
+   "feed": "https://mercadoeconsumo.com.br/feed/",
+   "industria": "A&B + Agro · A&B / Varejo",
+   "papel": "anexo"
+  },
+  {
+   "nome": "FoodNavigator-LATAM",
+   "site": "https://www.foodnavigator-latam.com",
+   "industria": "A&B + Agro · A&B",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Desafios da Educação",
+   "site": "https://desafiosdaeducacao.com.br",
+   "industria": "Educação · Privado",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Revista Ensino Superior",
+   "site": "https://revistaensinosuperior.com.br",
+   "industria": "Educação · Privado",
+   "papel": "anexo"
+  },
+  {
+   "nome": "MEC (notícias)",
+   "site": "https://www.gov.br/mec/pt-br/assuntos/noticias",
+   "feed": "https://www.gov.br/mec/pt-br/assuntos/noticias/RSS",
+   "industria": "Educação · Privado / Público",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Agência Brasil (Educação)",
+   "site": "https://agenciabrasil.ebc.com.br",
+   "feed": "https://agenciabrasil.ebc.com.br/rss/educacao/feed.xml",
+   "industria": "Educação · Público",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Porvir",
+   "site": "https://porvir.org",
+   "feed": "https://porvir.org/feed/",
+   "industria": "Educação · Público",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Nova Escola",
+   "site": "https://novaescola.org.br",
+   "industria": "Educação · Público",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Finsiders Brasil",
+   "site": "https://finsidersbrasil.com.br",
+   "feed": "https://finsidersbrasil.com.br/feed/",
+   "industria": "Financial Services · Banking / Payments",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Bloomberg Línea (finanças)",
+   "site": "https://www.bloomberglinea.com.br",
+   "industria": "Financial Services · Banking",
+   "papel": "anexo",
+   "feed": "https://www.bloomberglinea.com.br/arc/outboundfeeds/rss.xml"
+  },
+  {
+   "nome": "Finextra",
+   "site": "https://www.finextra.com",
+   "feed": "https://www.finextra.com/rss/headlines.aspx",
+   "industria": "Financial Services · Banking",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Sonho Seguro",
+   "site": "https://www.sonhoseguro.com.br",
+   "feed": "https://www.sonhoseguro.com.br/feed/",
+   "industria": "Financial Services · Insurance",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Revista Apólice",
+   "site": "https://revistaapolice.com.br",
+   "feed": "https://revistaapolice.com.br/feed/",
+   "industria": "Financial Services · Insurance",
+   "papel": "anexo"
+  },
+  {
+   "nome": "CQCS",
+   "site": "https://cqcs.com.br",
+   "feed": "https://cqcs.com.br/feed/",
+   "industria": "Financial Services · Insurance",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Mobile Time",
+   "site": "https://www.mobiletime.com.br",
+   "feed": "https://www.mobiletime.com.br/feed/",
+   "industria": "Financial Services · Payments / TI & Telecom",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Payments Dive",
+   "site": "https://www.paymentsdive.com",
+   "feed": "https://www.paymentsdive.com/feeds/news/",
+   "industria": "Financial Services · Payments",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Futuro da Saúde",
+   "site": "https://futurodasaude.com.br",
+   "feed": "https://futurodasaude.com.br/feed/",
+   "industria": "Health",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Medicina S/A",
+   "site": "https://medicinasa.com.br",
+   "feed": "https://medicinasa.com.br/feed/",
+   "industria": "Health",
+   "papel": "anexo"
+  },
+  {
+   "nome": "ANS (notícias)",
+   "site": "https://www.gov.br/ans/pt-br/assuntos/noticias",
+   "feed": "https://www.gov.br/ans/rss.xml",
+   "industria": "Health",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Agência de Notícias da Indústria (CNI)",
+   "site": "https://noticias.portaldaindustria.com.br",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Notícias de Mineração Brasil",
+   "site": "https://www.noticiasdemineracao.com",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Automotive Business",
+   "site": "https://www.automotivebusiness.com.br",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "anexo"
+  },
+  {
+   "nome": "CanalEnergia",
+   "site": "https://www.canalenergia.com.br",
+   "feed": "https://www.canalenergia.com.br/feed",
+   "industria": "Power & Utilities",
+   "papel": "anexo"
+  },
+  {
+   "nome": "epbr",
+   "site": "https://epbr.com.br",
+   "industria": "Power & Utilities",
+   "papel": "anexo"
+  },
+  {
+   "nome": "MegaWhat",
+   "site": "https://megawhat.energy",
+   "feed": "https://megawhat.energy/feed/",
+   "industria": "Power & Utilities",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Agência Brasil (Política)",
+   "site": "https://agenciabrasil.ebc.com.br",
+   "feed": "https://agenciabrasil.ebc.com.br/rss/politica/feed.xml",
+   "industria": "Public Services",
+   "papel": "anexo"
+  },
+  {
+   "nome": "JOTA",
+   "site": "https://www.jota.info",
+   "feed": "https://www.jota.info/feed",
+   "industria": "Public Services",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Poder360",
+   "site": "https://www.poder360.com.br",
+   "feed": "https://www.poder360.com.br/feed/",
+   "industria": "Public Services",
+   "papel": "anexo"
+  },
+  {
+   "nome": "NoVarejo",
+   "site": "https://novarejo.com.br",
+   "industria": "Varejo · Retail",
+   "papel": "anexo"
+  },
+  {
+   "nome": "E-Commerce Brasil",
+   "site": "https://www.ecommercebrasil.com.br",
+   "industria": "Varejo · Retail",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Portos e Navios",
+   "site": "https://www.portosenavios.com.br",
+   "industria": "Transportes & Logística",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Tecnologística",
+   "site": "https://www.tecnologistica.com.br",
+   "industria": "Transportes & Logística",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Aeroin",
+   "site": "https://aeroin.net",
+   "industria": "Transportes & Logística",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Teletime",
+   "site": "https://teletime.com.br",
+   "feed": "https://teletime.com.br/feed/",
+   "industria": "TI & Telecom",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Telesíntese",
+   "site": "https://www.telesintese.com.br",
+   "feed": "https://www.telesintese.com.br/feed/",
+   "industria": "TI & Telecom",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Baguete",
+   "site": "https://www.baguete.com.br",
+   "industria": "TI & Telecom",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Meio & Mensagem",
+   "site": "https://meioemensagem.com.br",
+   "feed": "https://meioemensagem.com.br/feed",
+   "industria": "Outros",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Propmark",
+   "site": "https://propmark.com.br",
+   "feed": "https://propmark.com.br/feed/",
+   "industria": "Outros",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Agência CBIC",
+   "site": "https://cbic.org.br",
+   "feed": "https://cbic.org.br/feed/",
+   "industria": "Outros",
+   "papel": "anexo"
+  },
+  {
+   "nome": "Brazil Journal",
+   "site": "https://braziljournal.com",
+   "feed": "https://braziljournal.com/feed/",
+   "industria": "Transversal",
+   "papel": "transversal"
+  },
+  {
+   "nome": "InfoMoney",
+   "site": "https://www.infomoney.com.br",
+   "feed": "https://www.infomoney.com.br/feed/",
+   "industria": "Transversal",
+   "papel": "transversal"
+  },
+  {
+   "nome": "NeoFeed",
+   "site": "https://neofeed.com.br",
+   "feed": "https://neofeed.com.br/feed/",
+   "industria": "Transversal",
+   "papel": "transversal"
+  },
+  {
+   "nome": "Banco Central (notas e normas)",
+   "site": "https://www.bcb.gov.br",
+   "feed": "https://www.bcb.gov.br/api/feed/sitebcb/sitefeeds/notasImprensa",
+   "industria": "Transversal",
+   "papel": "transversal"
+  },
+  {
+   "nome": "Times Brasil",
+   "site": "https://timesbrasil.com.br",
+   "feed": "https://timesbrasil.com.br/feed/",
+   "industria": "Transversal",
+   "papel": "transversal"
+  },
+  {
+   "nome": "BPMoney",
+   "site": "https://bpmoney.com.br",
+   "feed": "https://bpmoney.com.br/feed/",
+   "industria": "Transversal",
+   "papel": "transversal"
+  },
+  {
+   "nome": "Agência Brasil (últimas)",
+   "site": "https://agenciabrasil.ebc.com.br",
+   "feed": "https://agenciabrasil.ebc.com.br/rss/ultimasnoticias/feed.xml",
+   "industria": "Transversal",
+   "papel": "transversal"
+  },
+  {
+   "nome": "Globo Rural",
+   "site": "https://globorural.globo.com",
+   "industria": "A&B + Agro · Agro",
+   "papel": "alternativa",
+   "feed": "https://globorural.globo.com/rss/globorural"
+  },
+  {
+   "nome": "Agrolink",
+   "site": "https://www.agrolink.com.br",
+   "industria": "A&B + Agro · Agro",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "Revista Educação",
+   "site": "https://revistaeducacao.com.br",
+   "industria": "Educação · Privado",
+   "papel": "alternativa",
+   "feed": "https://revistaeducacao.com.br/feed/"
+  },
+  {
+   "nome": "Folha (Educação)",
+   "site": "https://www1.folha.uol.com.br/educacao",
+   "feed": "https://feeds.folha.uol.com.br/educacao/rss091.xml",
+   "industria": "Educação",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "SA Varejo",
+   "site": "https://savarejo.com.br",
+   "industria": "Varejo · Retail",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "Supermercado Moderno",
+   "site": "https://www.sm.com.br",
+   "industria": "Varejo · Retail",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "Giro News",
+   "site": "https://gironews.com",
+   "industria": "Varejo · Retail",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "Logweb",
+   "site": "https://www.logweb.com.br",
+   "industria": "Transportes & Logística",
+   "papel": "alternativa",
+   "feed": "https://logweb.com.br/feed/"
+  },
+  {
+   "nome": "Revista Ferroviária",
+   "site": "https://revistaferroviaria.com.br",
+   "industria": "Transportes & Logística",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "Aeroflap",
+   "site": "https://www.aeroflap.com.br",
+   "industria": "Transportes & Logística",
+   "papel": "alternativa",
+   "feed": "https://www.aeroflap.com.br/feed/"
+  },
+  {
+   "nome": "Agência Infra",
+   "site": "https://agenciainfra.com",
+   "industria": "Transportes & Logística / Power & Utilities",
+   "papel": "alternativa",
+   "feed": "https://agenciainfra.com/blog/feed/"
+  },
+  {
+   "nome": "Portal Portuário",
+   "site": "https://portalportuario.com.br",
+   "industria": "Transportes & Logística",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "Petronotícias",
+   "site": "https://petronoticias.com.br",
+   "industria": "Power & Utilities",
+   "papel": "alternativa",
+   "feed": "https://petronoticias.com.br/feed/"
+  },
+  {
+   "nome": "Brasil Energia",
+   "site": "https://brasilenergia.com.br",
+   "industria": "Power & Utilities",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "Brasil Mineral",
+   "site": "https://www.brasilmineral.com.br",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "alternativa",
+   "feed": "https://www.brasilmineral.com.br/feed/"
+  },
+  {
+   "nome": "In The Mine",
+   "site": "https://www.inthemine.com.br",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "alternativa",
+   "feed": "https://www.inthemine.com.br/site/feed/"
+  },
+  {
+   "nome": "Mining.com",
+   "site": "https://www.mining.com",
+   "feed": "https://www.mining.com/feed/",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "AutoIndústria",
+   "site": "https://www.autoindustria.com.br",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "alternativa",
+   "feed": "https://www.autoindustria.com.br/feed/"
+  },
+  {
+   "nome": "Revista Química e Derivados",
+   "site": "https://www.quimica.com.br",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "Tecnoblog",
+   "site": "https://tecnoblog.net",
+   "feed": "https://tecnoblog.net/feed/",
+   "industria": "TI & Telecom",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "IT Forum",
+   "site": "https://itforum.com.br",
+   "industria": "TI & Telecom",
+   "papel": "alternativa",
+   "feed": "https://itforum.com.br/feed/"
+  },
+  {
+   "nome": "TI Inside",
+   "site": "https://tiinside.com.br",
+   "industria": "TI & Telecom",
+   "papel": "alternativa",
+   "feed": "https://tiinside.com.br/feed/"
+  },
+  {
+   "nome": "Startups.com.br",
+   "site": "https://startups.com.br",
+   "industria": "TI & Telecom",
+   "papel": "alternativa",
+   "feed": "https://startups.com.br/feed/"
+  },
+  {
+   "nome": "Convergência Digital",
+   "site": "https://www.convergenciadigital.com.br",
+   "industria": "TI & Telecom",
+   "papel": "alternativa",
+   "feed": "https://convergenciadigital.com.br/feed/"
+  },
+  {
+   "nome": "Consumidor Moderno",
+   "site": "https://consumidormoderno.com.br",
+   "industria": "Varejo · Retail",
+   "papel": "alternativa",
+   "feed": "https://consumidormoderno.com.br/feed/"
+  },
+  {
+   "nome": "Mundo do Marketing",
+   "site": "https://www.mundodomarketing.com.br",
+   "industria": "Varejo · Retail",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "SuperVarejo (APAS)",
+   "site": "https://supervarejo.com.br",
+   "industria": "Varejo · Retail",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "Varejo S.A.",
+   "site": "https://www.varejosa.com.br",
+   "industria": "Varejo · Retail",
+   "papel": "alternativa",
+   "feed": "https://saopaulosa.com.br/feed/"
+  },
+  {
+   "nome": "Ecommerce na Prática",
+   "site": "https://ecommercenapratica.com",
+   "industria": "Varejo · Retail",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "Panorama Farmacêutico",
+   "site": "https://panoramafarmaceutico.com.br",
+   "industria": "Varejo · Retail / Health",
+   "papel": "alternativa",
+   "feed": "https://panoramafarmaceutico.com.br/feed/"
+  },
+  {
+   "nome": "Guia da Farmácia",
+   "site": "https://guiadafarmacia.com.br",
+   "industria": "Varejo · Retail / Health",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "Engarrafador Moderno",
+   "site": "https://www.engarrafadormoderno.com.br",
+   "industria": "A&B + Agro · A&B",
+   "papel": "alternativa",
+   "feed": "https://www.engarrafadormoderno.com.br/feed/"
+  },
+  {
+   "nome": "Food Dive",
+   "site": "https://www.fooddive.com",
+   "industria": "A&B + Agro · A&B",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "Retail Dive",
+   "site": "https://www.retaildive.com",
+   "industria": "Varejo · Retail",
+   "papel": "alternativa",
+   "feed": "https://www.retaildive.com/feeds/news/"
+  },
+  {
+   "nome": "Canal Solar",
+   "site": "https://canalsolar.com.br",
+   "industria": "Power & Utilities",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "Energia Hoje",
+   "site": "https://energiahoje.editorabrasilenergia.com.br",
+   "industria": "Power & Utilities",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "Revista Portuária",
+   "site": "https://www.revistaportuaria.com.br",
+   "industria": "Transportes & Logística",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "Guia Marítimo",
+   "site": "https://www.guiamaritimo.com.br",
+   "industria": "Transportes & Logística",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "Datamar News",
+   "site": "https://www.datamarnews.com",
+   "industria": "Transportes & Logística",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "Plástico Moderno",
+   "site": "https://www.plastico.com.br",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "alternativa",
+   "feed": "https://www.plastico.com.br/feed/"
+  },
+  {
+   "nome": "Fiesp (notícias)",
+   "site": "https://www.fiesp.com.br",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "alternativa"
+  },
+  {
+   "nome": "Monitor Mercantil",
+   "site": "https://monitormercantil.com.br",
+   "industria": "Manufacturing & Natural Resources",
+   "papel": "alternativa",
+   "feed": "https://monitormercantil.com.br/feed/"
+  },
+  {
+   "nome": "g1 Educação",
+   "site": "https://g1.globo.com",
+   "feed": "https://g1.globo.com/rss/g1/educacao/",
+   "industria": "Educação · Público",
+   "papel": "reforco"
+  },
+  {
+   "nome": "ABF (franquias)",
+   "site": "https://www.abf.com.br",
+   "feed": "https://abf.com.br/feed/",
+   "industria": "Varejo · Retail",
+   "papel": "reforco"
+  },
+  {
+   "nome": "Super Hiper (Abras)",
+   "site": "https://www.superhiper.com.br",
+   "feed": "https://www.superhiper.com.br/feed/",
+   "industria": "Varejo · Retail",
+   "papel": "reforco"
+  },
+  {
+   "nome": "Retail Dive",
+   "site": "https://www.retaildive.com",
+   "feed": "https://www.retaildive.com/feeds/news/",
+   "industria": "Varejo · Retail",
+   "papel": "reforco"
+  },
+  {
+   "nome": "Saúde Business",
+   "site": "https://www.saudebusiness.com",
+   "feed": "https://www.saudebusiness.com/feed/",
+   "industria": "Health · Hospitais",
+   "papel": "reforco"
+  },
+  {
+   "nome": "Portal Hospitais Brasil",
+   "site": "https://portalhospitaisbrasil.com.br",
+   "feed": "https://portalhospitaisbrasil.com.br/feed/",
+   "industria": "Health · Hospitais",
+   "papel": "reforco"
+  },
+  {
+   "nome": "Imobi Report",
+   "site": "https://imobireport.com.br",
+   "feed": "https://imobireport.com.br/feed/",
+   "industria": "Outros · Empreendimentos imobiliários",
+   "papel": "reforco"
+  },
+  {
+   "nome": "Revista O Empreiteiro",
+   "site": "https://revistaoe.com.br",
+   "feed": "https://revistaoe.com.br/feed/",
+   "industria": "Outros · Construção e engenharia",
+   "papel": "reforco"
+  },
+  {
+   "nome": "pv magazine Brasil",
+   "site": "https://www.pv-magazine-brasil.com",
+   "feed": "https://www.pv-magazine-brasil.com/feed/",
+   "industria": "Power & Utilities · Energias renováveis",
+   "papel": "reforco"
+  },
+  {
+   "nome": "Trata Brasil",
+   "site": "https://tratabrasil.org.br",
+   "feed": "https://tratabrasil.org.br/feed/",
+   "industria": "Power & Utilities · Saneamento",
+   "papel": "reforco"
+  },
+  {
+   "nome": "Ambiente Energia",
+   "site": "https://ambienteenergia.com.br",
+   "feed": "https://ambienteenergia.com.br/feed/",
+   "industria": "Power & Utilities · Energia elétrica",
+   "papel": "reforco"
+  },
+  {
+   "nome": "Diário do Transporte",
+   "site": "https://diariodotransporte.com.br",
+   "feed": "https://diariodotransporte.com.br/feed/",
+   "industria": "Transportes & Logística · Mobilidade de passageiros",
+   "papel": "reforco"
+  },
+  {
+   "nome": "Frota&Cia",
+   "site": "https://www.frotacia.com.br",
+   "feed": "https://www.frotacia.com.br/feed/",
+   "industria": "Transportes & Logística · Transporte de carga",
+   "papel": "reforco"
+  },
+  {
+   "nome": "Estradas",
+   "site": "https://estradas.com.br",
+   "feed": "https://estradas.com.br/feed/",
+   "industria": "Transportes & Logística · Infraestrutura de transporte",
+   "papel": "reforco"
+  },
+  {
+   "nome": "Agência Senado",
+   "site": "https://www12.senado.leg.br/noticias",
+   "feed": "https://www12.senado.leg.br/noticias/rss",
+   "industria": "Public Services · Governo federal",
+   "papel": "reforco"
+  },
+  {
+   "nome": "Agência Câmara",
+   "site": "https://www.camara.leg.br/noticias",
+   "feed": "https://www.camara.leg.br/noticias/rss/ultimas-noticias",
+   "industria": "Public Services · Governo federal",
+   "papel": "reforco"
+  },
+  {
+   "nome": "Agência Gov",
+   "site": "https://agenciagov.ebc.com.br",
+   "feed": "https://agenciagov.ebc.com.br/rss.xml",
+   "industria": "Public Services · Governo federal",
+   "papel": "reforco"
+  },
+  {
+   "nome": "TCU (notícias)",
+   "site": "https://portal.tcu.gov.br",
+   "feed": "https://portal.tcu.gov.br/feed/",
+   "industria": "Public Services · Governo federal",
+   "papel": "reforco"
+  },
+  {
+   "nome": "AirWay",
+   "site": "https://www.airway.com.br",
+   "feed": "https://www.airway.com.br/feed.xml",
+   "industria": "Transportes & Logística · Mobilidade de passageiros",
+   "papel": "reforco"
+  },
+  {
+   "nome": "CADE (notícias)",
+   "site": "https://www.gov.br/cade",
+   "feed": "https://www.gov.br/cade/rss.xml",
+   "industria": "Transversal",
+   "papel": "movimentos"
+  }
+ ]
+}

@@ -1,0 +1,244 @@
+{
+ "_como_usar": "Divulgações do calendário do IBGE (API pública) que entram na Agenda como 'Publicação de referência'. Cada item liga o produto do IBGE (alias_produto) a uma ou mais indústrias. Para incluir uma pesquisa, acrescente um item; para tirar, apague. 'camara' liga as audiências públicas e seminários das comissões da Câmara (API de dados abertos) às indústrias, pela sigla da comissão.",
+ "janela_dias": 90,
+ "ibge": [
+  {
+   "alias": "indice-nacional-de-precos-ao-consumidor-amplo",
+   "nome": "IPCA",
+   "industrias": [
+    [
+     "Varejo",
+     "Retail"
+    ],
+    [
+     "Financial Services",
+     "Banking"
+    ]
+   ],
+   "offering": "Finance"
+  },
+  {
+   "alias": "indice-nacional-de-precos-ao-consumidor-amplo-15",
+   "nome": "IPCA-15",
+   "industrias": [
+    [
+     "Varejo",
+     "Retail"
+    ],
+    [
+     "Financial Services",
+     "Banking"
+    ]
+   ],
+   "offering": "Finance"
+  },
+  {
+   "alias": "contas-nacionais-trimestrais",
+   "nome": "PIB trimestral",
+   "industrias": [
+    [
+     "Financial Services",
+     "Banking"
+    ],
+    [
+     "Public Services",
+     "Governo federal"
+    ]
+   ],
+   "offering": "Strategy + M&A"
+  },
+  {
+   "alias": "pesquisa-nacional-por-amostra-de-domicilios-continua-mensal",
+   "nome": "PNAD Contínua (emprego)",
+   "industrias": [
+    [
+     "Public Services",
+     "Governo federal"
+    ]
+   ],
+   "offering": "Talent + Organization"
+  },
+  {
+   "alias": "pesquisa-mensal-de-comercio",
+   "nome": "Pesquisa Mensal de Comércio",
+   "industrias": [
+    [
+     "Varejo",
+     "Retail"
+    ]
+   ],
+   "offering": "Customer Experience"
+  },
+  {
+   "alias": "pesquisa-industrial-mensal-producao-fisica-brasil",
+   "nome": "Produção industrial (PIM-PF)",
+   "industrias": [
+    [
+     "Manufacturing & Natural Resources",
+     "Manufatura"
+    ]
+   ],
+   "offering": "Supply Chain"
+  },
+  {
+   "alias": "indice-de-precos-ao-produtor-industrias-extrativas-e-de-transformacao",
+   "nome": "Preços ao produtor (IPP)",
+   "industrias": [
+    [
+     "Manufacturing & Natural Resources",
+     "Manufatura"
+    ]
+   ],
+   "offering": "Finance"
+  },
+  {
+   "alias": "pesquisa-mensal-de-servicos",
+   "nome": "Pesquisa Mensal de Serviços",
+   "industrias": [
+    [
+     "Outros",
+     "Serviços especializados"
+    ],
+    [
+     "TI & Telecom",
+     "Serviços de TI"
+    ],
+    [
+     "Transportes & Logística",
+     "Transporte de carga"
+    ]
+   ],
+   "offering": "Strategy + M&A"
+  },
+  {
+   "alias": "sistema-nacional-de-pesquisa-de-custos-e-indices-da-construcao-civil",
+   "nome": "Custos da construção (Sinapi)",
+   "industrias": [
+    [
+     "Outros",
+     "Construção e engenharia"
+    ]
+   ],
+   "offering": "Finance"
+  },
+  {
+   "alias": "levantamento-sistematico-da-producao-agricola",
+   "nome": "Safra (LSPA)",
+   "industrias": [
+    [
+     "A&B + Agro",
+     "Agro"
+    ]
+   ],
+   "offering": "Supply Chain"
+  },
+  {
+   "alias": "prognostico-da-safra",
+   "nome": "Prognóstico da safra",
+   "industrias": [
+    [
+     "A&B + Agro",
+     "Agro"
+    ]
+   ],
+   "offering": "Supply Chain"
+  },
+  {
+   "alias": "pesquisas-trimestrais-do-abate-de-animais-do-leite-do-couro-e-da-producao-de-ovos-de-galinha",
+   "nome": "Abate, leite e ovos",
+   "industrias": [
+    [
+     "A&B + Agro",
+     "A&B"
+    ]
+   ],
+   "offering": "Supply Chain"
+  },
+  {
+   "alias": "pesquisa-de-estoques",
+   "nome": "Estoques agrícolas",
+   "industrias": [
+    [
+     "A&B + Agro",
+     "Agro"
+    ]
+   ],
+   "offering": "Supply Chain"
+  }
+ ],
+ "camara": {
+  "janela_dias": 30,
+  "tipos": [
+   "Audiência Pública",
+   "Audiência Pública e Deliberação",
+   "Seminário"
+  ],
+  "comissoes": {
+   "CSAUDE": [
+    "Health",
+    "Saúde suplementar",
+    "Strategy + M&A"
+   ],
+   "CE": [
+    "Educação",
+    "Público",
+    "Strategy + M&A"
+   ],
+   "CDE": [
+    "Manufacturing & Natural Resources",
+    "Manufatura",
+    "Strategy + M&A"
+   ],
+   "CVT": [
+    "Transportes & Logística",
+    "Infraestrutura de transporte",
+    "Supply Chain"
+   ],
+   "CASP": [
+    "Public Services",
+    "Governo federal",
+    "Talent + Organization"
+   ],
+   "CINDRE": [
+    "Public Services",
+    "Estados",
+    "Strategy + M&A"
+   ],
+   "CCOM": [
+    "TI & Telecom",
+    "Telecomunicações",
+    "Tech Strategy"
+   ],
+   "CCTI": [
+    "TI & Telecom",
+    "Software e plataformas",
+    "Tech Strategy"
+   ],
+   "CFT": [
+    "Financial Services",
+    "Banking",
+    "Finance"
+   ],
+   "CDC": [
+    "Varejo",
+    "Retail",
+    "Customer Experience"
+   ],
+   "CAPADR": [
+    "A&B + Agro",
+    "Agro",
+    "Supply Chain"
+   ],
+   "CME": [
+    "Power & Utilities",
+    "Energia elétrica",
+    "Sustainability"
+   ],
+   "CDU": [
+    "Outros",
+    "Construção e engenharia",
+    "Strategy + M&A"
+   ]
+  }
+ }
+}

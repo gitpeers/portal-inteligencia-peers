@@ -1,0 +1,562 @@
+{
+ "_como_usar": "Feeds RSS lidos a cada atualização do Radar e de Movimentos. Fontes setoriais têm 'padrao' = [indústria, divisão]: a notícia fica na indústria da fonte, e as palavras-chave só escolhem a divisão. Fontes gerais têm 'padrao': null: a notícia só entra se as palavras-chave identificarem a indústria com clareza. Para incluir uma fonte, acrescente um item; para tirar, apague o item.",
+ "fontes": [
+  {
+   "nome": "Finsiders Brasil",
+   "url": "https://finsidersbrasil.com.br/feed/",
+   "padrao": [
+    "Financial Services",
+    "Banking"
+   ]
+  },
+  {
+   "nome": "Bloomberg Línea (finanças)",
+   "url": "https://www.bloomberglinea.com.br/arc/outboundfeeds/rss.xml",
+   "padrao": null
+  },
+  {
+   "nome": "Finextra",
+   "url": "https://www.finextra.com/rss/headlines.aspx",
+   "padrao": [
+    "Financial Services",
+    "Banking"
+   ]
+  },
+  {
+   "nome": "Banco Central (notas e normas)",
+   "url": "https://www.bcb.gov.br/api/feed/sitebcb/sitefeeds/notasImprensa",
+   "padrao": [
+    "Financial Services",
+    "Banking"
+   ]
+  },
+  {
+   "nome": "Revista Apólice",
+   "url": "https://revistaapolice.com.br/feed/",
+   "padrao": [
+    "Financial Services",
+    "Insurance"
+   ]
+  },
+  {
+   "nome": "Sonho Seguro",
+   "url": "https://www.sonhoseguro.com.br/feed/",
+   "padrao": [
+    "Financial Services",
+    "Insurance"
+   ]
+  },
+  {
+   "nome": "CQCS",
+   "url": "https://cqcs.com.br/feed/",
+   "padrao": [
+    "Financial Services",
+    "Insurance"
+   ]
+  },
+  {
+   "nome": "Mobile Time",
+   "url": "https://www.mobiletime.com.br/feed/",
+   "padrao": [
+    "Financial Services",
+    "Payments"
+   ]
+  },
+  {
+   "nome": "Payments Dive",
+   "url": "https://www.paymentsdive.com/feeds/news/",
+   "padrao": [
+    "Financial Services",
+    "Payments"
+   ]
+  },
+  {
+   "nome": "BPMoney",
+   "url": "https://bpmoney.com.br/feed/",
+   "padrao": null
+  },
+  {
+   "nome": "Teletime",
+   "url": "https://teletime.com.br/feed/",
+   "padrao": [
+    "TI & Telecom",
+    "Telecomunicações"
+   ]
+  },
+  {
+   "nome": "Telesíntese",
+   "url": "https://www.telesintese.com.br/feed/",
+   "padrao": [
+    "TI & Telecom",
+    "Telecomunicações"
+   ]
+  },
+  {
+   "nome": "Convergência Digital",
+   "url": "https://convergenciadigital.com.br/feed/",
+   "padrao": [
+    "TI & Telecom",
+    "Telecomunicações"
+   ]
+  },
+  {
+   "nome": "Tecnoblog",
+   "url": "https://tecnoblog.net/feed/",
+   "padrao": [
+    "TI & Telecom",
+    "Software e plataformas"
+   ]
+  },
+  {
+   "nome": "Startups.com.br",
+   "url": "https://startups.com.br/feed/",
+   "padrao": [
+    "TI & Telecom",
+    "Software e plataformas"
+   ]
+  },
+  {
+   "nome": "IT Forum",
+   "url": "https://itforum.com.br/feed/",
+   "padrao": [
+    "TI & Telecom",
+    "Serviços de TI"
+   ]
+  },
+  {
+   "nome": "TI Inside",
+   "url": "https://tiinside.com.br/feed/",
+   "padrao": [
+    "TI & Telecom",
+    "Serviços de TI"
+   ]
+  },
+  {
+   "nome": "Consumidor Moderno",
+   "url": "https://consumidormoderno.com.br/feed/",
+   "padrao": [
+    "Varejo",
+    "Retail"
+   ]
+  },
+  {
+   "nome": "Varejo S.A.",
+   "url": "https://saopaulosa.com.br/feed/",
+   "padrao": [
+    "Varejo",
+    "Retail"
+   ]
+  },
+  {
+   "nome": "Panorama Farmacêutico",
+   "url": "https://panoramafarmaceutico.com.br/feed/",
+   "padrao": [
+    "Varejo",
+    "Retail"
+   ]
+  },
+  {
+   "nome": "ABF (franquias)",
+   "url": "https://abf.com.br/feed/",
+   "padrao": [
+    "Varejo",
+    "Retail"
+   ]
+  },
+  {
+   "nome": "Super Hiper (Abras)",
+   "url": "https://www.superhiper.com.br/feed/",
+   "padrao": [
+    "Varejo",
+    "Retail"
+   ]
+  },
+  {
+   "nome": "Retail Dive",
+   "url": "https://www.retaildive.com/feeds/news/",
+   "padrao": [
+    "Varejo",
+    "Retail"
+   ]
+  },
+  {
+   "nome": "Food Connection",
+   "url": "https://www.foodconnection.com.br/feed/",
+   "padrao": [
+    "A&B + Agro",
+    "A&B"
+   ]
+  },
+  {
+   "nome": "Engarrafador Moderno",
+   "url": "https://www.engarrafadormoderno.com.br/feed/",
+   "padrao": [
+    "A&B + Agro",
+    "A&B"
+   ]
+  },
+  {
+   "nome": "AgFeed",
+   "url": "https://agfeed.com.br/feed/",
+   "padrao": [
+    "A&B + Agro",
+    "Agro"
+   ]
+  },
+  {
+   "nome": "Canal Rural",
+   "url": "https://www.canalrural.com.br/feed/",
+   "padrao": [
+    "A&B + Agro",
+    "Agro"
+   ]
+  },
+  {
+   "nome": "Globo Rural",
+   "url": "https://globorural.globo.com/rss/globorural",
+   "padrao": [
+    "A&B + Agro",
+    "Agro"
+   ]
+  },
+  {
+   "nome": "MegaWhat",
+   "url": "https://megawhat.energy/feed/",
+   "padrao": [
+    "Power & Utilities",
+    "Energia elétrica"
+   ]
+  },
+  {
+   "nome": "Petronotícias",
+   "url": "https://petronoticias.com.br/feed/",
+   "padrao": [
+    "Power & Utilities",
+    "Petróleo e gás"
+   ]
+  },
+  {
+   "nome": "pv magazine Brasil",
+   "url": "https://www.pv-magazine-brasil.com/feed/",
+   "padrao": [
+    "Power & Utilities",
+    "Energias renováveis"
+   ]
+  },
+  {
+   "nome": "Trata Brasil",
+   "url": "https://tratabrasil.org.br/feed/",
+   "padrao": [
+    "Power & Utilities",
+    "Saneamento"
+   ]
+  },
+  {
+   "nome": "Ambiente Energia",
+   "url": "https://ambienteenergia.com.br/feed/",
+   "padrao": [
+    "Power & Utilities",
+    "Energia elétrica"
+   ]
+  },
+  {
+   "nome": "Agência Infra",
+   "url": "https://agenciainfra.com/blog/feed/",
+   "padrao": null
+  },
+  {
+   "nome": "Futuro da Saúde",
+   "url": "https://futurodasaude.com.br/feed/",
+   "padrao": [
+    "Health",
+    "Saúde suplementar"
+   ]
+  },
+  {
+   "nome": "Medicina S/A",
+   "url": "https://medicinasa.com.br/feed/",
+   "padrao": [
+    "Health",
+    "Hospitais"
+   ]
+  },
+  {
+   "nome": "ANS (notícias)",
+   "url": "https://www.gov.br/ans/rss.xml",
+   "padrao": [
+    "Health",
+    "Saúde suplementar"
+   ]
+  },
+  {
+   "nome": "Saúde Business",
+   "url": "https://www.saudebusiness.com/feed/",
+   "padrao": [
+    "Health",
+    "Hospitais"
+   ]
+  },
+  {
+   "nome": "Portal Hospitais Brasil",
+   "url": "https://portalhospitaisbrasil.com.br/feed/",
+   "padrao": [
+    "Health",
+    "Hospitais"
+   ]
+  },
+  {
+   "nome": "Agência Brasil (Educação)",
+   "url": "https://agenciabrasil.ebc.com.br/rss/educacao/feed.xml",
+   "padrao": [
+    "Educação",
+    "Público"
+   ]
+  },
+  {
+   "nome": "Porvir",
+   "url": "https://porvir.org/feed/",
+   "padrao": [
+    "Educação",
+    "Público"
+   ]
+  },
+  {
+   "nome": "Revista Educação",
+   "url": "https://revistaeducacao.com.br/feed/",
+   "padrao": [
+    "Educação",
+    "Privado"
+   ]
+  },
+  {
+   "nome": "Folha (Educação)",
+   "url": "https://feeds.folha.uol.com.br/educacao/rss091.xml",
+   "padrao": [
+    "Educação",
+    "Público"
+   ]
+  },
+  {
+   "nome": "g1 Educação",
+   "url": "https://g1.globo.com/rss/g1/educacao/",
+   "padrao": [
+    "Educação",
+    "Público"
+   ]
+  },
+  {
+   "nome": "AutoIndústria",
+   "url": "https://www.autoindustria.com.br/feed/",
+   "padrao": [
+    "Manufacturing & Natural Resources",
+    "Manufatura"
+   ]
+  },
+  {
+   "nome": "Plástico Moderno",
+   "url": "https://www.plastico.com.br/feed/",
+   "padrao": [
+    "Manufacturing & Natural Resources",
+    "Manufatura"
+   ]
+  },
+  {
+   "nome": "Brasil Mineral",
+   "url": "https://www.brasilmineral.com.br/feed/",
+   "padrao": [
+    "Manufacturing & Natural Resources",
+    "Mineração"
+   ]
+  },
+  {
+   "nome": "In The Mine",
+   "url": "https://www.inthemine.com.br/site/feed/",
+   "padrao": [
+    "Manufacturing & Natural Resources",
+    "Mineração"
+   ]
+  },
+  {
+   "nome": "Mining.com",
+   "url": "https://www.mining.com/feed/",
+   "padrao": [
+    "Manufacturing & Natural Resources",
+    "Mineração"
+   ]
+  },
+  {
+   "nome": "Logweb",
+   "url": "https://logweb.com.br/feed/",
+   "padrao": [
+    "Transportes & Logística",
+    "Logística e armazenagem"
+   ]
+  },
+  {
+   "nome": "Aeroflap",
+   "url": "https://www.aeroflap.com.br/feed/",
+   "padrao": [
+    "Transportes & Logística",
+    "Mobilidade de passageiros"
+   ]
+  },
+  {
+   "nome": "Diário do Transporte",
+   "url": "https://diariodotransporte.com.br/feed/",
+   "padrao": [
+    "Transportes & Logística",
+    "Mobilidade de passageiros"
+   ]
+  },
+  {
+   "nome": "Frota&Cia",
+   "url": "https://www.frotacia.com.br/feed/",
+   "padrao": [
+    "Transportes & Logística",
+    "Transporte de carga"
+   ]
+  },
+  {
+   "nome": "Estradas",
+   "url": "https://estradas.com.br/feed/",
+   "padrao": [
+    "Transportes & Logística",
+    "Infraestrutura de transporte"
+   ]
+  },
+  {
+   "nome": "AirWay",
+   "url": "https://www.airway.com.br/feed.xml",
+   "padrao": [
+    "Transportes & Logística",
+    "Mobilidade de passageiros"
+   ]
+  },
+  {
+   "nome": "Agência Brasil (Política)",
+   "url": "https://agenciabrasil.ebc.com.br/rss/politica/feed.xml",
+   "padrao": [
+    "Public Services",
+    "Governo federal"
+   ]
+  },
+  {
+   "nome": "Agência Senado",
+   "url": "https://www12.senado.leg.br/noticias/rss",
+   "padrao": [
+    "Public Services",
+    "Governo federal"
+   ]
+  },
+  {
+   "nome": "Agência Câmara",
+   "url": "https://www.camara.leg.br/noticias/rss/ultimas-noticias",
+   "padrao": [
+    "Public Services",
+    "Governo federal"
+   ]
+  },
+  {
+   "nome": "Agência Gov",
+   "url": "https://agenciagov.ebc.com.br/rss.xml",
+   "padrao": [
+    "Public Services",
+    "Governo federal"
+   ]
+  },
+  {
+   "nome": "TCU (notícias)",
+   "url": "https://portal.tcu.gov.br/feed/",
+   "padrao": [
+    "Public Services",
+    "Governo federal"
+   ]
+  },
+  {
+   "nome": "JOTA",
+   "url": "https://www.jota.info/feed",
+   "padrao": null
+  },
+  {
+   "nome": "Poder360",
+   "url": "https://www.poder360.com.br/feed/",
+   "padrao": null
+  },
+  {
+   "nome": "Agência CBIC",
+   "url": "https://cbic.org.br/feed/",
+   "padrao": [
+    "Outros",
+    "Construção e engenharia"
+   ]
+  },
+  {
+   "nome": "Meio & Mensagem",
+   "url": "https://meioemensagem.com.br/feed",
+   "padrao": [
+    "Outros",
+    "Comunicação e mídia"
+   ]
+  },
+  {
+   "nome": "Propmark",
+   "url": "https://propmark.com.br/feed/",
+   "padrao": [
+    "Outros",
+    "Comunicação e mídia"
+   ]
+  },
+  {
+   "nome": "Imobi Report",
+   "url": "https://imobireport.com.br/feed/",
+   "padrao": [
+    "Outros",
+    "Empreendimentos imobiliários"
+   ]
+  },
+  {
+   "nome": "Revista O Empreiteiro",
+   "url": "https://revistaoe.com.br/feed/",
+   "padrao": [
+    "Outros",
+    "Construção e engenharia"
+   ]
+  },
+  {
+   "nome": "InfoMoney",
+   "url": "https://www.infomoney.com.br/feed/",
+   "padrao": null
+  },
+  {
+   "nome": "NeoFeed",
+   "url": "https://neofeed.com.br/feed/",
+   "padrao": null
+  },
+  {
+   "nome": "Times Brasil",
+   "url": "https://timesbrasil.com.br/feed/",
+   "padrao": null
+  },
+  {
+   "nome": "Brazil Journal",
+   "url": "https://braziljournal.com/feed/",
+   "padrao": null
+  },
+  {
+   "nome": "Monitor Mercantil",
+   "url": "https://monitormercantil.com.br/feed/",
+   "padrao": null
+  },
+  {
+   "nome": "Agência Brasil (últimas)",
+   "url": "https://agenciabrasil.ebc.com.br/rss/ultimasnoticias/feed.xml",
+   "padrao": null
+  },
+  {
+   "nome": "CADE (notícias)",
+   "url": "https://www.gov.br/cade/rss.xml",
+   "padrao": null
+  }
+ ],
+ "_validacao": "Lista revisada em 06/10/2026 com validar_fontes.py: só entram fontes com feed ativo. Relatório completo em relatorio_fontes.md."
+}
