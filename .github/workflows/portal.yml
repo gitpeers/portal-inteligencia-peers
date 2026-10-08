@@ -1,0 +1,91 @@
+# Atualiza os dados do portal no Supabase e publica a página no GitHub Pages.
+# - Todo dia às 6h (Brasília): baixa os dados do Supabase, roda os scripts do Backend (que respeitam a cadência de
+#   cada tipo de dado), devolve os dados ao Supabase, grava no repositório só as configurações que os scripts
+#   alteram (calendário, relatórios) e publica a página.
+# - A cada envio de arquivos (push) para a branch main: só publica a página.
+# - Manualmente (aba Actions > "Atualizar e publicar o portal" > Run workflow): atualiza tudo e publica.
+# Os dados nunca vão para o repositório (público): ficam só no Supabase, e a página os recebe depois do login com
+# e-mail da Peers. Precisa dos Secrets SUPABASE_URL e SUPABASE_SERVICE_KEY (Settings > Secrets and variables > Actions).
+name: Atualizar e publicar o portal
+
+on:
+  schedule:
+    - cron: "0 9 * * *"          # 9h UTC = 6h em Brasília
+  workflow_dispatch:
+    inputs:
+      forcar:
+        description: "Atualizar todos os tipos de dado agora, ignorando a cadência"
+        type: boolean
+        default: true
+  push:
+    branches: [main]
+
+permissions:
+  contents: write                # gravar as configurações alteradas pelos scripts (calendário, relatórios)
+  pages: write                   # publicar no GitHub Pages
+  id-token: write
+
+concurrency:
+  group: portal
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar dependências
+        run: pip install openpyxl     # leitura das planilhas do Tesouro (Indicadores)
+      - name: Baixar os dados do Supabase
+        working-directory: Backend
+        run: python baixar_dados.py
+      - name: Atualizar dados
+        working-directory: Backend
+        run: python atualizar_portal.py ${{ (github.event_name == 'workflow_dispatch' && inputs.forcar) && '--forcar' || '' }}
+      - name: Devolver os dados ao Supabase
+        working-directory: Backend
+        run: python enviar_dados.py --todos
+      - name: Gravar configurações no repositório
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Backend/config/calendario.json Backend/releases_trimestre.json
+          git add Backend/relatorio_indicadores.json 2>/dev/null || true
+          git add Backend/config/ifdata_publicos.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "Nada mudou nas configurações."
+          else
+            git commit -m "Atualização automática das configurações ($(TZ=America/Sao_Paulo date '+%d/%m/%Y %H:%M'))"
+            # se alguém enviou mudanças durante a execução, junta antes de gravar (nesses arquivos, vale o robô)
+            git pull --rebase -X theirs origin main
+            git push
+          fi
+
+  publicar:
+    needs: atualizar
+    if: always() && (needs.atualizar.result == 'success' || needs.atualizar.result == 'skipped')
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Montar o site (só a página; os dados vêm do Supabase após o login)
+        run: |
+          mkdir -p _site
+          cp Frontend/index.html _site/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deploy
+        uses: actions/deploy-pages@v4
