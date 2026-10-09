@@ -24,7 +24,7 @@ CAMPOS = {
     "radar": {"resumo": (350, False), "porQueImporta": (220, False), "anguloPeers": (240, True)},
     "movimentos": {"tese": (200, False), "leitura": (300, False)},
 }
-LIMITE_FINANCAS, LIMITE_INDICADORES = 480, 380
+LIMITE_FINANCAS, LIMITE_INDICADORES, LIMITE_APROFUNDAMENTO = 480, 380, 420
 # Concorrência: os campos de texto e duas escolhas fechadas (selo e offering afetada)
 CAMPOS_CONCORRENCIA = {"fato": (300, False), "sinal": (240, False), "impacto": (300, False)}
 SELOS = ("Ameaça", "Oportunidade", "Monitorar")
@@ -96,7 +96,8 @@ def main():
             erros.append(f"descartar/{id_}: id fora das pendências")
         else:
             conferir_texto(erros, f"descartar/{id_}", motivo, 160, False)
-    for secao, limite in (("financas", LIMITE_FINANCAS), ("indicadores", LIMITE_INDICADORES)):
+    for secao, limite in (("financas", LIMITE_FINANCAS), ("indicadores", LIMITE_INDICADORES),
+                          ("aprofundamento", LIMITE_APROFUNDAMENTO)):
         validos = set(pend.get(secao, {}))
         for chave, texto in resp.get(secao, {}).items():
             if chave not in validos:
@@ -162,6 +163,8 @@ def main():
         analises["financas"][chave] = {"texto": texto.strip(), "periodo": pend["financas"][chave]["periodo"], "geradoEm": hoje_iso()}
     for chave, texto in resp.get("indicadores", {}).items():
         analises["indicadores"][chave] = {"texto": texto.strip(), "geradoEm": hoje_iso()}
+    for chave, texto in resp.get("aprofundamento", {}).items():
+        analises.setdefault("aprofundamento", {})[chave] = {"texto": texto.strip(), "geradoEm": hoje_iso()}
     if resp.get("concorrenciaSemana"):
         s_ = pend["concorrenciaSemana"]
         analises["concorrencia"] = {"pontos": [p.strip() for p in resp["concorrenciaSemana"]],
@@ -171,11 +174,12 @@ def main():
     contagem["concorrenciaSemana"] = 1 if resp.get("concorrenciaSemana") else 0
     contagem["financas"] = len(resp.get("financas", {}))
     contagem["indicadores"] = len(resp.get("indicadores", {}))
+    contagem["aprofundamento"] = len(resp.get("aprofundamento", {}))
 
     # Finanças e Indicadores só contam como feitos quando todas as entradas pendentes foram respondidas
     estado = ler_json(ESTADO) if ESTADO.exists() else {"processadoEm": {}}
     faltando = {}
-    for secao in ("financas", "indicadores"):
+    for secao in ("financas", "indicadores", "aprofundamento"):
         if secao in pend:
             falta = sorted(set(pend[secao]) - set(resp.get(secao, {})))
             if falta:

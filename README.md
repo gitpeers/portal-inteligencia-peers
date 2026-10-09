@@ -25,6 +25,7 @@ Backend/
   atualizar_indicadores.py  Indicadores setoriais (Banco Central, IBGE, Tesouro e outras fontes)
   atualizar_financas.py Finanças das companhias abertas, a partir da CVM e dos releases
   atualizar_concorrencia.py  Concorrência: movimentos das consultorias concorrentes, a partir do Google Notícias
+  atualizar_aprofundamento.py  Indicadores: visão por player (setor contra as empresas), a partir dos dados acima
   baixar_dados.py       traz os dados do Supabase para Frontend/dados, antes dos scripts trabalharem
   enviar_dados.py       devolve os arquivos de Frontend/dados ao Supabase, depois dos scripts
   supabase_api.py       acesso à tabela secoes do Supabase (usado pelos dois acima)
@@ -59,6 +60,7 @@ Supabase/
 | Indicadores setoriais | Banco Central, IBGE, Tesouro e outras (`config/indicadores_fontes.json`) | Mensal |
 | Finanças · companhias abertas | CVM e releases (`config/financas_cvm.json`, `config/financas_releases.json`) | Semanal |
 | Finanças · Valor 1000 | Planilha do ranking | Manual, uma vez por ano |
+| Indicadores · visão por player | Indicadores, Finanças (companhias abertas), Valor 1000 e Capag do Tesouro (`config/indicadores_players.json`) | Diária (recalcula; a leitura da IA muda quando Indicadores ou Finanças mudam) |
 | Concorrência | Google Notícias, edições Brasil e EUA (lista de concorrentes no Supabase; regras em `config/concorrencia_regras.json`) | Diária |
 | Análises (resumos, "Por que importa", Ângulo Peers, leituras, impacto da concorrência) | Rotina de IA (`Backend/ia/ROTINA.md`) | Diária, às 07h05 |
 
@@ -69,6 +71,8 @@ Supabase/
 - `classificacao.json`: palavras-chave de indústrias, temas, offerings, tipos de movimento e exclusões.
 - `calendario.json`: eventos da Agenda; use `"recorrencia": "anual"` para eventos que se repetem.
 - `indicadores_fontes.json`: ligar um indicador a uma série pública.
+- `indicadores_players.json`: qual indicador de cada segmento abre a visão por player, quais empresas entram, a
+  métrica de cada uma e o cuidado de método mostrado no painel. O indicador ligado aparece primeiro no cartão.
 - `concorrencia_regras.json`: palavras de cada tipo de movimento dos concorrentes, filtros de ruído e a lista de
   empresas de tecnologia do mapa de parcerias. Não tem nomes de concorrentes (ver abaixo).
 

@@ -11,6 +11,7 @@ import sys
 from datetime import datetime
 
 import atualizar_agenda
+import atualizar_aprofundamento
 import atualizar_concorrencia
 import atualizar_financas
 import atualizar_indicadores
@@ -24,6 +25,7 @@ CADENCIA = {
     "indicadores": 30,   # Indicadores: mensal (as fontes publicam mensalmente ou com menos frequência)
     "financas": 7,       # Finanças: semanal (a CVM recebe os ITRs ao longo da temporada de resultados)
     "concorrencia": 1,   # Concorrência: diária (Google Notícias dos últimos 7 dias)
+    "aprofundamento": 1, # Visão por player dos Indicadores: diária, depois de Indicadores e Finanças (só recalcula)
 }
 TAREFAS = {
     "noticias": atualizar_noticias.main,
@@ -31,6 +33,7 @@ TAREFAS = {
     "indicadores": atualizar_indicadores.main,
     "financas": atualizar_financas.main,
     "concorrencia": atualizar_concorrencia.main,
+    "aprofundamento": atualizar_aprofundamento.main,
 }
 
 
