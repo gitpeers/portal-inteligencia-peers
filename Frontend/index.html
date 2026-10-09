@@ -258,6 +258,13 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 .tl-item h4{font-size:.92rem;font-weight:600;margin-bottom:5px}
 .lnk-player,.lnk-conc{cursor:pointer;border-bottom:1px dotted var(--grey)}
 .lnk-player:hover,.lnk-conc:hover{color:var(--blue-ink);border-bottom-color:var(--navy)}
+/* Concorrência: cada movimento é um cartão da largura do bloco, para todos terminarem na mesma borda,
+   seja a manchete curta ou longa */
+.tl-item.conc{background:#fff;border:1px solid var(--grey-border);border-radius:var(--r-md);padding:14px 18px;margin-bottom:12px;
+  transition:border-color var(--dur) var(--ease)}
+.tl-item.conc:last-child{padding-bottom:14px;margin-bottom:0}
+.tl-item.conc:hover{border-color:var(--grey-strong)}
+.tl-item.conc::before{top:19px}
 .pontos-semana{margin:8px 0 0 18px;display:grid;gap:6px}
 .cel-parc{display:inline-block;min-width:22px;padding:1px 7px;border-radius:var(--pill);background:var(--navy);color:#fff;font-size:.7rem}
 .mx td.n{text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
@@ -1850,7 +1857,7 @@ function renderConcorrencia(){
 
 function itemConcorrencia(i){
   const semAnalise = !i.ia;
-  return '<div class="tl-item">' +
+  return '<div class="tl-item conc">' +
     '<div class="tl-head"><span class="tl-data">'+formatarData(i.data)+'</span>' +
       '<span class="badge bp">'+esc(i.tipo)+'</span>' +
       (i.selo ? '<span class="badge '+(SELO_CLASSE[i.selo]||'bg-n')+'">'+esc(i.selo)+'</span>' : '') +
