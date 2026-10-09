@@ -1436,7 +1436,7 @@ function briefingTrimestral(L, ids){
 function renderFinancas(){
   const sel = [...estado.industrias];
   // Um painel por indústria: margem de Financial Services e de Varejo não se comparam na mesma tabela.
-  const alvos = sel.length ? sel : ["Varejo"];
+  const alvos = sel;
   const abertas = estadoFinancas.base==="abertas";
   const nomeBase = abertas ? 'Companhias abertas · último trimestre' : 'Maiores empresas · Valor 1000';
   const titulo = (alvos.length===1 ? 'Finanças dos players — ' + esc(alvos[0]) : 'Finanças dos players') +
@@ -1450,7 +1450,7 @@ function renderFinancas(){
     (alvos.length>1 ? ' Um painel por indústria selecionada — os indicadores de setores diferentes não são comparáveis entre si.' : '') +
   '</p></div>' +
   (!sel.length
-    ? '<div class="warn" style="margin-bottom:18px">Nenhuma indústria marcada no filtro acima: exibindo <b>Varejo</b> como padrão.</div>' : '') +
+    ? '<div class="card"><div class="vazio">Escolha uma ou mais indústrias no filtro acima para ver as finanças dos players.</div></div>' : '') +
   (estado.offerings.size
     ? '<div class="srcnote">O filtro de offering não se aplica a esta seção: o cadastro de players é marcado apenas pelo eixo de indústria.</div>' : '') +
   alvos.map(abertas ? painelTrimestral : painelIndustria).join("");
