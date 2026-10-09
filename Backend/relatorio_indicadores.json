@@ -1,7 +1,7 @@
 {
- "executadoEm": "2026-10-08 16:23",
- "ok": 148,
- "falhas": 3,
+ "executadoEm": "2026-10-09 12:29",
+ "ok": 143,
+ "falhas": 8,
  "series": [
   {
    "indicador": "Carteira de crédito do SFN",
@@ -25,7 +25,8 @@
    "indicador": "Dívida bruta do governo geral",
    "segmento": "Administração pública",
    "conector": "sgs",
-   "situacao": "ok"
+   "situacao": "falha",
+   "erro": "Expecting value: line 1 column 1 (char 0)"
   },
   {
    "indicador": "INCC",
@@ -169,7 +170,8 @@
    "indicador": "Crédito rural concedido",
    "segmento": "Grãos & Insumos (Row Crops)",
    "conector": "sgs",
-   "situacao": "ok"
+   "situacao": "falha",
+   "erro": "Expecting value: line 1 column 1 (char 0)"
   },
   {
    "indicador": "Abate de bovinos",
@@ -289,7 +291,8 @@
    "indicador": "Inadimplência das pessoas físicas",
    "segmento": "Varejo geral",
    "conector": "sgs",
-   "situacao": "ok"
+   "situacao": "falha",
+   "erro": "Expecting value: line 1 column 1 (char 0)"
   },
   {
    "indicador": "Produção física de higiene e cosméticos",
@@ -403,7 +406,8 @@
    "indicador": "Exportações de manufaturados",
    "segmento": "Indústria de transformação",
    "conector": "comex",
-   "situacao": "ok"
+   "situacao": "falha",
+   "erro": "HTTP Error 429: Too Many Requests"
   },
   {
    "indicador": "Exportações de veículos",
@@ -499,7 +503,8 @@
    "indicador": "Importações de componentes eletrônicos",
    "segmento": "Hardware, dispositivos e componentes",
    "conector": "comex",
-   "situacao": "ok"
+   "situacao": "falha",
+   "erro": "HTTP Error 429: Too Many Requests"
   },
   {
    "indicador": "Resultado primário do governo central",
@@ -529,7 +534,8 @@
    "indicador": "Desembolsos do BNDES",
    "segmento": "Bancos comerciais, bancos de desenvolvimento e agências de fomento públicas",
    "conector": "sgs",
-   "situacao": "ok"
+   "situacao": "falha",
+   "erro": "Expecting value: line 1 column 1 (char 0)"
   },
   {
    "indicador": "Desembolsos do BNDES para máquinas",
@@ -559,13 +565,15 @@
    "indicador": "Despesa com pessoal sobre a RCL",
    "segmento": "Administração pública estadual",
    "conector": "siconfi",
-   "situacao": "ok"
+   "situacao": "falha",
+   "erro": "IncompleteRead(0 bytes read)"
   },
   {
    "indicador": "Dívida consolidada sobre a RCL",
    "segmento": "Administração pública estadual",
    "conector": "siconfi",
-   "situacao": "ok"
+   "situacao": "falha",
+   "erro": "IncompleteRead(0 bytes read)"
   },
   {
    "indicador": "Produção de petróleo",
@@ -613,22 +621,19 @@
    "indicador": "Capacidade instalada de geração",
    "segmento": "Geração, transmissão e distribuição",
    "conector": "siga",
-   "situacao": "falha",
-   "erro": "<urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)>"
+   "situacao": "ok"
   },
   {
    "indicador": "Capacidade instalada solar, eólica e biomassa",
    "segmento": "Solar, Eólica e Biomassa e biogás",
    "conector": "siga",
-   "situacao": "falha",
-   "erro": "<urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)>"
+   "situacao": "ok"
   },
   {
    "indicador": "Participação na matriz elétrica",
    "segmento": "Solar, Eólica e Biomassa e biogás",
    "conector": "siga",
-   "situacao": "falha",
-   "erro": "<urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)>"
+   "situacao": "ok"
   },
   {
    "indicador": "Emprego formal na indústria",
