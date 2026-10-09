@@ -16,7 +16,7 @@ create table if not exists public.secoes (
   atualizado_em timestamptz not null default now()
 );
 
--- 2. Domínio permitido (para trocar o domínio, mude só aqui e no DOMINIO do index.html) ---------------
+-- 2. Domínios permitidos: Peers e Actar, do grupo Peers (para mudar, altere aqui e em DOMINIOS no index.html) ---
 create or replace function public.dominio_permitido(email text)
 returns boolean
 language sql
@@ -24,6 +24,7 @@ immutable
 set search_path = ''
 as $$
   select lower(coalesce(email, '')) like '%@peers.com.br'
+      or lower(coalesce(email, '')) like '%@actar.com.br'
 $$;
 
 -- 3. Quem pode ler -----------------------------------------------------------------------------------
@@ -52,7 +53,7 @@ set search_path = ''
 as $$
 begin
   if not public.dominio_permitido(new.email) then
-    raise exception 'Acesso restrito a e-mails @peers.com.br';
+    raise exception 'Acesso restrito a e-mails @peers.com.br e @actar.com.br';
   end if;
   return new;
 end;

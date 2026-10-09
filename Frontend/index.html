@@ -389,8 +389,8 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
     <h1>Portal de Inteligência Peers</h1>
     <p class="login-sub" id="loginSub">Verificando acesso…</p>
     <form id="formEmail" onsubmit="pedirCodigo(event)" hidden>
-      <label for="loginEmail">Seu e-mail da Peers</label>
-      <input id="loginEmail" type="email" autocomplete="email" placeholder="Seu e-mail Peers" required>
+      <label for="loginEmail">Seu e-mail do grupo Peers</label>
+      <input id="loginEmail" type="email" autocomplete="email" placeholder="nome@peers.com.br ou nome@actar.com.br" required>
       <button class="btn" id="btnEmail">Receber código</button>
     </form>
     <form id="formCodigo" onsubmit="confirmarCodigo(event)" hidden>
@@ -495,13 +495,13 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 
 <script>
 /* =========================================================
-   ACESSO · login por código enviado ao e-mail da Peers (Supabase)
+   ACESSO · login por código enviado ao e-mail do grupo Peers: Peers e Actar (Supabase)
    A URL e a chave abaixo são públicas por natureza: quem protege os dados são as regras do banco
    (Supabase/configuracao.sql), que só entregam dados a quem entrou com e-mail do domínio.
    ========================================================= */
 const SUPABASE_URL = "https://jznkivbmqrdfajxyklhp.supabase.co";
 const SUPABASE_CHAVE = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6bmtpdmJtcXJkZmFqeHlrbGhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0ODM1NzksImV4cCI6MjEwNzA1OTU3OX0.BlEpP8zE9akVpR1bTa67fBcrtS_OCeg1H9wMlA0Pd4Y";  // chave pública "anon", nunca a secreta
-const DOMINIO = "@peers.com.br";
+const DOMINIOS = ["@peers.com.br", "@actar.com.br"];   // grupo Peers; os mesmos da função dominio_permitido no Supabase
 const ESPERA_REENVIO = 60;                             // segundos até liberar "Reenviar código"
 
 let sb, emailLogin = "", portalAberto = false;
@@ -517,7 +517,7 @@ function mostrarEtapa(etapa){
   document.getElementById("formCodigo").hidden = etapa !== "codigo";
   document.getElementById("loginSub").textContent = etapa === "codigo"
     ? "Enviamos um código para " + emailLogin + ". Confira também o lixo eletrônico."
-    : "Acesso restrito à equipe Peers. Informe seu e-mail e enviaremos um código de acesso.";
+    : "Acesso restrito ao grupo Peers (Peers e Actar). Informe seu e-mail e enviaremos um código de acesso.";
   document.getElementById(etapa === "codigo" ? "loginCodigo" : "loginEmail").focus();
 }
 
@@ -550,7 +550,7 @@ async function enviarCodigo(){
 async function pedirCodigo(ev){
   ev.preventDefault();
   const email = document.getElementById("loginEmail").value.trim().toLowerCase();
-  if(!email.endsWith(DOMINIO)){ msgLogin("Acesso permitido somente para e-mails Peers."); return; }
+  if(!DOMINIOS.some(d => email.endsWith(d))){ msgLogin("Acesso permitido somente para e-mails @peers.com.br e @actar.com.br."); return; }
   const btn = document.getElementById("btnEmail");
   btn.disabled = true; btn.textContent = "Enviando…"; msgLogin("");
   emailLogin = email;
