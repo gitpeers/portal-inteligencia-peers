@@ -269,6 +269,8 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 .tl-item.conc:last-child{padding-bottom:14px;margin-bottom:0}
 .tl-item.conc:hover{border-color:var(--grey-strong)}
 .tl-item.conc::before{top:19px}
+/* os cinco números ocupam a largura toda, alinhados ao bloco de baixo (auto-fit estica as colunas) */
+.kgrid.kpis-conc{grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:18px}
 .pontos-semana{margin:8px 0 0 18px;display:grid;gap:6px}
 .cel-parc{display:inline-block;min-width:22px;padding:1px 7px;border-radius:var(--pill);background:var(--navy);color:#fff;font-size:.7rem}
 .mx td.n{text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
@@ -1822,7 +1824,7 @@ function renderConcorrencia(){
   '</div>';
 
   const conta = f => base.filter(f).length;
-  const kpis = '<div class="kgrid" style="margin-bottom:18px">' + [
+  const kpis = '<div class="kgrid kpis-conc">' + [
     [base.length, "movimentos no período"],
     [conta(i=>i.selo==="Ameaça"), "marcados como ameaça"],
     [conta(i=>i.selo==="Oportunidade"), "marcados como oportunidade"],
