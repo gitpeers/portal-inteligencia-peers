@@ -1583,13 +1583,6 @@ function renderIndicadores(){
   return '' +
   '<div class="sec-head"><h2>Indicadores setoriais</h2>' +
   '<p>Como está o setor em números: até cinco indicadores-chave por segmento, cada um da fonte oficial com melhor disponibilidade. Filtre a indústria no recorte acima e a divisão e o segmento aqui embaixo; marque o segmento para levá-lo ao briefing.</p></div>' +
-  (function(){
-    const todos = DADOS.indicadores.flatMap(s=>s.indicadores);
-    const reais = todos.filter(x=>x.status==="real").length;
-    return '<div class="warn" style="margin-bottom:18px"><b>' + reais + ' de ' + todos.length + ' indicadores com valor real</b>, tirados das fontes públicas e das associações de cada setor. ' +
-      'Os marcados como <b>atualização manual</b> vêm de publicações sem API e mudam só quando alguém os atualiza; os marcados como <b>série equivalente</b> usam um dado próximo ao original, com a explicação ao passar o mouse.' +
-      (reais < todos.length ? ' Os marcados como <b>valor de exemplo</b> ainda não foram ligados à fonte e não devem ser usados com cliente.' : '') + '</div>';
-  })() +
   (estado.offerings.size
     ? '<div class="srcnote">O filtro de offering não se aplica a esta seção: os indicadores são marcados apenas pelo eixo de indústria.</div>' : '') +
   filtros +
