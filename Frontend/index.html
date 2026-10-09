@@ -163,7 +163,10 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 .b1{background:var(--blue-soft);color:var(--blue-ink)}
 .b2{background:var(--ok-soft);color:#075e42}
 .b3{background:var(--danger-soft);color:#9b2328}
-.bp{background:var(--neon);color:var(--navy)}
+/* etiquetas de destaque: lima suave com contorno, para não competir com o conteúdo (o lima cheio fica para o
+   selo da edição e a aba ativa) */
+.bp{background:var(--neon-soft);color:var(--navy);box-shadow:inset 0 0 0 1px #d4e05a}
+.badge:empty{display:none}
 .bg-n{background:var(--grey-light);color:var(--grey-dark)}
 .chip{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:.71rem;font-weight:600;margin:3px 3px 0 0;
   background:var(--serene-soft);color:var(--navy);border:1px solid var(--serene)}
