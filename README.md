@@ -102,6 +102,20 @@ python enviar_dados.py --todos
 Para corrigir uma seção à mão (ex.: Valor 1000): `baixar_dados.py`, editar o arquivo em `Frontend/dados` e
 `python enviar_dados.py valor1000`.
 
+## Editar pela pasta do SharePoint
+
+A pasta do portal no SharePoint (Research & Insights - Ativos do Site) fica sincronizada com este repositório por
+uma tarefa agendada no computador do Kayo ("Portal Peers - Sincronizar GitHub", a cada 5 minutos):
+
+- Quem edita um arquivo na pasta e salva vê a mudança no site em poucos minutos. A tarefa espera 2 minutos sem
+  edições antes de enviar, para não publicar um arquivo pela metade.
+- O que é publicado direto no GitHub (por colaboradores, pelo robô ou pela rotina de IA) aparece na pasta sozinho.
+- Com o computador do Kayo desligado, as alterações ficam na pasta e são enviadas quando ele ligar.
+- Se algo der errado (conflito, muitos arquivos apagados de uma vez, dados prestes a ir para o repositório), nada é
+  enviado e aparece o arquivo `SINCRONIZACAO_COM_ERRO.txt` na pasta, explicando o motivo.
+- Os arquivos de `Frontend/dados` na pasta são cópias temporárias: editá-los não muda o site (os dados ficam no
+  Supabase).
+
 ## Observações
 
 - O GitHub pausa agendamentos de repositórios sem atividade por 60 dias. Os envios automáticos de dados contam
