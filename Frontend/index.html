@@ -275,9 +275,27 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 .kbox.clicavel{cursor:pointer;transition:border-color var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
 .kbox.clicavel:hover{border-color:var(--navy);box-shadow:var(--shadow)}
 .ver-players{margin-top:9px;font-size:.68rem;font-weight:700;color:var(--blue-ink)}
-.aprof-graf{margin:0 0 14px}
-.aprof-graf svg{width:100%;height:120px;display:block;background:var(--serene-soft);border-radius:var(--r-sm)}
-.aprof-graf-eixo{display:flex;justify-content:space-between;font-size:.66rem;color:var(--grey);margin-top:4px}
+.aprof-graf{margin:0 0 16px;border:1px solid var(--grey-border);border-radius:var(--r-md);padding:12px 14px 8px}
+.aprof-graf-tit{font-size:.72rem;font-weight:700;color:var(--navy);display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin-bottom:4px}
+.aprof-graf-tit span{font-weight:500;color:var(--grey)}
+.aprof-graf-area{position:relative}
+.aprof-graf-area svg{display:block;overflow:visible}
+.g-grade{stroke:var(--grey-light);stroke-width:1}
+.g-base{stroke:var(--grey-strong);stroke-width:1}
+.g-eixo{font-size:10.5px;fill:var(--grey)}
+.g-faixa{font-size:10px;font-weight:700;fill:var(--blue-ink)}
+.g-final{font-size:11.5px;font-weight:700;fill:var(--navy)}
+.g-mira{stroke:var(--grey-dark);stroke-width:1}
+.g-ponto{fill:var(--navy);stroke:#fff;stroke-width:2}
+.g-hit{cursor:crosshair;outline:none}
+.g-tip{position:absolute;pointer-events:none;background:var(--navy);color:#fff;border-radius:var(--r-sm);padding:6px 9px;
+  font-size:.7rem;line-height:1.35;white-space:nowrap;box-shadow:var(--shadow-md)}
+.g-tip b{display:block;font-size:.8rem}
+.g-tip span{color:rgba(255,255,255,.75)}
+.aprof-graf-nota{font-size:.68rem;color:var(--grey);margin:2px 0 0}
+.aprof-dados{margin-top:6px;font-size:.7rem;color:var(--grey-dark)}
+.aprof-dados summary{cursor:pointer;color:var(--blue-ink);font-weight:600}
+.aprof-dados-lista{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:6px;font-variant-numeric:tabular-nums}
 .aprof-ref-txt{font-size:.8rem;margin:0 0 10px;color:var(--text2)}
 .aprof-tab td{vertical-align:middle}
 .aprof-tab tbody tr{cursor:default}
@@ -1710,20 +1728,106 @@ function fmtDif(d){
   return (d>0?'+':(d<0?'−':'')) + fmtN(Math.abs(d),1) + ' p.p.';
 }
 
-// Linha do tempo do indicador (últimos 24 meses ou 8 trimestres), em SVG simples.
-function graficoHistorico(h, unidade){
+// Evolução do indicador: eixo com valores, meses, faixas do trimestre comparado (e do mesmo trimestre do ano
+// anterior), valor final rotulado e leitura por mês ao passar o mouse (valor e variação em 12 meses).
+const MESES_CURTOS = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+function rotMes(am){ const [a,m] = am.split("-"); return MESES_CURTOS[+m-1]+"/"+a.slice(2); }
+
+function graficoHistorico(h){
   if(!h || !h.pontos || h.pontos.length<4) return '';
-  const pts = h.pontos, W = 640, H = 120, ml = 8, mr = 8, mt = 14, mb = 22;
-  const vals = pts.map(p=>p[1]), min = Math.min(...vals), max = Math.max(...vals), amp = (max-min) || 1;
-  const x = i => ml + i*(W-ml-mr)/(pts.length-1), y = v => mt + (H-mt-mb)*(1-(v-min)/amp);
+  return '<div class="aprof-graf"><div class="aprof-graf-tit">Evolução do indicador' +
+      '<span>'+(h.somado12m ? 'valor de cada mês (o cartão mostra a soma de 12 meses)' : (h.freq==="trimestral" ? 'por trimestre' : 'por mês'))+'</span></div>' +
+    '<div class="aprof-graf-area" data-graf></div>' +
+    '<details class="aprof-dados"><summary>Ver os valores</summary><div class="aprof-dados-lista">' +
+      h.pontos.map(p=>'<span>'+rotMes(p[0])+' <b>'+fmtN(p[1], Math.abs(p[1])<100?2:1)+'</b></span>').join("") + '</div></details></div>';
+}
+
+function niceTicks(min, max, n){
+  const passoBruto = (max-min)/n || 1, mag = Math.pow(10, Math.floor(Math.log10(passoBruto)));
+  const passo = [1,2,2.5,5,10].map(k=>k*mag).find(k=>k>=passoBruto);
+  const ini = Math.floor(min/passo)*passo, fim = Math.ceil(max/passo)*passo, t = [];
+  for(let v=ini; v<=fim+passo/2; v+=passo) t.push(+v.toFixed(10));
+  return t;
+}
+
+function montarGrafico(alvo, h, unidade, trimestre){
+  if(!alvo) return;
+  const pts = h.pontos, W = Math.max(alvo.clientWidth, 280), H = 210;
+  const ml = 46, mr = 58, mt = 22, mb = 26;
+  const vals = pts.map(p=>p[1]);
+  const ticks = niceTicks(Math.min(...vals), Math.max(...vals), 4);
+  const y0 = ticks[0], y1 = ticks[ticks.length-1];
+  const x = i => ml + i*(W-ml-mr)/(pts.length-1);
+  const y = v => mt + (H-mt-mb)*(1-(v-y0)/((y1-y0)||1));
+  const casas = Math.abs(y1)<10 ? 2 : (Math.abs(y1)<100 ? 1 : 0);
+  const fmt = v => fmtN(v, casas);
+  const passoX = (W-ml-mr)/(pts.length-1);
+
+  // faixas do trimestre usado na comparação com os players e do mesmo trimestre um ano antes
+  let faixas = '';
+  if(trimestre && /^[1-4]T\d\d$/.test(trimestre) && h.freq==="mensal"){
+    const ano = 2000 + +trimestre.slice(2), q = +trimestre[0];
+    [[ano, trimestre], [ano-1, q+"T"+String(ano-1).slice(2)]].forEach(([a, rot], k)=>{
+      const idx = [1,2,3].map(j=>pts.findIndex(p=>p[0]===a+"-"+String((q-1)*3+j).padStart(2,"0"))).filter(i=>i>=0);
+      if(!idx.length) return;
+      const xa = x(Math.min(...idx)) - passoX/2, xb = x(Math.max(...idx)) + passoX/2;
+      faixas += '<rect x="'+xa.toFixed(1)+'" y="'+mt+'" width="'+(xb-xa).toFixed(1)+'" height="'+(H-mt-mb)+'" fill="var(--blue)" opacity="'+(k?0.06:0.12)+'"/>' +
+        '<text x="'+((xa+xb)/2).toFixed(1)+'" y="'+(mt-7)+'" text-anchor="middle" class="g-faixa">'+rot+'</text>';
+    });
+  }
+  const grade = ticks.map(t=>'<line x1="'+ml+'" x2="'+(W-mr)+'" y1="'+y(t).toFixed(1)+'" y2="'+y(t).toFixed(1)+'" class="g-grade"/>' +
+    '<text x="'+(ml-8)+'" y="'+(y(t)+4).toFixed(1)+'" text-anchor="end" class="g-eixo">'+fmt(t)+'</text>').join("");
+  // meses no eixo: o primeiro de cada semestre (jan e jul), sem encostar nas pontas
+  const marcas = pts.map((p,i)=>({p,i})).filter(o=>h.freq!=="mensal" || /-(01|07)$/.test(o.p[0]))
+    .map(o=>'<line x1="'+x(o.i).toFixed(1)+'" x2="'+x(o.i).toFixed(1)+'" y1="'+(H-mb)+'" y2="'+(H-mb+4)+'" class="g-grade"/>' +
+      '<text x="'+x(o.i).toFixed(1)+'" y="'+(H-mb+16)+'" text-anchor="middle" class="g-eixo">'+rotMes(o.p[0])+'</text>').join("");
   const linha = pts.map((p,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(p[1]).toFixed(1)).join(' ');
-  const rot = p => { const [a,m] = p[0].split('-'); return ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"][+m-1]+'/'+a.slice(2); };
-  const ult = pts[pts.length-1];
-  return '<div class="aprof-graf"><svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" role="img" aria-label="Evolução do indicador">' +
-      '<path d="'+linha+'" fill="none" stroke="var(--navy)" stroke-width="2" vector-effect="non-scaling-stroke"/>' +
-      '<circle cx="'+x(pts.length-1)+'" cy="'+y(ult[1])+'" r="3.5" fill="var(--navy)"/>' +
-    '</svg>' +
-    '<div class="aprof-graf-eixo"><span>'+rot(pts[0])+'</span><span>'+(h.somado12m?'valor de cada mês':'mín. '+fmtN(min,1)+' · máx. '+fmtN(max,1))+'</span><span>'+rot(ult)+'</span></div></div>';
+  const area = linha + ' L'+x(pts.length-1).toFixed(1)+' '+(H-mb)+' L'+x(0).toFixed(1)+' '+(H-mb)+' Z';
+  const ult = pts[pts.length-1], iu = pts.length-1;
+
+  alvo.innerHTML = '<svg width="'+W+'" height="'+H+'" role="img" aria-label="Evolução do indicador de '+rotMes(pts[0][0])+' a '+rotMes(ult[0])+'">' +
+      faixas + grade +
+      '<line x1="'+ml+'" x2="'+(W-mr)+'" y1="'+(H-mb)+'" y2="'+(H-mb)+'" class="g-base"/>' + marcas +
+      '<path d="'+area+'" fill="var(--navy)" opacity="0.07"/>' +
+      '<path d="'+linha+'" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>' +
+      '<circle cx="'+x(iu).toFixed(1)+'" cy="'+y(ult[1]).toFixed(1)+'" r="4.5" fill="var(--navy)" stroke="#fff" stroke-width="2"/>' +
+      '<text x="'+(x(iu)+9).toFixed(1)+'" y="'+(y(ult[1])+4).toFixed(1)+'" class="g-final">'+fmt(ult[1])+'</text>' +
+      '<line class="g-mira" y1="'+mt+'" y2="'+(H-mb)+'" style="display:none"/>' +
+      '<circle class="g-ponto" r="4.5" style="display:none"/>' +
+      '<rect class="g-hit" x="'+(ml-passoX/2)+'" y="0" width="'+(W-ml-mr+passoX)+'" height="'+H+'" fill="transparent" tabindex="0"/>' +
+    '</svg><div class="g-tip" style="display:none"></div>' +
+    (faixas ? '<p class="aprof-graf-nota">Faixas azuis: o trimestre usado na comparação com os players ('+trimestre+') e o mesmo trimestre do ano anterior. Passe o mouse para ver o valor de cada mês.</p>' : '');
+
+  // leitura por mês: valor e variação sobre o mesmo mês do ano anterior (quando a série tem 12 meses antes)
+  const svg = alvo.querySelector("svg"), mira = svg.querySelector(".g-mira"), ponto = svg.querySelector(".g-ponto"), tip = alvo.querySelector(".g-tip");
+  const defas = h.freq==="mensal" ? 12 : 4;
+  const mostrar = i => {
+    const p = pts[i], xi = x(i), yi = y(p[1]), ant = pts[i-defas];
+    mira.setAttribute("x1", xi); mira.setAttribute("x2", xi); mira.style.display = "";
+    ponto.setAttribute("cx", xi); ponto.setAttribute("cy", yi); ponto.style.display = "";
+    tip.textContent = "";
+    const v = document.createElement("b"); v.textContent = fmtN(p[1], casas) + (unidade ? " " + unidade : "");
+    const d = document.createElement("span"); d.textContent = rotMes(p[0]) + (ant && !h.somado12m ? " · " + (p[1]>=ant[1]?"+":"−") + fmtN(Math.abs((p[1]/ant[1]-1)*100),1) + "% em 12 meses" : "");
+    tip.append(v, d);
+    tip.style.display = "";
+    tip.style.left = Math.min(Math.max(xi - tip.offsetWidth/2, 0), W - tip.offsetWidth) + "px";
+    tip.style.top = Math.max(yi - tip.offsetHeight - 12, 0) + "px";
+  };
+  const esconder = () => { mira.style.display = ponto.style.display = tip.style.display = "none"; };
+  const hit = svg.querySelector(".g-hit");
+  let atual = iu;
+  hit.addEventListener("pointermove", e=>{
+    const r = svg.getBoundingClientRect();
+    atual = Math.max(0, Math.min(pts.length-1, Math.round((e.clientX - r.left - ml)/passoX)));
+    mostrar(atual);
+  });
+  hit.addEventListener("pointerleave", esconder);
+  hit.addEventListener("focus", ()=>mostrar(atual));
+  hit.addEventListener("blur", esconder);
+  hit.addEventListener("keydown", e=>{
+    if(e.key==="ArrowLeft"){ atual = Math.max(0, atual-1); mostrar(atual); e.preventDefault(); }
+    if(e.key==="ArrowRight"){ atual = Math.min(pts.length-1, atual+1); mostrar(atual); e.preventDefault(); }
+  });
 }
 
 function abrirAprofundamento(chave){
@@ -1784,7 +1888,7 @@ function abrirAprofundamento(chave){
       '<button class="modal-close" onclick="fecharModal(\'Ficha\')">Fechar</button>' +
     '</div>' +
     '<div class="modal-body">' +
-      graficoHistorico(p.historico, ind.unidade) +
+      graficoHistorico(p.historico) +
       '<p class="cardnote" style="margin:0 0 10px"><span class="badge '+cls+'">'+rotNivel+'</span> '+esc(expNivel)+'. '+esc(p.nota)+'</p>' +
       (leitura && leitura.texto ? '<div class="analise-ia"><span class="selo-ia">Gerado por IA</span>'+esc(leitura.texto)+'</div>' : '') +
       (refTxt ? '<p class="aprof-ref-txt">'+refTxt+'</p>' : '') +
@@ -1794,6 +1898,8 @@ function abrirAprofundamento(chave){
         '<ul class="mini">'+movs.map(mv=>'<li><span class="d">'+formatarData(mv.data).slice(0,5)+'</span><span><b>'+esc(mv.player)+'</b> · '+esc(mv.tese)+'</span></li>').join("")+'</ul>' : '') +
     '</div>';
   abrirModal("Ficha");
+  // desenhado depois de aberto: o gráfico usa a largura real do painel
+  if(p.historico) montarGrafico(m.querySelector("[data-graf]"), p.historico, ind.unidade, s.mesmoPeriodo ? s.periodoReferencia : null);
 }
 
 /* =========================================================
