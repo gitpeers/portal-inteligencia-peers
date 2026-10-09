@@ -76,11 +76,26 @@ body.bloqueado #login{display:flex;min-height:100vh;align-items:center;justify-c
 
 /* ---- BARRA FIXA: ABAS + FILTROS ---- */
 .topbar{position:sticky;top:0;z-index:100;box-shadow:var(--shadow-md)}
-.nav-tabs{background:var(--navy);display:flex;gap:4px;padding:0 40px;overflow-x:auto;border-top:1px solid rgba(255,255,255,.10)}
-.nav-tab{padding:14px 16px 12px;color:rgba(255,255,255,.62);font-size:.82rem;font-weight:500;cursor:pointer;
+.nav-tabs{background:var(--navy);display:flex;gap:4px;padding:0 40px;border-top:1px solid rgba(255,255,255,.10);flex-wrap:wrap}
+.nav-tab{background:none;border:none;border-bottom:2px solid transparent;font-family:inherit;padding:14px 16px 12px;color:rgba(255,255,255,.62);font-size:.82rem;font-weight:500;cursor:pointer;
   border-bottom:2px solid transparent;white-space:nowrap;transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease)}
 .nav-tab:hover{color:#fff}
 .nav-tab.active{color:#fff;font-weight:600;border-bottom-color:var(--neon)}
+.nav-tab .seta{margin-left:7px;font-size:.62rem;opacity:.7;display:inline-block;transition:transform var(--dur) var(--ease)}
+.nav-atual{font-weight:500;color:rgba(255,255,255,.62)}
+.nav-grupo{position:relative}
+.nav-menu{display:none;position:absolute;top:100%;left:0;min-width:320px;background:var(--navy);border:1px solid rgba(255,255,255,.16);
+  border-radius:0 0 var(--r-md) var(--r-md);padding:8px;box-shadow:var(--shadow-lg);z-index:150}
+.nav-grupo.open .nav-menu{display:block}
+.nav-grupo.open .seta{transform:rotate(180deg)}
+.nav-menu-tit{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.45);padding:6px 12px 8px}
+.nav-item{display:block;width:100%;text-align:left;background:none;border:none;font-family:inherit;color:#fff;font-size:.84rem;
+  font-weight:500;padding:10px 12px;border-radius:var(--r-sm);cursor:pointer;transition:background var(--dur) var(--ease)}
+.nav-item small{display:block;color:rgba(255,255,255,.55);font-size:.7rem;font-weight:400;margin-top:2px}
+.nav-item:hover,.nav-item:focus-visible{background:rgba(255,255,255,.08)}
+.nav-item.active{color:var(--neon)}
+@media(max-width:560px){.nav-tab{padding:12px 10px 10px;font-size:.78rem}.nav-atual{display:none}
+  .nav-tabs{position:relative}.nav-grupo{position:static}.nav-menu{left:8px;right:8px;min-width:0}}
 .filters-bar{background:#fff;border-bottom:1px solid var(--grey-border);padding:11px 40px;display:flex;
   gap:9px;align-items:center;flex-wrap:wrap}
 .flt-label{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--grey)}
@@ -304,6 +319,15 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 .aprof-barra{position:absolute;top:0;height:8px;border-radius:var(--pill);background:var(--blue)}
 .aprof-barra.neg{background:#c4343a}
 .aprof-ref{position:absolute;top:-4px;width:2px;height:16px;background:var(--navy)}
+/* Edição do dia: dois quadros, um por grupo do menu */
+.quadro{display:flex;flex-direction:column;min-width:0}
+.quadro-cab{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap;margin:0 2px 10px}
+.quadro-tit{font-size:.95rem;font-weight:700;color:var(--navy);margin-right:8px}
+.quadro-desc{font-size:.74rem;color:var(--grey)}
+.quadro-links{display:flex;gap:4px;flex-wrap:wrap}
+.quadro-links button{background:none;border:none;font-family:inherit;font-size:.72rem;font-weight:600;color:var(--blue-ink);cursor:pointer;
+  padding:3px 6px;border-radius:var(--r-sm)}
+.quadro-links button:hover{background:var(--serene-soft)}
 .pontos-semana{margin:8px 0 0 18px;display:grid;gap:6px}
 .cel-parc{display:inline-block;min-width:22px;padding:1px 7px;border-radius:var(--pill);background:var(--navy);color:#fff;font-size:.7rem}
 .mx td.n{text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
@@ -722,6 +746,18 @@ const estadoMovimentos = { filtroTipo:"todos", filtroPlayer:"todos", visao:"linh
 const estadoIndicadores = { divisao:"todas", segmento:"todos" };
 const estadoConcorrencia = { visao:"feed", periodo:90, grupo:"todos", concorrente:"todos", tipo:"todos", selo:"todos", escopo:"todos" };
 
+// Menu em dois grupos (com submenu vertical), mais a Edição do dia. A ordem das abas dentro do grupo é a do menu.
+const GRUPOS = [
+  {id:"home"},
+  {id:"mercado", label:"Mercado", desc:"notícias e dados do setor", abas:[
+    {id:"radar", desc:"o que foi noticiado, com o ângulo para a Peers"},
+    {id:"indicadores", desc:"o setor em números, com a visão por player"},
+    {id:"agenda", desc:"datas e eventos dos próximos 90 dias"}]},
+  {id:"players", label:"Players e concorrência", desc:"empresas, decisões e concorrentes", abas:[
+    {id:"financas", desc:"resultados das empresas e do ranking Valor 1000"},
+    {id:"movimentos", desc:"aquisições, parcerias e trocas de comando"},
+    {id:"concorrencia", desc:"o que as consultorias concorrentes estão fazendo"}]}
+];
 const ABAS = [
   {id:"home", label:"Edição do dia"},
   {id:"radar", label:"Radar"},
@@ -920,8 +956,20 @@ function init(){
 
 function montarAbas(){
   const nav = document.getElementById("navTabs");
-  nav.innerHTML = ABAS.map(a=>'<div class="nav-tab '+(a.id===estado.aba?'active':'')+'" data-s="'+a.id+'">'+a.label+'</div>').join("");
-  nav.querySelectorAll(".nav-tab").forEach(t=>{
+  const rot = id => ABAS.find(a=>a.id===id).label;
+  nav.innerHTML = GRUPOS.map(g=>{
+    if(!g.abas) return '<button type="button" class="nav-tab '+(g.id===estado.aba?'active':'')+'" data-s="'+g.id+'">'+rot(g.id)+'</button>';
+    const ativo = g.abas.some(a=>a.id===estado.aba);
+    return '<div class="nav-grupo" data-g="'+g.id+'">' +
+      '<button type="button" class="nav-tab '+(ativo?'active':'')+'" aria-haspopup="true" aria-expanded="false">'+g.label +
+        (ativo ? '<span class="nav-atual"> · '+esc(rot(estado.aba))+'</span>' : '') + '<span class="seta">▾</span></button>' +
+      '<div class="nav-menu" role="menu"><div class="nav-menu-tit">'+esc(g.desc)+'</div>' +
+        g.abas.map(a=>'<button type="button" role="menuitem" class="nav-item'+(a.id===estado.aba?' active':'')+'" data-s="'+a.id+'">' +
+          rot(a.id)+'<small>'+esc(a.desc)+'</small></button>').join("") +
+      '</div></div>';
+  }).join("");
+  const fechar = ()=>nav.querySelectorAll(".nav-grupo").forEach(g=>{ g.classList.remove("open"); g.querySelector(".nav-tab").setAttribute("aria-expanded","false"); });
+  nav.querySelectorAll("[data-s]").forEach(t=>{
     t.addEventListener("click", ()=>{
       pararFala();            // trocar de aba interrompe o resumo falado
       estado.aba = t.dataset.s;
@@ -930,6 +978,19 @@ function montarAbas(){
       window.scrollTo({top:0, behavior:'smooth'});
     });
   });
+  // o submenu abre ao passar o mouse (computador) e ao tocar ou clicar (celular e teclado)
+  nav.querySelectorAll(".nav-grupo").forEach(g=>{
+    const botao = g.querySelector(".nav-tab");
+    const abrir = ()=>{ fechar(); g.classList.add("open"); botao.setAttribute("aria-expanded","true"); };
+    g.addEventListener("mouseenter", ()=>{ if(window.matchMedia("(hover:hover)").matches) abrir(); });
+    g.addEventListener("mouseleave", ()=>{ if(window.matchMedia("(hover:hover)").matches) fechar(); });
+    botao.addEventListener("click", e=>{ e.stopPropagation(); g.classList.contains("open") ? fechar() : abrir(); });
+  });
+  if(!montarAbas.ligado){
+    document.addEventListener("click", e=>{ if(!e.target.closest(".nav-grupo")) document.querySelectorAll(".nav-grupo.open").forEach(g=>g.classList.remove("open")); });
+    document.addEventListener("keydown", e=>{ if(e.key==="Escape") document.querySelectorAll(".nav-grupo.open").forEach(g=>g.classList.remove("open")); });
+    montarAbas.ligado = true;
+  }
 }
 
 /* =========================================================
@@ -990,6 +1051,10 @@ function renderHome(){
   const movsRecentes = movs.slice(0,5);
   const agendaAberta = DADOS.agenda.filter(passaFiltro).filter(e=>diasEntre(e.data)>=0).sort((a,b)=>a.data.localeCompare(b.data));
   const agenda30 = agendaAberta.filter(e=>diasEntre(e.data)<=30);
+  // concorrência da semana: ameaças e oportunidades primeiro
+  const pesoSelo = {"Ameaça":0, "Oportunidade":1};
+  const concSemana = (DADOS.concorrencia||[]).filter(c=>diasEntre(c.data)>=-7)
+    .sort((a,b)=>((pesoSelo[a.selo] ?? 2)-(pesoSelo[b.selo] ?? 2)) || b.data.localeCompare(a.data)).slice(0,5);
   const indsSel = [...estado.industrias];
   const playersCobertos = indsSel.length
     ? indsSel.reduce((s,i)=>s+segmentosDaIndustria(i).length, 0)
@@ -1021,6 +1086,13 @@ function renderHome(){
   ).join("") + '</div>' +
 
   '<div class="grid-2" style="grid-template-columns:1.35fr 1fr">' +
+    '<div class="quadro">' + cabecaQuadro("mercado") +
+    '<div class="card" style="margin:0 0 18px">' +
+      '<div class="card-title"><span class="dot"></span>Agenda — próximos 30 dias<span class="hint">'+agenda30.length+(agenda30.length===1?' data':' datas')+'</span></div>' +
+      (agenda30.length ? '<ul class="mini">' + agenda30.slice(0,4).map(e=>
+        '<li><span class="d">'+formatarData(e.data).slice(0,5)+'</span><span>'+esc(e.titulo)+'</span></li>'
+      ).join("") + '</ul>' : '<div class="vazio">Nada agendado nos próximos 30 dias.</div>') +
+    '</div>' +
     '<div class="card" id="cardManchetes" style="margin:0">' +
       '<div class="card-title"><span class="dot"></span>Principais manchetes<span class="hint">abra o Radar para o ângulo completo</span></div>' +
       (manchetes.length ? manchetes.map(m=>
@@ -1029,7 +1101,8 @@ function renderHome(){
           '<h3>'+esc(m.manchete)+'</h3><p>'+esc(m.resumo)+'</p>' +
         '</div>').join("")
        : '<div class="vazio">Nenhuma manchete para este recorte.</div>') +
-    '</div>' +
+    '</div></div>' +
+    '<div class="quadro">' + cabecaQuadro("players") +
     '<div id="colunaDireita" style="display:flex;flex-direction:column;gap:18px">' +
       '<div class="card" style="margin:0">' +
         '<div class="card-title"><span class="dot"></span>Movimentos recentes</div>' +
@@ -1038,13 +1111,21 @@ function renderHome(){
         ).join("") + '</ul>' : '<div class="vazio">Nenhum movimento para este recorte.</div>') +
       '</div>' +
       '<div class="card" style="margin:0">' +
-        '<div class="card-title"><span class="dot"></span>Agenda — próximos 30 dias</div>' +
-        (agenda30.length ? '<ul class="mini">' + agenda30.map(e=>
-          '<li><span class="d">'+formatarData(e.data).slice(0,5)+'</span><span>'+esc(e.titulo)+'</span></li>'
-        ).join("") + '</ul>' : '<div class="vazio">Nada agendado nos próximos 30 dias.</div>') +
+        '<div class="card-title"><span class="dot"></span>Concorrência — últimos 7 dias</div>' +
+        (concSemana.length ? '<ul class="mini">' + concSemana.map(c=>
+          '<li><span class="d">'+formatarData(c.data).slice(0,5)+'</span><span><b>'+esc(c.nome)+'</b> · '+esc(c.fato || c.manchete) +
+            (c.selo && c.selo!=="Monitorar" ? ' <span class="badge '+SELO_CLASSE[c.selo]+'">'+esc(c.selo)+'</span>' : '')+'</span></li>'
+        ).join("") + '</ul>' : '<div class="vazio">Nenhum movimento de concorrente nos últimos 7 dias.</div>') +
       '</div>' +
-    '</div>' +
+    '</div></div>' +
   '</div>';
+}
+
+// Cabeça de cada quadro da Edição do dia: o grupo do menu e atalhos para as abas dele.
+function cabecaQuadro(id){
+  const g = GRUPOS.find(x=>x.id===id);
+  return '<div class="quadro-cab"><div><span class="quadro-tit">'+esc(g.label)+'</span><span class="quadro-desc">'+esc(g.desc)+'</span></div>' +
+    '<div class="quadro-links">'+g.abas.map(a=>'<button type="button" data-ir="'+a.id+'">'+esc(ABAS.find(x=>x.id===a.id).label)+' ›</button>').join("")+'</div></div>';
 }
 
 /* =========================================================
@@ -2289,6 +2370,9 @@ function ligarEventos(){
     renderizar();
   }));
   document.querySelectorAll("[data-conc]").forEach(el=>el.addEventListener("click", ()=>abrirFichaConcorrente(el.dataset.conc)));
+  document.querySelectorAll("[data-ir]").forEach(b=>b.addEventListener("click", ()=>{
+    estado.aba = b.dataset.ir; montarAbas(); renderizar(); window.scrollTo({top:0, behavior:'smooth'});
+  }));
   document.querySelectorAll("[data-aprof]").forEach(el=>el.addEventListener("click", ()=>abrirAprofundamento(el.dataset.aprof)));
 }
 
