@@ -16,7 +16,7 @@ Quem for reproduzir a rotina só precisa apontar o agendamento para este arquivo
   nem mostre ou grave as variáveis `SUPABASE_URL` e `SUPABASE_SERVICE_KEY` em arquivos, mensagens ou no resumo.
 - **Português do Brasil**, frases curtas e diretas, sem jargão vazio ("sinergias", "disruptivo") e sem exclamações.
 - **Leitor:** consultores e sócios da Peers, que abrem o portal antes de uma reunião com cliente.
-- Não cite consultorias concorrentes.
+- Não cite consultorias concorrentes, **exceto na seção Concorrência** (abaixo), que existe para acompanhá-las.
 
 ## Passo 1. Preparar
 
@@ -47,12 +47,16 @@ Escreva as respostas em `Backend/ia/trabalho/respostas.json`. Com muitos itens, 
   "financas":    { "<Indústria>|<Divisão>": "..." },
   "indicadores": { "<id do segmento>": "..." },
   "descartar":   { "<id>": "motivo" },
-  "revisar":     { "<id>": "motivo" }
+  "revisar":     { "<id>": "motivo" },
+  "concorrencia":          { "<id>": { "fato": "...", "sinal": "...", "impacto": "...", "selo": "...", "offering": "..." } },
+  "descartarConcorrencia": { "<id>": "motivo" },
+  "concorrenciaSemana":    [ "...", "...", "..." ]
 }
 ```
 
-Responda todos os itens de `radar` e `movimentos` (em `radar`/`movimentos` ou em `descartar`) e todas as chaves de `financas` e `indicadores` que vierem
-nas pendências. Seções ausentes nas pendências ficam fora das respostas.
+Responda todos os itens de `radar` e `movimentos` (em `radar`/`movimentos` ou em `descartar`), todos os itens de
+`concorrencia` (em `concorrencia` ou em `descartarConcorrencia`) e todas as chaves de `financas` e `indicadores` que
+vierem nas pendências. Seções ausentes nas pendências ficam fora das respostas.
 
 ### Radar (cada notícia)
 
@@ -87,6 +91,47 @@ ROE e lucro) e quem se destacou acima ou abaixo dela. Use só os números do arq
 Até 380 caracteres, 1 ou 2 frases: o que os indicadores dizem sobre o momento do segmento (crescimento, preço,
 crédito, demanda), citando dois ou três valores com o período. Só os valores do arquivo.
 
+### Concorrência (cada movimento de concorrente, quando vier `concorrencia` nas pendências)
+
+A única seção em que se fala das consultorias concorrentes. O robô achou a notícia e marcou o tipo de movimento;
+a IA diz o que aconteceu, o que o movimento revela e o que muda para a Peers. Em `referencia.concorrentes` está o
+grupo de cada concorrente e as offerings em que ele disputa projetos com a Peers.
+
+**Quem é a Peers, para o impacto.** Consultoria brasileira de estratégia, gestão e tecnologia (Peers Consulting +
+Technology). Atua com as offerings de `referencia.offerings` e nas indústrias do portal (Financial Services, Varejo,
+Health, Power & Utilities, A&B + Agro, Manufacturing & Natural Resources, TI & Telecom, Transportes & Logística,
+Educação, Public Services). Disputa projetos com as estratégicas globais, as Big Four, as consultorias de tecnologia
+e as consultorias brasileiras da lista.
+
+- **fato** (até 300): o que aconteceu, em 1 ou 2 frases: quem, o quê, com quem, quanto e onde, só com o que a manchete
+  e a fonte dizem. Se a matéria é de fora do Brasil, diga o país.
+- **sinal** (até 240): o que o movimento revela sobre a aposta do concorrente (capacidade que compra, mercado que
+  quer, oferta que empacota). Uma frase. Não invente motivos que a notícia não sustenta.
+- **impacto** (até 300): o que muda para a Peers, em uma ou duas frases, terminando no que fazer. Ex.: `Reforça o
+  concorrente em IA aplicada a bancos, onde a Peers disputa projetos de Analytics + IA; vale levar casos próprios de IA
+  em produção às propostas de Financial Services.` Fale da Peers como empresa, sem nomes de clientes ou de pessoas
+  da Peers, sem propostas em andamento e sem nada que não seja público.
+- **selo**, um de três, pelo critério abaixo (sempre o mesmo, para o leitor confiar no selo):
+  - `Ameaça`: o concorrente ganha capacidade, parceria, cliente ou presença numa offering ou indústria em que a Peers
+    atua no Brasil (aquisição de consultoria, aliança com big tech, nova oferta, projeto ganho, centro aberto aqui).
+  - `Oportunidade`: o movimento abre espaço para a Peers: problema de reputação, multa, investigação, conflito de
+    independência (auditoria × consultoria), saída de mercado, cortes ou perda de sócios.
+  - `Monitorar`: movimento relevante, mas sem efeito direto agora (nomeação, resultado financeiro, movimento só em
+    outro país).
+- **offering**: o nome exato de uma offering de `referencia.offerings`, a mais afetada. O robô sugere uma no item;
+  troque se não for a melhor.
+- **descartarConcorrencia** (com o motivo): a notícia não é um movimento do concorrente (homônimo, ex-funcionário,
+  estudo ou opinião, comentário de ações, evento social, contratação de uma pessoa vinda do concorrente) ou repete
+  um fato que já está em outro item. O item some do site.
+
+### Leitura da semana da Concorrência (quando vier `concorrenciaSemana` nas pendências; semanal)
+
+De 3 a 5 pontos (até 300 caracteres cada), para quem tem 30 segundos. Procure padrões, não repita notícias:
+vários concorrentes indo na mesma direção, uma corrida (IA generativa, aquisições de boutiques, centros no Brasil),
+uma fragilidade que se repete. Cada ponto cita os concorrentes envolvidos e termina no que importa para a Peers.
+Use os itens de `concorrenciaSemana.itens` com as análises que você escreveu hoje para os itens pendentes. Semana
+sem movimento relevante: 3 pontos curtos dizendo isso e o que vale observar.
+
 ### Sessão trimestral de Finanças (quando vier `releases` nas pendências)
 
 Os releases do novo trimestre estão prontos. Para cada empresa em `releases.prontos`:
@@ -109,7 +154,7 @@ python Backend/enviar_dados.py --todos
 ```
 
 O `aplicar.py` confere tamanhos, campos e ids, e só então grava nos arquivos. Se apontar problemas, corrija as
-respostas e rode de novo. Nunca edite `radar.json`, `movimentos.json` ou `analises.json` à mão.
+respostas e rode de novo. Nunca edite `radar.json`, `movimentos.json`, `concorrencia.json` ou `analises.json` à mão.
 O `enviar_dados.py` devolve os dados ao Supabase: é a partir dele que o portal mostra as análises. Só rode depois
 que o `aplicar.py` terminar sem problemas.
 
@@ -128,8 +173,9 @@ Os dados já foram para o Supabase no passo 3; o envio ao repositório guarda s�
 
 ## Passo 5. Resumo final
 
-Responda em até 5 linhas: quantos itens escreveu em cada seção, o que ficou para o dia seguinte, os itens em
-`revisar` (com o título e o motivo de cada um) e qualquer falha. É aqui que quem acompanha a rotina vê o que precisa
+Responda em até 5 linhas: quantos itens escreveu em cada seção (na Concorrência, também quantos descartou e se
+escreveu a Leitura da semana), o que ficou para o dia seguinte, os itens em `revisar` (com o título e o motivo de
+cada um) e qualquer falha. É aqui que quem acompanha a rotina vê o que precisa
 de atenção.
 
 ---
