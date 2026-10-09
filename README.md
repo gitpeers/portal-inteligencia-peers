@@ -6,7 +6,7 @@ Movimentos estratégicos, Concorrência e Agenda setorial, filtráveis por indú
 O portal se atualiza sozinho: o GitHub Actions roda os scripts em Python todo dia, busca os dados em fontes
 públicas (feeds de notícias, Banco Central, IBGE, CVM, Câmara) e grava no **Supabase**. Uma rotina do Claude
 escreve as análises por cima. Os dados ficam só no Supabase, e o GitHub Pages publica só a página. Para ver os
-dados, a pessoa entra com um **código enviado ao e-mail @peers.com.br**.
+dados, a pessoa entra com um **código enviado ao e-mail @peers.com.br ou @actar.com.br** (a Actar é do grupo Peers).
 
 Os scripts trabalham com arquivos: antes de rodar, `baixar_dados.py` traz os dados do Supabase para
 `Frontend/dados`; no fim, `enviar_dados.py` devolve o resultado. Esses arquivos são temporários e nunca vão para o
@@ -41,11 +41,13 @@ Supabase/
 
 - O repositório é **público**, mas só tem código e configurações: os dados nunca entram nele.
 - O site publica só a página. Ela pede os dados ao Supabase, cujas regras (RLS) só entregam a quem fez login
-  com e-mail `@peers.com.br`. A URL e a chave pública no `index.html` podem ser vistas por qualquer um: sozinhas
+  com e-mail `@peers.com.br` ou `@actar.com.br`. A URL e a chave pública no `index.html` podem ser vistas por qualquer um: sozinhas
   não abrem nada.
 - O código de login é enviado pelo Outlook da Peers, por um fluxo do Power Automate ligado ao Supabase
   (Send Email hook).
 - O cadastro é automático no primeiro login; uma trava no banco recusa e-mails de outros domínios.
+- Para liberar outro domínio: altere a função `dominio_permitido` em `Supabase/configuracao.sql` (rodar no SQL Editor)
+  e a lista `DOMINIOS` no `Frontend/index.html`, nessa ordem.
 - Para tirar o acesso de alguém: Supabase > Authentication > Users > apagar o usuário.
 
 ## O que se atualiza e quando
