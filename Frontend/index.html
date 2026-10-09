@@ -256,8 +256,10 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 .tl-head{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
 .tl-data{font-size:.72rem;color:var(--grey);font-weight:600;font-variant-numeric:tabular-nums}
 .tl-item h4{font-size:.92rem;font-weight:600;margin-bottom:5px}
-.lnk-player{cursor:pointer;border-bottom:1px dotted var(--grey)}
-.lnk-player:hover{color:var(--blue-ink);border-bottom-color:var(--navy)}
+.lnk-player,.lnk-conc{cursor:pointer;border-bottom:1px dotted var(--grey)}
+.lnk-player:hover,.lnk-conc:hover{color:var(--blue-ink);border-bottom-color:var(--navy)}
+.pontos-semana{margin:8px 0 0 18px;display:grid;gap:6px}
+.cel-parc{display:inline-block;min-width:22px;padding:1px 7px;border-radius:var(--pill);background:var(--navy);color:#fff;font-size:.7rem}
 .mx td.n{text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
 .mx td.z{text-align:center;color:var(--grey-strong)}
 .mx th.t{text-align:center;font-size:.66rem}
@@ -618,7 +620,7 @@ let HOJE, PERIODO_TRI, VALOR1000_CAMPOS, VALOR1000, TAXONOMIA, TRIMESTRAL_2T26, 
 
 async function carregarDados(){
   const nomes = ["edicao","taxonomia","radar","movimentos","agenda","valor1000","companhias_abertas","indicadores"];
-  const {data, error} = await sb.from("secoes").select("nome,conteudo").in("nome", [...nomes, "analises"]);
+  const {data, error} = await sb.from("secoes").select("nome,conteudo").in("nome", [...nomes, "analises", "concorrencia", "concorrentes"]);
   if(error) throw new Error(error.message);
   const porNome = Object.fromEntries(data.map(l=>[l.nome, l.conteudo]));
   const faltando = nomes.filter(n=>!(n in porNome));
@@ -626,6 +628,9 @@ async function carregarDados(){
   const [edicao, taxo, radar, movimentos, agenda, valor, abertas, indicadores] = nomes.map(n=>porNome[n]);
   // leituras escritas pela rotina de IA (Backend/ia/ROTINA.md); sem elas, o site segue normalmente
   const analises = porNome.analises || {financas:{}, indicadores:{}};
+  // Concorrência: a lista de concorrentes e os movimentos coletados pelo robô; sem elas, a aba mostra um aviso
+  const concorrencia = porNome.concorrencia || {itens:[]};
+  const concorrentes = (porNome.concorrentes || {concorrentes:[]}).concorrentes;
   HOJE = edicao.hoje;
   PERIODO_TRI = abertas.periodo;
   VALOR1000_CAMPOS = valor.campos;
@@ -642,7 +647,9 @@ async function carregarDados(){
     indicadores: INDICADORES_SETORIAIS,
     // itens que a rotina de IA descartou (sem relação com negócios) ficam guardados nos dados, mas não aparecem
     radar: radar.filter(i=>!i.oculto), movimentos: movimentos.filter(m=>!m.oculto), agenda,
-    analises: {financas: analises.financas || {}, indicadores: analises.indicadores || {}}
+    analises: {financas: analises.financas || {}, indicadores: analises.indicadores || {}, concorrencia: analises.concorrencia || null},
+    concorrencia: concorrencia.itens.filter(i=>!i.oculto),
+    concorrentes
   };
   const dataBr = formatarData(HOJE);
   document.querySelector(".header-badge").textContent = "EDIÇÃO DE " + dataBr;
@@ -664,6 +671,7 @@ const estado = {
 const estadoFinancas = { ordenarPor:"receitaLiquida", ordemAsc:false, base:"abertas" };
 const estadoMovimentos = { filtroTipo:"todos", filtroPlayer:"todos", visao:"linha" };
 const estadoIndicadores = { divisao:"todas", segmento:"todos" };
+const estadoConcorrencia = { visao:"feed", periodo:90, grupo:"todos", concorrente:"todos", tipo:"todos", selo:"todos", escopo:"todos" };
 
 const ABAS = [
   {id:"home", label:"Edição do dia"},
@@ -671,6 +679,7 @@ const ABAS = [
   {id:"financas", label:"Finanças dos players"},
   {id:"indicadores", label:"Indicadores setoriais"},
   {id:"movimentos", label:"Movimentos estratégicos"},
+  {id:"concorrencia", label:"Concorrência"},
   {id:"agenda", label:"Agenda setorial"}
 ];
 
@@ -742,6 +751,7 @@ function universoItens(){
     : a==="agenda" ? DADOS.agenda
     : a==="financas" ? (estadoFinancas.base==="abertas" ? DADOS.trimestral : DADOS.players.flatMap(p=>p.segmentos))
     : a==="indicadores" ? DADOS.indicadores
+    : a==="concorrencia" ? DADOS.concorrencia
     : DADOS.radar.concat(DADOS.movimentos, DADOS.agenda.filter(e=>diasEntre(e.data)>=0 && diasEntre(e.data)<=30));
   return lista.map(x=>({industria:x.industria, offering:x.offering, temas:x.temas||[]}));
 }
@@ -894,6 +904,7 @@ function renderizar(){
   else if(estado.aba==="financas") c.innerHTML = renderFinancas();
   else if(estado.aba==="indicadores") c.innerHTML = renderIndicadores();
   else if(estado.aba==="movimentos") c.innerHTML = renderMovimentos();
+  else if(estado.aba==="concorrencia") c.innerHTML = renderConcorrencia();
   else if(estado.aba==="agenda") c.innerHTML = renderAgenda();
   if(estado.modoVisualizacao==="comercial") c.insertAdjacentHTML("afterbegin", barraComercial());
   atualizarContador();
@@ -1736,6 +1747,201 @@ function abrirFichaPlayer(pl){
 }
 
 /* =========================================================
+   CONCORRÊNCIA
+   Movimentos das consultorias concorrentes. O robô busca no Google Notícias (a lista de concorrentes fica no
+   Supabase, fora do repositório público) e a rotina de IA escreve o fato, o sinal e o impacto para a Peers.
+   Fica fora do briefing: o impacto é leitura interna, e o briefing é montado para o cliente.
+   ========================================================= */
+const SELO_CLASSE = {"Ameaça":"b3", "Oportunidade":"b2", "Monitorar":"bg-n"};
+// O escopo vem da edição do Google Notícias consultada: diz de onde é a imprensa, não onde o fato aconteceu.
+const ROTULO_ESCOPO = {"Brasil":"Imprensa brasileira", "Global":"Imprensa internacional"};
+const PERIODOS_CONC = [[30,"Últimos 30 dias"],[90,"Últimos 90 dias"],[180,"Últimos 6 meses"],[365,"Últimos 12 meses"]];
+
+function concorrenteDe(id){
+  return DADOS.concorrentes.find(c=>c.id===id) || {id, nome:id, grupo:"", concorreEm:[]};
+}
+
+// Recorte comum às três visões: offering (filtro do topo), período, grupo e escopo.
+function baseConcorrencia(){
+  const e = estadoConcorrencia;
+  return DADOS.concorrencia
+    .filter(i=>!estado.offerings.size || estado.offerings.has(i.offering))
+    .filter(i=>diasEntre(i.data) >= -e.periodo)
+    .filter(i=>e.grupo==="todos" || i.grupo===e.grupo)
+    .filter(i=>e.escopo==="todos" || i.escopo===e.escopo);
+}
+
+function selConc(chave, rotulo, opcoes){
+  return '<span class="flt-label">'+rotulo+'</span>' +
+    '<select class="flt" data-fconc="'+chave+'">' +
+      opcoes.map(([v,t])=>'<option value="'+esc(v)+'"'+(String(estadoConcorrencia[chave])===String(v)?' selected':'')+'>'+esc(t)+'</option>').join("") +
+    '</select>';
+}
+
+function renderConcorrencia(){
+  const cabeca = '<div class="sec-head"><h2>Concorrência</h2>' +
+    '<p>O que as consultorias concorrentes estão fazendo e o que isso muda para a Peers. O robô busca os movimentos todo dia no Google Notícias, no Brasil e no exterior, e a IA escreve o fato, o que ele sinaliza e o impacto para a Peers. Os itens ficam guardados por 12 meses. Uso interno: esta seção não entra no briefing.</p></div>';
+  if(!DADOS.concorrentes.length)
+    return cabeca + '<div class="card"><div class="vazio">A lista de concorrentes ainda não foi cadastrada no banco de dados do portal. Assim que for, o robô faz a primeira coleta na rodada seguinte.</div></div>';
+
+  const e = estadoConcorrencia;
+  const base = baseConcorrencia();
+  const cont = {};
+  base.forEach(i=>{ cont[i.concorrente] = (cont[i.concorrente]||0) + 1; });
+  if(e.concorrente!=="todos" && !cont[e.concorrente]) e.concorrente = "todos";
+  const itens = base
+    .filter(i=>e.concorrente==="todos" || i.concorrente===e.concorrente)
+    .filter(i=>e.tipo==="todos" || i.tipo===e.tipo)
+    .filter(i=>e.selo==="todos" || (e.selo==="sem" ? !i.selo : i.selo===e.selo))
+    .sort((a,b)=>b.data.localeCompare(a.data));
+
+  const grupos = [...new Set(DADOS.concorrentes.map(c=>c.grupo))];
+  const tipos = [...new Set(DADOS.concorrencia.map(i=>i.tipo))].sort();
+  const porVolume = Object.keys(cont).sort((a,b)=>cont[b]-cont[a] || concorrenteDe(a).nome.localeCompare(concorrenteDe(b).nome));
+
+  const filtros = '<div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:18px">' +
+    selConc("periodo", "Período", PERIODOS_CONC) +
+    selConc("grupo", "Grupo", [["todos","Todos os grupos"], ...grupos.map(g=>[g,g])]) +
+    selConc("escopo", "Imprensa", [["todos","Brasileira e internacional"],["Brasil","Brasileira"],["Global","Internacional"]]) +
+    (e.visao==="feed"
+      ? selConc("concorrente", "Concorrente", [["todos","Todos"], ...porVolume.map(id=>[id, concorrenteDe(id).nome+' ('+cont[id]+')'])]) +
+        selConc("tipo", "Tipo", [["todos","Todos os tipos"], ...tipos.map(t=>[t,t])]) +
+        selConc("selo", "Selo", [["todos","Todos"],["Ameaça","Ameaça"],["Oportunidade","Oportunidade"],["Monitorar","Monitorar"],["sem","Sem análise ainda"]])
+      : '') +
+  '</div>';
+
+  const conta = f => base.filter(f).length;
+  const kpis = '<div class="kgrid" style="margin-bottom:18px">' + [
+    [base.length, "movimentos no período"],
+    [conta(i=>i.selo==="Ameaça"), "marcados como ameaça"],
+    [conta(i=>i.selo==="Oportunidade"), "marcados como oportunidade"],
+    [conta(i=>i.parceiros && i.parceiros.length), "com big techs de IA e nuvem"],
+    [Object.keys(cont).length + ' <span class="u">de '+DADOS.concorrentes.length+'</span>', "concorrentes com movimento"]
+  ].map(([v,l])=>'<div class="kbox"><div class="v">'+v+'</div><div class="l">'+l+'</div></div>').join("") + '</div>';
+
+  const lw = DADOS.analises.concorrencia;
+  const leitura = lw && lw.pontos && lw.pontos.length
+    ? '<div class="card"><div class="card-title"><span class="dot"></span>Leitura da semana' +
+        '<span class="hint">'+formatarData(lw.inicio)+' a '+formatarData(lw.fim)+'</span></div>' +
+        '<div class="analise-ia"><span class="selo-ia">Gerado por IA</span>' +
+          '<ul class="pontos-semana">'+lw.pontos.map(p=>'<li>'+esc(p)+'</li>').join("")+'</ul></div></div>'
+    : '';
+
+  const abas = '<div style="display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap">' +
+    [["feed","Movimentos"],["mapa","Mapa de parcerias"],["matriz","Por concorrente"]].map(([k,l])=>
+      '<button class="tbtn'+(e.visao===k?' on':'')+'" data-visaoconc="'+k+'">'+l+'</button>').join("") + '</div>';
+
+  const avisos = (estado.industrias.size
+      ? '<div class="srcnote">O filtro de indústria não se aplica a esta seção: os movimentos são marcados pela offering da Peers afetada (filtro Offering).</div>' : '');
+
+  let corpo;
+  if(e.visao==="mapa") corpo = mapaParcerias(base);
+  else if(e.visao==="matriz") corpo = matrizConcorrentes(base);
+  else corpo = '<div class="card">' +
+    '<div class="card-title"><span class="dot"></span>Movimentos<span class="hint">'+itens.length+' de '+base.length+' no recorte</span></div>' +
+    filtros +
+    (itens.length ? '<div class="tl">' + itens.map(itemConcorrencia).join("") + '</div>'
+                  : '<div class="vazio">Nenhum movimento para este filtro.</div>') +
+  '</div>';
+  if(e.visao!=="feed") corpo = '<div class="card">' + filtros + corpo + '</div>';
+
+  return cabeca + avisos + leitura + kpis + abas + corpo;
+}
+
+function itemConcorrencia(i){
+  const semAnalise = !i.ia;
+  return '<div class="tl-item">' +
+    '<div class="tl-head"><span class="tl-data">'+formatarData(i.data)+'</span>' +
+      '<span class="badge bp">'+esc(i.tipo)+'</span>' +
+      (i.selo ? '<span class="badge '+(SELO_CLASSE[i.selo]||'bg-n')+'">'+esc(i.selo)+'</span>' : '') +
+      (i.offering ? '<span class="badge b1">'+esc(i.offering)+'</span>' : '') +
+      '<span class="badge bg-n">'+esc(ROTULO_ESCOPO[i.escopo]||i.escopo)+'</span>' +
+      (i.ia ? '<span class="selo-ia">Gerado por IA</span>' : '') + '</div>' +
+    '<h4><span class="lnk-conc" data-conc="'+esc(i.concorrente)+'">'+esc(i.nome)+'</span>' +
+      '<span class="subnome" style="display:inline;margin-left:7px">'+esc(i.grupo)+'</span></h4>' +
+    '<p class="tese">'+esc(i.fato || i.manchete)+'</p>' +
+    (i.sinal ? '<p class="leitura"><span class="rot">O que sinaliza:</span> '+esc(i.sinal)+'</p>' : '') +
+    (i.impacto ? '<div class="box-angulo"><span class="rot">Impacto para a Peers:</span> '+esc(i.impacto)+'</div>' : '') +
+    (semAnalise ? '<p class="cardnote" style="margin:0 0 6px">Análise da IA em preparação: entra na próxima rotina, às 07h05.</p>' : '') +
+    '<p class="cardnote" style="margin:4px 0 0">' + (i.fato ? 'Manchete: '+esc(i.manchete)+' · ' : '') +
+      'Fonte: '+linkFonte(i.fonte, i.url) +
+      (i.parceiros && i.parceiros.length ? ' · Com: '+esc(i.parceiros.join(", ")) : '') + '</p>' +
+  '</div>';
+}
+
+// Quem está aliado a quem: concorrentes × big techs citadas nas manchetes de parceria, aliança e investimento.
+function mapaParcerias(base){
+  const comP = base.filter(i=>i.parceiros && i.parceiros.length);
+  const porParc = {};
+  comP.forEach(i=>i.parceiros.forEach(p=>{ porParc[p] = (porParc[p]||0) + 1; }));
+  const cols = Object.keys(porParc).sort((a,b)=>porParc[b]-porParc[a] || a.localeCompare(b));
+  const porConc = {};
+  comP.forEach(i=>{ (porConc[i.concorrente] = porConc[i.concorrente] || []).push(i); });
+  const linhas = Object.keys(porConc).sort((a,b)=>porConc[b].length-porConc[a].length || concorrenteDe(a).nome.localeCompare(concorrenteDe(b).nome));
+  return '<div class="card-title"><span class="dot"></span>Mapa de parcerias<span class="hint">'+linhas.length+' concorrentes · '+cols.length+' empresas de tecnologia</span></div>' +
+    '<p class="cardnote">Em cada célula, quantos movimentos do período citam o concorrente junto com a empresa de tecnologia (parceria, aliança, investimento, lançamento conjunto). Passe o mouse para ver as manchetes; clique no concorrente para abrir a ficha.</p>' +
+    (linhas.length ? '<div class="table-wrap"><table class="data-table mx"><thead><tr><th>Concorrente</th>' +
+      cols.map(p=>'<th class="t">'+esc(p)+'</th>').join("") + '</tr></thead><tbody>' +
+      linhas.map(id=>{
+        const c = concorrenteDe(id);
+        return '<tr data-conc="'+esc(id)+'"><td><span class="nome-p">'+esc(c.nome)+'</span><span class="subnome">'+esc(c.grupo)+'</span></td>' +
+          cols.map(p=>{
+            const doPar = porConc[id].filter(i=>i.parceiros.indexOf(p)>=0);
+            return doPar.length
+              ? '<td class="n" title="'+esc(doPar.map(i=>formatarData(i.data)+' · '+(i.fato||i.manchete)).join("\n"))+'"><span class="cel-parc">'+doPar.length+'</span></td>'
+              : '<td class="z">·</td>';
+          }).join("") + '</tr>';
+      }).join("") + '</tbody></table></div>'
+     : '<div class="vazio">Nenhuma parceria com empresa de tecnologia no recorte. Experimente um período maior.</div>');
+}
+
+// Um concorrente por linha, inclusive os sem movimento no período: silêncio também é informação.
+function matrizConcorrentes(base){
+  const e = estadoConcorrencia;
+  const lista = DADOS.concorrentes.filter(c=>e.grupo==="todos" || c.grupo===e.grupo);
+  const tipos = [...new Set(base.map(i=>i.tipo))].sort();
+  const linhas = lista.map(c=>({c, itens: base.filter(i=>i.concorrente===c.id)}))
+    .sort((a,b)=>b.itens.length-a.itens.length || a.c.nome.localeCompare(b.c.nome));
+  const cel = n => n ? '<td class="n">'+n+'</td>' : '<td class="z">·</td>';
+  return '<div class="card-title"><span class="dot"></span>Por concorrente<span class="hint">'+lista.length+' concorrentes monitorados</span></div>' +
+    '<p class="cardnote">Quantos movimentos cada concorrente fez no período, por selo e por tipo. Clique na linha para abrir a ficha.</p>' +
+    '<div class="table-wrap"><table class="data-table mx"><thead><tr><th>Concorrente</th><th class="t">Total</th>' +
+      '<th class="t">Ameaça</th><th class="t">Oportunidade</th>' +
+      tipos.map(t=>'<th class="t">'+esc(t)+'</th>').join("") + '</tr></thead><tbody>' +
+      linhas.map(({c, itens})=>'<tr data-conc="'+esc(c.id)+'"><td><span class="nome-p">'+esc(c.nome)+'</span><span class="subnome">'+esc(c.grupo)+'</span></td>' +
+        cel(itens.length) + cel(itens.filter(i=>i.selo==="Ameaça").length) + cel(itens.filter(i=>i.selo==="Oportunidade").length) +
+        tipos.map(t=>cel(itens.filter(i=>i.tipo===t).length)).join("") + '</tr>').join("") +
+    '</tbody></table></div>';
+}
+
+// Ficha: a trajetória de 12 meses de um concorrente e onde ele disputa projetos com a Peers.
+function abrirFichaConcorrente(id){
+  const c = concorrenteDe(id);
+  const lista = DADOS.concorrencia.filter(i=>i.concorrente===id).sort((a,b)=>b.data.localeCompare(a.data));
+  const porTipo = {}, porSelo = {};
+  lista.forEach(i=>{ porTipo[i.tipo] = (porTipo[i.tipo]||0) + 1; if(i.selo) porSelo[i.selo] = (porSelo[i.selo]||0) + 1; });
+  const parceiros = [...new Set(lista.flatMap(i=>i.parceiros||[]))].sort();
+  const m = document.getElementById("mFicha");
+  m.innerHTML = '' +
+    '<div class="modal-head">' +
+      '<div><h3>'+esc(c.nome)+'</h3>' +
+      '<p>'+esc(c.grupo)+' · '+lista.length+(lista.length===1?' movimento':' movimentos')+' em até 12 meses</p></div>' +
+      '<button class="modal-close" onclick="fecharModal(\'Ficha\')">Fechar</button>' +
+    '</div>' +
+    '<div class="modal-body">' +
+      ((c.concorreEm||[]).length ? '<p class="cardnote" style="margin:0 0 8px"><span class="rot">Disputa projetos com a Peers em:</span> ' +
+        c.concorreEm.map(o=>'<span class="badge b1">'+esc(o)+'</span>').join(" ") + '</p>' : '') +
+      (parceiros.length ? '<p class="cardnote" style="margin:0 0 8px"><span class="rot">Big techs citadas com ele:</span> '+esc(parceiros.join(", "))+'</p>' : '') +
+      '<div style="display:flex;gap:7px;flex-wrap:wrap;margin:6px 0 16px">' +
+        Object.entries(porSelo).sort((a,b)=>b[1]-a[1]).map(([s,n])=>'<span class="badge '+(SELO_CLASSE[s]||'bg-n')+'">'+esc(s)+': '+n+'</span>').join("") +
+        Object.entries(porTipo).sort((a,b)=>b[1]-a[1]).map(([t,n])=>'<span class="badge bp">'+esc(t)+': '+n+'</span>').join("") + '</div>' +
+      (lista.length ? '<div class="tl">' + lista.map(itemConcorrencia).join("") + '</div>'
+                    : '<div class="vazio">Nenhum movimento encontrado nos últimos 12 meses.</div>') +
+    '</div>';
+  abrirModal("Ficha");
+}
+
+/* =========================================================
    AGENDA SETORIAL
    ========================================================= */
 function renderAgenda(){
@@ -1818,6 +2024,14 @@ function ligarEventos(){
   if(selPl) selPl.addEventListener("change", e=>{ estadoMovimentos.filtroPlayer = e.target.value; renderizar(); });
   document.querySelectorAll("[data-visaomov]").forEach(b=>b.addEventListener("click", ()=>{ estadoMovimentos.visao = b.dataset.visaomov; renderizar(); }));
   document.querySelectorAll(".lnk-player").forEach(el=>el.addEventListener("click", ()=>abrirFichaPlayer(el.dataset.player)));
+  document.querySelectorAll("[data-visaoconc]").forEach(b=>b.addEventListener("click", ()=>{ estadoConcorrencia.visao = b.dataset.visaoconc; renderizar(); }));
+  document.querySelectorAll("select[data-fconc]").forEach(sel=>sel.addEventListener("change", e=>{
+    const k = sel.dataset.fconc;
+    estadoConcorrencia[k] = k==="periodo" ? +e.target.value : e.target.value;
+    if(k==="grupo") estadoConcorrencia.concorrente = "todos";
+    renderizar();
+  }));
+  document.querySelectorAll("[data-conc]").forEach(el=>el.addEventListener("click", ()=>abrirFichaConcorrente(el.dataset.conc)));
 }
 
 function atualizarContador(){

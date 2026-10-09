@@ -11,6 +11,7 @@ import sys
 from datetime import datetime
 
 import atualizar_agenda
+import atualizar_concorrencia
 import atualizar_financas
 import atualizar_indicadores
 import atualizar_noticias
@@ -22,12 +23,14 @@ CADENCIA = {
     "agenda": 1,         # Agenda: diária (só tira o que passou e roda os eventos anuais)
     "indicadores": 30,   # Indicadores: mensal (as fontes publicam mensalmente ou com menos frequência)
     "financas": 7,       # Finanças: semanal (a CVM recebe os ITRs ao longo da temporada de resultados)
+    "concorrencia": 1,   # Concorrência: diária (Google Notícias dos últimos 7 dias)
 }
 TAREFAS = {
     "noticias": atualizar_noticias.main,
     "agenda": atualizar_agenda.main,
     "indicadores": atualizar_indicadores.main,
     "financas": atualizar_financas.main,
+    "concorrencia": atualizar_concorrencia.main,
 }
 
 

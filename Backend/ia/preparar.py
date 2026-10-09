@@ -12,7 +12,7 @@ import json
 import statistics
 import sys
 import urllib.request
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -24,6 +24,8 @@ ESTADO = IA / "estado.json"
 REPO = "gitpeers/portal-inteligencia-peers"
 MAX_RADAR = 150          # por execução; o que passar disso fica para o dia seguinte
 MAX_MOVIMENTOS = 80
+MAX_CONCORRENCIA = 100   # a carga inicial (6 meses) é dividida em alguns dias
+DIAS_LEITURA_SEMANA = 7  # a Leitura da semana da Concorrência é reescrita uma vez por semana
 DIAS_ESPERA_RELEASES = 50  # depois disso, processa os releases que já saíram mesmo sem a fila completa
 FIM_TRIMESTRE = {"1": "03-31", "2": "06-30", "3": "09-30", "4": "12-31"}
 
@@ -100,6 +102,31 @@ def releases():
             "faltam": [r["nome"] for r in fila["releases"] if not r.get("link")]}
 
 
+def concorrencia():
+    """Movimentos dos concorrentes sem análise e, uma vez por semana, o material da Leitura da semana."""
+    caminho_lista, caminho_itens = DADOS / "concorrentes.json", DADOS / "concorrencia.json"
+    if not (caminho_lista.exists() and caminho_itens.exists()):
+        return None, None, 0
+    perfil = {c["id"]: {k: c.get(k) for k in ("nome", "grupo", "concorreEm")}
+              for c in ler_json(caminho_lista)["concorrentes"]}
+    itens = ler_json(caminho_itens)["itens"]
+    sem_ia = sorted((i for i in itens if not i.get("ia")), key=lambda i: i["data"], reverse=True)
+    pend = [{k: i.get(k) for k in ("id", "concorrente", "nome", "grupo", "tipo", "manchete", "fonte", "data",
+                                    "escopo", "parceiros", "offering")} for i in sem_ia[:MAX_CONCORRENCIA]]
+    semana = None
+    analises = ler_json(DADOS / "analises.json") if (DADOS / "analises.json").exists() else {}
+    ultima = (analises.get("concorrencia") or {}).get("geradoEm", "")
+    hoje = date.fromisoformat(hoje_iso())
+    if not ultima or (hoje - date.fromisoformat(ultima)).days >= DIAS_LEITURA_SEMANA:
+        inicio = (hoje - timedelta(days=DIAS_LEITURA_SEMANA)).isoformat()
+        da_semana = [i for i in itens if i["data"] >= inicio and not i.get("oculto")]
+        # os itens da semana que ainda não têm análise vêm nas pendências: a leitura usa as análises escritas hoje
+        semana = {"inicio": inicio, "fim": hoje_iso(),
+                  "itens": [{k: i.get(k) for k in ("id", "nome", "grupo", "tipo", "manchete", "data", "escopo",
+                                                    "parceiros", "fato", "sinal", "impacto", "selo")} for i in da_semana]}
+    return {"perfis": perfil, "itens": pend}, semana, max(0, len(sem_ia) - MAX_CONCORRENCIA)
+
+
 def main():
     if "--sem-verificar" not in sys.argv:
         ok, motivo = robo_terminou()
@@ -130,6 +157,12 @@ def main():
     rel = releases()
     if rel:
         pend["releases"] = rel
+    conc, semana, conc_fora = concorrencia()
+    if conc:
+        pend["referencia"]["concorrentes"] = conc["perfis"]
+        pend["concorrencia"] = conc["itens"]
+    if semana:
+        pend["concorrenciaSemana"] = semana
 
     TRABALHO.mkdir(exist_ok=True)
     for velho in TRABALHO.glob("respostas*.json"):      # respostas de uma execução anterior não valem mais
@@ -137,9 +170,10 @@ def main():
     gravar_json(TRABALHO / "pendencias.json", pend)
     resumo = {"radar": len(pend["radar"]), "movimentos": len(pend["movimentos"]),
               "financas": len(pend.get("financas", {})), "indicadores": len(pend.get("indicadores", {})),
-              "releases": len(rel["prontos"]) if rel else 0}
+              "releases": len(rel["prontos"]) if rel else 0,
+              "concorrencia": len(pend.get("concorrencia", [])), "concorrenciaSemana": 1 if semana else 0}
     log(f"Pendências: {resumo} (ficaram para outro dia: {max(0, len(radar) - MAX_RADAR)} do Radar, "
-        f"{max(0, len(movs) - MAX_MOVIMENTOS)} de Movimentos)")
+        f"{max(0, len(movs) - MAX_MOVIMENTOS)} de Movimentos, {conc_fora} da Concorrência)")
     sys.exit(0 if any(resumo.values()) else 4)
 
 

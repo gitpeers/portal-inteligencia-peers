@@ -1,7 +1,7 @@
 # Portal de Inteligência Peers
 
 Protótipo do portal da área de Research & Insights: Radar, Finanças dos players, Indicadores setoriais,
-Movimentos estratégicos e Agenda setorial, filtráveis por indústria e offering.
+Movimentos estratégicos, Concorrência e Agenda setorial, filtráveis por indústria e offering.
 
 O portal se atualiza sozinho: o GitHub Actions roda os scripts em Python todo dia, busca os dados em fontes
 públicas (feeds de notícias, Banco Central, IBGE, CVM, Câmara) e grava no **Supabase**. Uma rotina do Claude
@@ -24,6 +24,7 @@ Backend/
   atualizar_agenda.py   Agenda, a partir do calendário, do IBGE e da Câmara
   atualizar_indicadores.py  Indicadores setoriais (Banco Central, IBGE, Tesouro e outras fontes)
   atualizar_financas.py Finanças das companhias abertas, a partir da CVM e dos releases
+  atualizar_concorrencia.py  Concorrência: movimentos das consultorias concorrentes, a partir do Google Notícias
   baixar_dados.py       traz os dados do Supabase para Frontend/dados, antes dos scripts trabalharem
   enviar_dados.py       devolve os arquivos de Frontend/dados ao Supabase, depois dos scripts
   supabase_api.py       acesso à tabela secoes do Supabase (usado pelos dois acima)
@@ -56,7 +57,8 @@ Supabase/
 | Indicadores setoriais | Banco Central, IBGE, Tesouro e outras (`config/indicadores_fontes.json`) | Mensal |
 | Finanças · companhias abertas | CVM e releases (`config/financas_cvm.json`, `config/financas_releases.json`) | Semanal |
 | Finanças · Valor 1000 | Planilha do ranking | Manual, uma vez por ano |
-| Análises (resumos, "Por que importa", Ângulo Peers, leituras) | Rotina de IA (`Backend/ia/ROTINA.md`) | Diária, às 07h05 |
+| Concorrência | Google Notícias, edições Brasil e EUA (lista de concorrentes no Supabase; regras em `config/concorrencia_regras.json`) | Diária |
+| Análises (resumos, "Por que importa", Ângulo Peers, leituras, impacto da concorrência) | Rotina de IA (`Backend/ia/ROTINA.md`) | Diária, às 07h05 |
 
 ## Ajustes sem programar (pasta Backend/config)
 
@@ -65,9 +67,24 @@ Supabase/
 - `classificacao.json`: palavras-chave de indústrias, temas, offerings, tipos de movimento e exclusões.
 - `calendario.json`: eventos da Agenda; use `"recorrencia": "anual"` para eventos que se repetem.
 - `indicadores_fontes.json`: ligar um indicador a uma série pública.
+- `concorrencia_regras.json`: palavras de cada tipo de movimento dos concorrentes, filtros de ruído e a lista de
+  empresas de tecnologia do mapa de parcerias. Não tem nomes de concorrentes (ver abaixo).
 
 Depois de editar um arquivo pelo site do GitHub, rode a atualização manualmente: aba **Actions** >
 **Atualizar e publicar o portal** > **Run workflow**.
+
+## Concorrência: a lista de concorrentes fica no Supabase
+
+O repositório é público; por isso a lista de consultorias que a Peers monitora não fica em `Backend/config`, e sim na
+seção `concorrentes` da tabela `secoes` do Supabase (só quem faz login vê). Para incluir, tirar ou ajustar um
+concorrente: Supabase > Table Editor > `secoes` > linha `concorrentes` > editar o JSON. Cada concorrente tem `id`,
+`nome`, `grupo`, `buscar` (termos da busca no Google Notícias), `nomes` (grafias que contam como menção na manchete),
+`excluir` (homônimos) e `concorreEm` (offerings da Peers em que disputa projetos). Concorrente novo ganha uma carga
+dos últimos 6 meses na rodada seguinte do robô.
+
+O robô registra no log do GitHub (público) só contagens, nunca nomes nem manchetes, e o relatório da rotina de IA
+(`Backend/relatorio_ia.json`) também não traz os itens da Concorrência. A seção fica fora do briefing, que é montado
+para o cliente.
 
 ## Configuração (uma vez)
 

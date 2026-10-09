@@ -25,13 +25,20 @@ CAMPOS = {
     "movimentos": {"tese": (200, False), "leitura": (300, False)},
 }
 LIMITE_FINANCAS, LIMITE_INDICADORES = 480, 380
+# Concorrência: os campos de texto e duas escolhas fechadas (selo e offering afetada)
+CAMPOS_CONCORRENCIA = {"fato": (300, False), "sinal": (240, False), "impacto": (300, False)}
+SELOS = ("Ameaça", "Oportunidade", "Monitorar")
+LEITURA_SEMANA = (3, 5, 300)   # mínimo e máximo de pontos, caracteres por ponto
 
 
 def ler_respostas():
     total = {}
     for arq in sorted(TRABALHO.glob("respostas*.json")):
         for secao, itens in ler_json(arq).items():
-            total.setdefault(secao, {}).update(itens)
+            if isinstance(itens, list):        # concorrenciaSemana: lista de pontos, escrita de uma vez
+                total[secao] = itens
+            else:
+                total.setdefault(secao, {}).update(itens)
     return total
 
 
@@ -45,6 +52,23 @@ def conferir_texto(erros, onde, valor, limite, vazio_ok):
         erros.append(f"{onde}: {len(v)} caracteres (limite {limite})")
     if re.search(r"https?://|\n", v):
         erros.append(f"{onde}: sem links nem quebras de linha")
+
+
+def gravar_concorrencia(resp):
+    """Grava as análises dos movimentos dos concorrentes; os descartados somem do site, mas ficam guardados."""
+    caminho = DADOS / "concorrencia.json"
+    novos, descartes = resp.get("concorrencia", {}), resp.get("descartarConcorrencia", {})
+    if not (novos or descartes):
+        return 0
+    dados = ler_json(caminho)
+    for i in dados["itens"]:
+        if i["id"] in novos:
+            i.update({k: v.strip() for k, v in novos[i["id"]].items()})
+            i["ia"] = True
+        if i["id"] in descartes:
+            i.update({"oculto": True, "motivoOculto": descartes[i["id"]].strip(), "ia": True})
+    gravar_json(caminho, dados)
+    return len(novos) + len(descartes)
 
 
 def main():
@@ -79,6 +103,37 @@ def main():
                 erros.append(f"{secao}/{chave}: fora das pendências")
             else:
                 conferir_texto(erros, f"{secao}/{chave}", texto, limite, False)
+    validos_conc = {i["id"] for i in pend.get("concorrencia", [])}
+    offerings = set(pend["referencia"]["offerings"])
+    for id_, c in resp.get("concorrencia", {}).items():
+        if id_ not in validos_conc:
+            erros.append(f"concorrencia/{id_}: id fora das pendências"); continue
+        permitidos = set(CAMPOS_CONCORRENCIA) | {"selo", "offering"}
+        if not isinstance(c, dict) or set(c) != permitidos:
+            erros.append(f"concorrencia/{id_}: os campos são exatamente {sorted(permitidos)}"); continue
+        for campo, (limite, vazio_ok) in CAMPOS_CONCORRENCIA.items():
+            conferir_texto(erros, f"concorrencia/{id_}.{campo}", c[campo], limite, vazio_ok)
+        if c["selo"] not in SELOS:
+            erros.append(f"concorrencia/{id_}.selo: use um de {SELOS}")
+        if c["offering"] not in offerings:
+            erros.append(f"concorrencia/{id_}.offering: use o nome exato de uma offering de referencia.offerings")
+    for id_, motivo in resp.get("descartarConcorrencia", {}).items():
+        if id_ not in validos_conc:
+            erros.append(f"descartarConcorrencia/{id_}: id fora das pendências")
+        else:
+            conferir_texto(erros, f"descartarConcorrencia/{id_}", motivo, 160, False)
+        if id_ in resp.get("concorrencia", {}):
+            erros.append(f"concorrencia/{id_}: está em concorrencia e em descartarConcorrencia; escolha um")
+    if "concorrenciaSemana" in resp:
+        pontos = resp["concorrenciaSemana"]
+        minimo, maximo, limite = LEITURA_SEMANA
+        if "concorrenciaSemana" not in pend:
+            erros.append("concorrenciaSemana: a leitura da semana não está nas pendências de hoje")
+        elif not isinstance(pontos, list) or not minimo <= len(pontos) <= maximo:
+            erros.append(f"concorrenciaSemana: uma lista de {minimo} a {maximo} textos")
+        else:
+            for k, ponto in enumerate(pontos):
+                conferir_texto(erros, f"concorrenciaSemana[{k}]", ponto, limite, False)
     if erros:
         log("Respostas com problema (nada foi gravado):")
         for e in erros:
@@ -107,7 +162,13 @@ def main():
         analises["financas"][chave] = {"texto": texto.strip(), "periodo": pend["financas"][chave]["periodo"], "geradoEm": hoje_iso()}
     for chave, texto in resp.get("indicadores", {}).items():
         analises["indicadores"][chave] = {"texto": texto.strip(), "geradoEm": hoje_iso()}
+    if resp.get("concorrenciaSemana"):
+        s_ = pend["concorrenciaSemana"]
+        analises["concorrencia"] = {"pontos": [p.strip() for p in resp["concorrenciaSemana"]],
+                                    "inicio": s_["inicio"], "fim": s_["fim"], "geradoEm": hoje_iso()}
     gravar_json(ANALISES, analises)
+    contagem["concorrencia"] = gravar_concorrencia(resp)
+    contagem["concorrenciaSemana"] = 1 if resp.get("concorrenciaSemana") else 0
     contagem["financas"] = len(resp.get("financas", {}))
     contagem["indicadores"] = len(resp.get("indicadores", {}))
 
@@ -129,6 +190,7 @@ def main():
         "pendentesNaoRespondidos": {
             "radar": len(pend.get("radar", [])) - contagem["radar"],
             "movimentos": len(pend.get("movimentos", [])) - contagem["movimentos"],
+            "concorrencia": len(pend.get("concorrencia", [])) - contagem["concorrencia"],
             **{k: len(v) for k, v in faltando.items()},
         },
         "descartados": resp.get("descartar", {}),
