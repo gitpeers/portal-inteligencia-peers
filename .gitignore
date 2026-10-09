@@ -1,0 +1,31 @@
+# Documentos de trabalho da R&I: não vão para o repositório público
+*.docx
+*.pdf
+*.xlsx
+*.pptx
+V anteriores/
+Backup/
+Frontend/index_v4.html
+desktop.ini
+__pycache__/
+
+# Arquivos temporários do Office e cópias de conflito do OneDrive (nome do computador no fim, ex.: -PEERS84HBTJ4)
+~$*
+*-PEERS*.*
+
+# Aviso de falha da sincronização automática com o GitHub (ver Backend/sincronizar_github.ps1)
+SINCRONIZACAO_COM_ERRO.txt
+
+# Rotina de IA: arquivos de trabalho de cada execução
+Backend/ia/trabalho/
+
+# Dados do portal: ficam só no Supabase, protegidos pelo login. Os arquivos de Frontend/dados são temporários,
+# criados por baixar_dados.py para os scripts e a rotina de IA trabalharem, e devolvidos por enviar_dados.py.
+Frontend/dados/
+**/dados/
+
+# Chaves do Supabase, se guardadas em arquivo no computador
+.env
+
+# Cópia do controle de versão do repositório original (do amigo), guardada só por segurança
+.git_do_amigo_backup/
