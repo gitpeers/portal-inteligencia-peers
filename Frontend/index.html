@@ -405,7 +405,7 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
     <p class="login-sub" id="loginSub">Verificando acesso…</p>
     <form id="formEmail" onsubmit="pedirCodigo(event)" hidden>
       <label for="loginEmail">Seu e-mail do grupo Peers</label>
-      <input id="loginEmail" type="email" autocomplete="email" placeholder="nome@peers.com.br ou nome@actar.com.br" required>
+      <input id="loginEmail" type="email" autocomplete="email" placeholder="Seu e-mail Peers ou Actar" required>
       <button class="btn" id="btnEmail">Receber código</button>
     </form>
     <form id="formCodigo" onsubmit="confirmarCodigo(event)" hidden>
@@ -565,7 +565,7 @@ async function enviarCodigo(){
 async function pedirCodigo(ev){
   ev.preventDefault();
   const email = document.getElementById("loginEmail").value.trim().toLowerCase();
-  if(!DOMINIOS.some(d => email.endsWith(d))){ msgLogin("Acesso permitido somente para e-mails @peers.com.br e @actar.com.br."); return; }
+  if(!DOMINIOS.some(d => email.endsWith(d))){ msgLogin("Acesso permitido somente para e-mails Peers ou Actar."); return; }
   const btn = document.getElementById("btnEmail");
   btn.disabled = true; btn.textContent = "Enviando…"; msgLogin("");
   emailLogin = email;
