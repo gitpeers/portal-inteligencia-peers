@@ -102,6 +102,21 @@ def releases():
             "faltam": [r["nome"] for r in fila["releases"] if not r.get("link")]}
 
 
+def aprofundamento():
+    """Visão por player de cada indicador ligado: o setor, as empresas e a diferença de cada uma (do robô)."""
+    caminho = DADOS / "aprofundamento.json"
+    if not caminho.exists():
+        return {}
+    saida = {}
+    for p in ler_json(caminho)["pontes"]:
+        saida[f'{p["segmento"]}|{p["indicador"]}'] = {
+            "indicador": p["indicador"], "nivel": p["nivel"], "nota": p["nota"], "metrica": p["rotuloMetrica"],
+            "unidade": p["unidadeMetrica"], "setor": p.get("setor"),
+            "players": [{k: x.get(k) for k in ("nome", "valor", "diferenca", "posicao", "periodo")} for x in p["players"]],
+        }
+    return saida
+
+
 def concorrencia():
     """Movimentos dos concorrentes sem análise e, uma vez por semana, o material da Leitura da semana."""
     caminho_lista, caminho_itens = DADOS / "concorrentes.json", DADOS / "concorrencia.json"
@@ -157,6 +172,13 @@ def main():
     rel = releases()
     if rel:
         pend["releases"] = rel
+    # visão por player: reescrita quando Indicadores ou Finanças mudam (não todo dia, embora o robô recalcule)
+    base_aprof = max(ultima.get("indicadores", ""), ultima.get("financas", ""))
+    if base_aprof and base_aprof > feito.get("aprofundamento", ""):
+        aprof = aprofundamento()
+        if aprof:
+            pend["aprofundamento"] = aprof
+            pend["atualizadoEm"]["aprofundamento"] = base_aprof
     conc, semana, conc_fora = concorrencia()
     if conc:
         pend["referencia"]["concorrentes"] = conc["perfis"]
@@ -171,6 +193,7 @@ def main():
     resumo = {"radar": len(pend["radar"]), "movimentos": len(pend["movimentos"]),
               "financas": len(pend.get("financas", {})), "indicadores": len(pend.get("indicadores", {})),
               "releases": len(rel["prontos"]) if rel else 0,
+              "aprofundamento": len(pend.get("aprofundamento", {})),
               "concorrencia": len(pend.get("concorrencia", [])), "concorrenciaSemana": 1 if semana else 0}
     log(f"Pendências: {resumo} (ficaram para outro dia: {max(0, len(radar) - MAX_RADAR)} do Radar, "
         f"{max(0, len(movs) - MAX_MOVIMENTOS)} de Movimentos, {conc_fora} da Concorrência)")

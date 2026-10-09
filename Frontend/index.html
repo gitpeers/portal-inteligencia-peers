@@ -271,6 +271,21 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 .tl-item.conc::before{top:19px}
 /* os cinco números ocupam a largura toda, alinhados ao bloco de baixo (auto-fit estica as colunas) */
 .kgrid.kpis-conc{grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:18px}
+/* Indicadores: o cartão ligado a players é clicável e abre a visão por player */
+.kbox.clicavel{cursor:pointer;transition:border-color var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
+.kbox.clicavel:hover{border-color:var(--navy);box-shadow:var(--shadow)}
+.ver-players{margin-top:9px;font-size:.68rem;font-weight:700;color:var(--blue-ink)}
+.aprof-graf{margin:0 0 14px}
+.aprof-graf svg{width:100%;height:120px;display:block;background:var(--serene-soft);border-radius:var(--r-sm)}
+.aprof-graf-eixo{display:flex;justify-content:space-between;font-size:.66rem;color:var(--grey);margin-top:4px}
+.aprof-ref-txt{font-size:.8rem;margin:0 0 10px;color:var(--text2)}
+.aprof-tab td{vertical-align:middle}
+.aprof-tab tbody tr{cursor:default}
+.aprof-det{white-space:normal!important;font-size:.72rem;color:var(--grey-dark)}
+.aprof-trilho{position:relative;height:8px;background:var(--grey-light);border-radius:var(--pill);margin:2px 0 6px}
+.aprof-barra{position:absolute;top:0;height:8px;border-radius:var(--pill);background:var(--blue)}
+.aprof-barra.neg{background:#c4343a}
+.aprof-ref{position:absolute;top:-4px;width:2px;height:16px;background:var(--navy)}
 .pontos-semana{margin:8px 0 0 18px;display:grid;gap:6px}
 .cel-parc{display:inline-block;min-width:22px;padding:1px 7px;border-radius:var(--pill);background:var(--navy);color:#fff;font-size:.7rem}
 .mx td.n{text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
@@ -633,7 +648,7 @@ let HOJE, PERIODO_TRI, VALOR1000_CAMPOS, VALOR1000, TAXONOMIA, TRIMESTRAL_2T26, 
 
 async function carregarDados(){
   const nomes = ["edicao","taxonomia","radar","movimentos","agenda","valor1000","companhias_abertas","indicadores"];
-  const {data, error} = await sb.from("secoes").select("nome,conteudo").in("nome", [...nomes, "analises", "concorrencia", "concorrentes"]);
+  const {data, error} = await sb.from("secoes").select("nome,conteudo").in("nome", [...nomes, "analises", "concorrencia", "concorrentes", "aprofundamento"]);
   if(error) throw new Error(error.message);
   const porNome = Object.fromEntries(data.map(l=>[l.nome, l.conteudo]));
   const faltando = nomes.filter(n=>!(n in porNome));
@@ -660,7 +675,10 @@ async function carregarDados(){
     indicadores: INDICADORES_SETORIAIS,
     // itens que a rotina de IA descartou (sem relação com negócios) ficam guardados nos dados, mas não aparecem
     radar: radar.filter(i=>!i.oculto), movimentos: movimentos.filter(m=>!m.oculto), agenda,
-    analises: {financas: analises.financas || {}, indicadores: analises.indicadores || {}, concorrencia: analises.concorrencia || null},
+    analises: {financas: analises.financas || {}, indicadores: analises.indicadores || {}, concorrencia: analises.concorrencia || null,
+               aprofundamento: analises.aprofundamento || {}},
+    // visão por player dos Indicadores, por "segmento|indicador"; sem ela, os indicadores não ficam clicáveis
+    aprofundamento: Object.fromEntries(((porNome.aprofundamento || {}).pontes || []).map(p=>[p.segmento+"|"+p.indicador, p])),
     concorrencia: concorrencia.itens.filter(i=>!i.oculto),
     concorrentes
   };
@@ -1623,15 +1641,17 @@ function renderIndicadores(){
               (s.origem==="sugestao" ? ' · <span class="badge bg-n">indicadores sugeridos pela R&I, a validar</span>' : '') + '</p></div>' +
             '<label class="cbx"><input type="checkbox" class="chk" data-tipo="indicador" data-id="'+s.id+'" '+(marcado?'checked':'')+'> incluir no briefing</label>' +
           '</div>' + caixaAnalise(DADOS.analises.indicadores[s.id]) +
-          '<div class="kgrid ind">' + s.indicadores.map(x=>{
+          '<div class="kgrid ind">' + indicadoresOrdenados(s).map(x=>{
             const f = fmtIndicador(x);
-            return '<div class="kbox"><div class="v">'+f.v+' <span class="u">'+esc(x.unidade)+'</span></div>' +
+            const aprof = DADOS.aprofundamento[chaveAprof(s, x)];
+            return '<div class="kbox'+(aprof?' clicavel" data-aprof="'+esc(chaveAprof(s, x))+'" title="Ver como os players se comparam a este indicador':'')+'"><div class="v">'+f.v+' <span class="u">'+esc(x.unidade)+'</span></div>' +
               '<div class="l">'+esc(x.nome)+'</div>' +
               '<div class="m"><span class="'+(x.var>0?'pos':(x.var<0?'neg':'num'))+'"'+(x.notaVar?' title="'+esc(x.notaVar)+'"':'')+'>'+f.varTxt+'</span> · '+esc(x.periodo)+'<br>'+esc(x.fonte)+' · '+esc(x.periodicidade.toLowerCase())+'</div>' +
               (x.auto===false && x.status==="real" ? '<div class="sem-auto" title="Valor tirado da publicação oficial (a fonte não tem API): muda quando alguém atualizar à mão, a cada nova edição">atualização manual</div>'
                 : x.auto===false ? '<div class="sem-auto" title="A fonte não tem API: o valor só muda se alguém atualizar manualmente">sem atualização automática</div>'
                 : (x.status!=="real" ? '<div class="sem-auto" title="Ainda não ligado à fonte: valor ilustrativo">valor de exemplo</div>' : '')) +
               (x.equivalente ? '<div class="sem-auto" title="'+esc(x.equivalente)+'">série equivalente</div>' : '') +
+              (aprof ? '<div class="ver-players">ver players ›</div>' : '') +
               '</div>';
           }).join("") + '</div>' +
         '</div>';
@@ -1656,6 +1676,124 @@ function briefingIndicadores(L, ids){
     });
     L.push("");
   });
+}
+
+/* =========================================================
+   INDICADORES · VISÃO POR PLAYER
+   Ao clicar no indicador ligado (o primeiro do segmento), o painel compara o setor com as empresas: a métrica
+   equivalente de cada uma, a diferença para o setor e a leitura da IA. Os dados vêm de aprofundamento.json,
+   montado pelo robô a partir de config/indicadores_players.json.
+   ========================================================= */
+const NIVEL_COMPARACAO = {
+  "direta":     ["b2", "Comparação direta", "mesma métrica no setor e nas empresas"],
+  "próxima":    ["b1", "Comparação próxima", "métricas parecidas, com diferença de definição"],
+  "aproximada": ["bg-n", "Comparação aproximada", "indicativa: métricas ou períodos diferentes"],
+  "contexto":   ["bg-n", "Contexto", "sem métrica equivalente: os players do ecossistema"]
+};
+
+function chaveAprof(s, x){ return s.id + "|" + x.nome; }
+
+// Os indicadores ligados a players vêm primeiro no cartão, na ordem da configuração.
+function indicadoresOrdenados(s){
+  const ligados = Object.values(DADOS.aprofundamento).filter(p=>p.segmento===s.id).map(p=>p.indicador);
+  return s.indicadores.map((x,k)=>({x, k, ordem: ligados.indexOf(x.nome)}))
+    .sort((a,b)=>(a.ordem<0?99:a.ordem)-(b.ordem<0?99:b.ordem) || a.k-b.k).map(o=>o.x);
+}
+
+function fmtMetrica(v, unidade){
+  if(v===null || v===undefined) return '—';
+  if(typeof v==="string") return esc(v);
+  return unidade==="%" ? fmtN(v,1).replace(/^-/,'−')+'%' : (unidade ? fmtN(v)+' '+esc(unidade) : fmtN(v,1));
+}
+function fmtDif(d){
+  if(d===null || d===undefined) return '';
+  return (d>0?'+':(d<0?'−':'')) + fmtN(Math.abs(d),1) + ' p.p.';
+}
+
+// Linha do tempo do indicador (últimos 24 meses ou 8 trimestres), em SVG simples.
+function graficoHistorico(h, unidade){
+  if(!h || !h.pontos || h.pontos.length<4) return '';
+  const pts = h.pontos, W = 640, H = 120, ml = 8, mr = 8, mt = 14, mb = 22;
+  const vals = pts.map(p=>p[1]), min = Math.min(...vals), max = Math.max(...vals), amp = (max-min) || 1;
+  const x = i => ml + i*(W-ml-mr)/(pts.length-1), y = v => mt + (H-mt-mb)*(1-(v-min)/amp);
+  const linha = pts.map((p,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(p[1]).toFixed(1)).join(' ');
+  const rot = p => { const [a,m] = p[0].split('-'); return ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"][+m-1]+'/'+a.slice(2); };
+  const ult = pts[pts.length-1];
+  return '<div class="aprof-graf"><svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" role="img" aria-label="Evolução do indicador">' +
+      '<path d="'+linha+'" fill="none" stroke="var(--navy)" stroke-width="2" vector-effect="non-scaling-stroke"/>' +
+      '<circle cx="'+x(pts.length-1)+'" cy="'+y(ult[1])+'" r="3.5" fill="var(--navy)"/>' +
+    '</svg>' +
+    '<div class="aprof-graf-eixo"><span>'+rot(pts[0])+'</span><span>'+(h.somado12m?'valor de cada mês':'mín. '+fmtN(min,1)+' · máx. '+fmtN(max,1))+'</span><span>'+rot(ult)+'</span></div></div>';
+}
+
+function abrirAprofundamento(chave){
+  const p = DADOS.aprofundamento[chave];
+  if(!p) return;
+  const seg = DADOS.indicadores.find(s=>s.id===p.segmento);
+  const ind = seg.indicadores.find(i=>i.nome===p.indicador);
+  const f = fmtIndicador(ind);
+  const [cls, rotNivel, expNivelPadrao] = NIVEL_COMPARACAO[p.nivel] || NIVEL_COMPARACAO.aproximada;
+  const expNivel = p.metrica==="capag" ? "a nota de cada ente, que forma o indicador" : expNivelPadrao;
+  const leitura = (DADOS.analises.aprofundamento||{})[chave];
+  const s = p.setor || {};
+  const capag = p.metrica==="capag";
+  const compara = s.referencia!==null && s.referencia!==undefined;
+  const refTxt = !compara ? '' :
+    (p.comparar==="var"
+      ? 'Setor: <b>'+fmtMetrica(s.referencia,'%')+'</b> em 12 meses'
+      : 'Setor: <b>'+fmtMetrica(s.referencia,p.unidadeMetrica)+'</b>') +
+    ' no '+esc(s.periodoReferencia||'') +
+    (s.mesmoPeriodo && s.periodoReferencia!==ind.periodo ? ' (mesmos meses do trimestre das empresas; o cartão mostra o último dado, '+esc(ind.periodo)+')'
+      : (s.mesmoPeriodo ? '' : ' (último dado disponível; o período das empresas é outro)'));
+
+  // barras: 0 no meio quando há valores negativos; a linha vertical marca o setor
+  const vals = p.players.map(x=>typeof x.valor==="number" ? x.valor : null).filter(v=>v!==null);
+  const lo = Math.min(0, ...(compara ? [s.referencia] : []), ...vals), hi = Math.max(0, ...(compara ? [s.referencia] : []), ...vals);
+  const pos = v => ((v-lo)/((hi-lo)||1)*100);
+  const barra = v => {
+    if(typeof v!=="number") return '';
+    const a = pos(Math.min(0,v)), b = pos(Math.max(0,v));
+    return '<div class="aprof-trilho">' +
+      '<span class="aprof-barra'+(v<0?' neg':'')+'" style="left:'+a+'%;width:'+Math.max(b-a,0.6)+'%"></span>' +
+      (compara ? '<span class="aprof-ref" style="left:'+pos(s.referencia)+'%" title="Setor"></span>' : '') + '</div>';
+  };
+  const corPos = {"acima":"b2", "abaixo":"b3", "em linha":"bg-n"};
+
+  const tabela = '<div class="table-wrap"><table class="data-table aprof-tab"><thead><tr><th>'+(capag?'Ente':'Player')+'</th><th>'+esc(p.rotuloMetrica)+'</th>' +
+      (capag ? '<th>Detalhe</th>' : '<th style="width:34%">'+(compara?'Contra o setor':'Comparação')+'</th>') + '<th>Período e fonte</th></tr></thead><tbody>' +
+    p.players.map(x=>'<tr><td><span class="nome-p">'+esc(x.nome)+'</span></td>' +
+      '<td class="num">'+(capag ? '<span class="badge '+(/^[AB]/.test(x.valor)?'b2':(x.valor==="C"?'bg-n':'b3'))+'">'+esc(x.valor)+'</span>' : fmtMetrica(x.valor,p.unidadeMetrica))+'</td>' +
+      (capag ? '<td class="aprof-det">'+esc(x.detalhe||'')+'</td>'
+             : '<td>'+barra(x.valor)+(x.posicao ? '<span class="badge '+corPos[x.posicao]+'">'+esc(x.posicao)+(x.posicao!=="em linha"?' · '+fmtDif(x.diferenca):'')+'</span>' : '')+'</td>') +
+      '<td class="aprof-det">'+esc(x.periodo)+' · '+esc(x.fonte)+'</td></tr>').join("") +
+    '</tbody></table></div>';
+
+  const resumoCapag = capag && p.resumo ? '<p class="cardnote" style="margin:0 0 10px">'+
+    ['A','B','C','D'].filter(n=>p.resumo[n]).map(n=>'<b>'+p.resumo[n]+'</b> com nota '+n).join(' · ')+'</p>' : '';
+
+  // movimentos recentes dos players listados (Movimentos estratégicos)
+  const norm = t => t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+  const nomes = p.players.map(x=>norm(x.nome).split(/[ (]/)[0]).filter(n=>n.length>2);
+  const movs = capag ? [] : DADOS.movimentos.filter(m=>nomes.some(n=>norm(m.player).startsWith(n))).sort((a,b)=>b.data.localeCompare(a.data)).slice(0,5);
+
+  const m = document.getElementById("mFicha");
+  m.innerHTML = '' +
+    '<div class="modal-head">' +
+      '<div><h3>'+esc(p.indicador)+'</h3>' +
+      '<p>'+esc(seg.segmento)+' · '+f.v+' '+esc(ind.unidade)+' · '+f.varTxt+' · '+esc(ind.periodo)+'</p></div>' +
+      '<button class="modal-close" onclick="fecharModal(\'Ficha\')">Fechar</button>' +
+    '</div>' +
+    '<div class="modal-body">' +
+      graficoHistorico(p.historico, ind.unidade) +
+      '<p class="cardnote" style="margin:0 0 10px"><span class="badge '+cls+'">'+rotNivel+'</span> '+esc(expNivel)+'. '+esc(p.nota)+'</p>' +
+      (leitura && leitura.texto ? '<div class="analise-ia"><span class="selo-ia">Gerado por IA</span>'+esc(leitura.texto)+'</div>' : '') +
+      (refTxt ? '<p class="aprof-ref-txt">'+refTxt+'</p>' : '') +
+      resumoCapag + tabela +
+      '<p class="cardnote" style="margin:10px 0 0">Indicador: '+esc(ind.fonte)+'. '+(capag ? '' : 'Empresas: Finanças dos players (último trimestre divulgado) ou Valor 1000, conforme a coluna de fonte.')+'</p>' +
+      (movs.length ? '<div class="card-title" style="margin-top:20px"><span class="dot"></span>Movimentos recentes desses players</div>' +
+        '<ul class="mini">'+movs.map(mv=>'<li><span class="d">'+formatarData(mv.data).slice(0,5)+'</span><span><b>'+esc(mv.player)+'</b> · '+esc(mv.tese)+'</span></li>').join("")+'</ul>' : '') +
+    '</div>';
+  abrirModal("Ficha");
 }
 
 /* =========================================================
@@ -2045,6 +2183,7 @@ function ligarEventos(){
     renderizar();
   }));
   document.querySelectorAll("[data-conc]").forEach(el=>el.addEventListener("click", ()=>abrirFichaConcorrente(el.dataset.conc)));
+  document.querySelectorAll("[data-aprof]").forEach(el=>el.addEventListener("click", ()=>abrirAprofundamento(el.dataset.aprof)));
 }
 
 function atualizarContador(){

@@ -749,11 +749,18 @@ def rotulo(d, freq):
     return f"{ABREV[d.month - 1]}/{d.year}"
 
 
-def calcular(cfg):
+MESES_HISTORICO = 27   # indicadores com visão por player: 2 anos de série + o trimestre equivalente do ano anterior
+
+
+def calcular(cfg, historico=False):
+    """Valor, variação e período do indicador; com historico=True, também a série mensal ou trimestral recente
+    (usada pelo gráfico e pela comparação com os players no mesmo trimestre)."""
     con = cfg["conector"]
     freq = cfg.get("freq", "mensal")
     lag = DEFASAGEM[freq]
     precisa = 26 if (cfg.get("acumular_12m") or cfg.get("somar_12m")) else lag + 1
+    if historico:
+        precisa = max(precisa, MESES_HISTORICO if freq == "mensal" else 9)
     if con == "sgs":
         codigos = cfg["codigo"] if isinstance(cfg["codigo"], list) else [cfg["codigo"]]
         soma = {}
@@ -844,8 +851,13 @@ def calcular(cfg):
     d = pontos[-1][0]
     if con == "siconfi":
         per = f"{d.month // 2}º bim/{d.year}" if cfg["metrica"] in ("icms_12m", "investimentos_ano") else f"{d.month // 4}º quadr/{d.year}"
-        return atual, var, per
-    return atual, var, rotulo(d, freq)
+        return atual, var, per, None
+    serie = None
+    if historico and freq in ("mensal", "trimestral") and not cfg.get("acumular_12m") and lag:
+        # pontos brutos do período (no somar_12m, o mês, não a soma de 12 meses), na mesma escala do valor exibido
+        serie = {"freq": freq, "somado12m": bool(cfg.get("somar_12m")),
+                 "pontos": [[p.strftime("%Y-%m"), float(f"{v / escala:.5g}")] for p, v in pontos[-(MESES_HISTORICO if freq == "mensal" else 9):]]}
+    return atual, var, rotulo(d, freq), serie
 
 
 def arredondar(v):
@@ -856,6 +868,10 @@ def main():
     series = ler_json(CONFIG / "indicadores_fontes.json")["series"]
     caminho = DADOS / "indicadores.json"
     segmentos = ler_json(caminho)
+    # indicadores com visão por player (config/indicadores_players.json) guardam a série recente
+    nome_seg = {s["id"]: s["segmento"] for s in segmentos}
+    com_historico = {(nome_seg.get(p["segmento"]), p["indicador"])
+                     for p in ler_json(CONFIG / "indicadores_players.json")["pontes"]}
     indice = {(s["segmento"], i["nome"]): i for s in segmentos for i in s["indicadores"]}
     ok = falhas = 0
     relatorio = []
@@ -866,7 +882,7 @@ def main():
             falhas += 1
             continue
         try:
-            valor, var, periodo = calcular(cfg)
+            valor, var, periodo, serie = calcular(cfg, (cfg["segmento"], cfg["indicador"]) in com_historico)
         except Exception as e:
             log(f"  falha em {cfg['indicador']}: {str(e)[:100]}")
             relatorio.append({"indicador": cfg["indicador"], "segmento": cfg["segmento"], "conector": cfg["conector"],
@@ -884,6 +900,8 @@ def main():
             alvo["varUnidade"] = cfg["var_unidade"]
         if cfg.get("equivalente"):
             alvo["equivalente"] = cfg["equivalente"]
+        if serie:
+            alvo["historico"] = serie
         ok += 1
     gravar_json(caminho, segmentos)
     gravar_json(CONFIG.parent / "relatorio_indicadores.json",

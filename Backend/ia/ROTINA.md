@@ -46,6 +46,7 @@ Escreva as respostas em `Backend/ia/trabalho/respostas.json`. Com muitos itens, 
   "movimentos":  { "<id>": { "tese": "...", "leitura": "..." } },
   "financas":    { "<Indústria>|<Divisão>": "..." },
   "indicadores": { "<id do segmento>": "..." },
+  "aprofundamento": { "<id do segmento>|<nome do indicador>": "..." },
   "descartar":   { "<id>": "motivo" },
   "revisar":     { "<id>": "motivo" },
   "concorrencia":          { "<id>": { "fato": "...", "sinal": "...", "impacto": "...", "selo": "...", "offering": "..." } },
@@ -55,8 +56,8 @@ Escreva as respostas em `Backend/ia/trabalho/respostas.json`. Com muitos itens, 
 ```
 
 Responda todos os itens de `radar` e `movimentos` (em `radar`/`movimentos` ou em `descartar`), todos os itens de
-`concorrencia` (em `concorrencia` ou em `descartarConcorrencia`) e todas as chaves de `financas` e `indicadores` que
-vierem nas pendências. Seções ausentes nas pendências ficam fora das respostas.
+`concorrencia` (em `concorrencia` ou em `descartarConcorrencia`) e todas as chaves de `financas`, `indicadores` e
+`aprofundamento` que vierem nas pendências. Seções ausentes nas pendências ficam fora das respostas.
 
 ### Radar (cada notícia)
 
@@ -131,6 +132,22 @@ vários concorrentes indo na mesma direção, uma corrida (IA generativa, aquisi
 uma fragilidade que se repete. Cada ponto cita os concorrentes envolvidos e termina no que importa para a Peers.
 Use os itens de `concorrenciaSemana.itens` com as análises que você escreveu hoje para os itens pendentes. Semana
 sem movimento relevante: 3 pontos curtos dizendo isso e o que vale observar.
+
+### Visão por player dos Indicadores (cada chave, quando vier `aprofundamento` nas pendências)
+
+É o texto do painel que abre ao clicar no indicador: o setor contra as empresas. Cada chave traz o indicador, o
+`setor` (valor, variação e, em `referencia`, o número usado na comparação, com `periodoReferencia`), os `players`
+com a métrica de cada um (`valor`), a `diferenca` para o setor e a `posicao` (acima, abaixo, em linha), além do
+`nivel` da comparação e da `nota` de método.
+
+Até 420 caracteres, 2 ou 3 frases: quem está acima e quem está abaixo do setor, com dois ou três números e o
+período, e o que isso indica (ganho ou perda de participação, risco maior ou menor). Use só os números do arquivo.
+- `nivel` aproximada: diga que a comparação é indicativa (ex.: "a receita das empresas, que é nominal, cresceu...").
+- `nivel` contexto ou sem `referencia` (sem comparação direta): descreva os players (quem cresce mais, quem recua) e a
+  relação deles com o indicador, sem falar em "acima do setor".
+- Capag (estados ou capitais): quantos têm nota A ou B, quais estão nas piores notas e o que a nota permite.
+- Empresa com variação fora do comum (acima de 50% ou queda acima de 30%): cite como caso à parte; costuma ser
+  aquisição, venda de ativo ou base fraca no ano anterior, e o arquivo não diz qual.
 
 ### Sessão trimestral de Finanças (quando vier `releases` nas pendências)
 

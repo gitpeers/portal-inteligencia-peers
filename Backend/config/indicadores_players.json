@@ -1,0 +1,995 @@
+{
+ "_como_usar": "Visão por player dos Indicadores setoriais: liga um indicador de cada segmento às empresas que se comparam a ele. O primeiro indicador listado de cada segmento abre a visão por player (os ligados aqui aparecem primeiro no cartão). players.base: 'abertas' (Finanças, último trimestre), 'valor1000' (ranking anual), 'capag_estados' ou 'capag_capitais'. Filtros: 'div' (divisão do portal), 'setorValor' (setor da empresa no Valor 1000), 'nomes' (incluir pelo nome exato), 'excluir' e 'max' (padrão 10, as maiores por receita). 'metrica': campo da empresa ('cresc' = crescimento da receita; nos bancos, crescCarteira, inadimplencia, crescLL, cet1). 'comparar': 'var' (contra a variação do indicador), 'valor' (contra o valor do indicador) ou null (sem comparação, só a lista). 'agregar': como somar os meses do indicador no trimestre das empresas ('media', 'soma' ou 'fim'); sem isso, vale a última variação publicada. 'nivel': direta, próxima, aproximada ou contexto. 'nota': o cuidado de método mostrado no painel.",
+ "pontes": [
+  {
+   "segmento": "a-b-agro-agro-graos-insumos-row-crops",
+   "indicador": "Produção de grãos",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Agro",
+    "setorValor": [
+     "Agronegócio"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "Safra (ano agrícola) contra a receita do último trimestre: os períodos não coincidem."
+  },
+  {
+   "segmento": "a-b-agro-agro-sucroalcooleiro-cana-de-acucar",
+   "indicador": "Produção de etanol",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Agro",
+    "setorValor": [
+     "Bioenergia"
+    ],
+    "nomes": [
+     "Raízen",
+     "Cerradinho Bioenergia"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "Produção em 12 meses contra a receita do trimestre, que também inclui açúcar e energia."
+  },
+  {
+   "segmento": "a-b-agro-agro-proteina-animal-carnes",
+   "indicador": "Exportações de carnes",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "nomes": [
+     "JBS",
+     "MBRF",
+     "Minerva Foods"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "A receita das empresas inclui operações fora do Brasil; o indicador é só do mercado brasileiro."
+  },
+  {
+   "segmento": "a-b-agro-a-b-alimentos",
+   "indicador": "Produção física da indústria de alimentos",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "A&B",
+    "setorValor": [
+     "Alimentos e Bebidas"
+    ],
+    "excluir": [
+     "JBS",
+     "MBRF",
+     "Minerva Foods",
+     "Ambev",
+     "Solar Bebidas"
+    ],
+    "nomes": [
+     "Josapar"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "O indicador mede volume (desconta a inflação); a receita das empresas é nominal. Empresa crescendo acima do setor por poucos pontos pode estar só repassando preço."
+  },
+  {
+   "segmento": "a-b-agro-a-b-bebidas",
+   "indicador": "Produção física de bebidas",
+   "nivel": "aproximada",
+   "players": {
+    "base": "valor1000",
+    "nomes": [
+     "Ambev",
+     "Coca-Cola Femsa Brasil",
+     "Coca-Cola Andina Brasil",
+     "Solar Bebidas"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "Receita anual de 2025 (Valor 1000) contra a produção do último mês. O indicador mede volume (desconta a inflação); a receita das empresas é nominal. Empresa crescendo acima do setor por poucos pontos pode estar só repassando preço."
+  },
+  {
+   "segmento": "educacao-publico-educacao-basica",
+   "indicador": "Matrículas na rede pública",
+   "nivel": "contexto",
+   "players": {
+    "base": "abertas",
+    "div": "Privado",
+    "setorValor": [
+     "Educação"
+    ],
+    "nomes": [
+     "Companhia Brasileira De Educação E Sistema De Ensino",
+     "Bioma Educação"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": null,
+   "agregar": null,
+   "nota": "Não há uma métrica das empresas que se compare diretamente a este indicador: a lista mostra os players do ecossistema, com o crescimento de cada um, para situar a conversa."
+  },
+  {
+   "segmento": "educacao-publico-educacao-profissional-e-tecnologica-ept",
+   "indicador": "Matrículas em cursos técnicos",
+   "nivel": "contexto",
+   "players": {
+    "base": "abertas",
+    "div": "Privado",
+    "setorValor": [
+     "Educação"
+    ],
+    "nomes": [
+     "Companhia Brasileira De Educação E Sistema De Ensino",
+     "Bioma Educação"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": null,
+   "agregar": null,
+   "nota": "Não há uma métrica das empresas que se compare diretamente a este indicador: a lista mostra os players do ecossistema, com o crescimento de cada um, para situar a conversa."
+  },
+  {
+   "segmento": "educacao-publico-ensino-superior",
+   "indicador": "Matrículas na rede pública",
+   "nivel": "contexto",
+   "players": {
+    "base": "abertas",
+    "div": "Privado",
+    "setorValor": [
+     "Educação"
+    ],
+    "nomes": [
+     "Companhia Brasileira De Educação E Sistema De Ensino",
+     "Bioma Educação"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": null,
+   "agregar": null,
+   "nota": "Não há uma métrica das empresas que se compare diretamente a este indicador: a lista mostra os players do ecossistema, com o crescimento de cada um, para situar a conversa."
+  },
+  {
+   "segmento": "educacao-privado-educacao-basica",
+   "indicador": "Matrículas na rede privada",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "nomes": [
+     "Companhia Brasileira De Educação E Sistema De Ensino",
+     "Bioma Educação",
+     "Grupo Salta",
+     "Cogna"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "Matrículas do Censo Escolar (anual) contra a receita do trimestre; os grupos também têm ensino superior e sistemas de ensino."
+  },
+  {
+   "segmento": "educacao-privado-ensino-superior",
+   "indicador": "Matrículas na rede privada",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Privado",
+    "setorValor": [
+     "Educação"
+    ],
+    "nomes": [
+     "Companhia Brasileira De Educação E Sistema De Ensino",
+     "Bioma Educação"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "Matrículas do Censo da Educação Superior (último ano disponível) contra a receita do trimestre."
+  },
+  {
+   "segmento": "financial-services-banking-bancos",
+   "indicador": "Carteira de crédito do SFN",
+   "nivel": "direta",
+   "players": {
+    "base": "abertas",
+    "nomes": [
+     "Itaú",
+     "Bradesco",
+     "Santander",
+     "Banco do Brasil"
+    ]
+   },
+   "metrica": "crescCarteira",
+   "comparar": "var",
+   "agregar": "fim",
+   "nota": "Mesma métrica: crescimento da carteira de crédito em 12 meses, no fim do trimestre."
+  },
+  {
+   "segmento": "financial-services-banking-bancos",
+   "indicador": "Inadimplência acima de 90 dias",
+   "nivel": "direta",
+   "players": {
+    "base": "abertas",
+    "nomes": [
+     "Itaú",
+     "Bradesco",
+     "Santander",
+     "Banco do Brasil"
+    ]
+   },
+   "metrica": "inadimplencia",
+   "comparar": "valor",
+   "agregar": "fim",
+   "nota": "Mesma métrica, no fim do trimestre. Cada banco divulga a própria base de cálculo; diferenças pequenas podem vir do critério."
+  },
+  {
+   "segmento": "financial-services-banking-bancos",
+   "indicador": "Lucro líquido do sistema bancário",
+   "nivel": "direta",
+   "players": {
+    "base": "abertas",
+    "nomes": [
+     "Itaú",
+     "Bradesco",
+     "Santander",
+     "Banco do Brasil"
+    ]
+   },
+   "metrica": "crescLL",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "Crescimento do lucro sobre o mesmo trimestre do ano anterior; os bancos divulgam o lucro recorrente."
+  },
+  {
+   "segmento": "financial-services-banking-bancos",
+   "indicador": "Índice de Basileia do sistema",
+   "nivel": "próxima",
+   "players": {
+    "base": "abertas",
+    "nomes": [
+     "Itaú",
+     "Bradesco",
+     "Santander",
+     "Banco do Brasil"
+    ]
+   },
+   "metrica": "cet1",
+   "comparar": null,
+   "agregar": null,
+   "nota": "Os bancos divulgam o capital principal (CET1), que é a parte mais nobre do índice de Basileia: o CET1 fica sempre abaixo do índice total."
+  },
+  {
+   "segmento": "financial-services-insurance-seguros",
+   "indicador": "Prêmios emitidos",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "nomes": [
+     "Porto Seguro",
+     "Irb - Brasil Resseguros",
+     "Wiz Co Participações E Corretagem De Seguros",
+     "Porto Serviço"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "Prêmios acumulados no ano contra a receita do trimestre."
+  },
+  {
+   "segmento": "financial-services-payments-meios-de-pagamento",
+   "indicador": "Valor transacionado com cartões",
+   "nivel": "aproximada",
+   "players": {
+    "base": "valor1000",
+    "div": "Payments",
+    "max": 10
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "Receita anual de 2025 (Valor 1000) contra o valor transacionado no trimestre; as empresas também têm receita de crédito e serviços."
+  },
+  {
+   "segmento": "health-saude-suplementar-operadoras",
+   "indicador": "Receita de contraprestações",
+   "nivel": "próxima",
+   "players": {
+    "base": "abertas",
+    "nomes": [
+     "Hapvida",
+     "Porto Saúde Participações",
+     "Qualicorp"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "Receita do setor no semestre contra a receita de cada empresa no trimestre."
+  },
+  {
+   "segmento": "health-industria-health-farmaceutica-dispositivos-e-diagnost",
+   "indicador": "Produção física farmacêutica",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Indústria Health",
+    "setorValor": [
+     "Farmacêutica e Cosméticos"
+    ],
+    "nomes": [
+     "Biomm"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "O indicador mede volume (desconta a inflação); a receita das empresas é nominal. Empresa crescendo acima do setor por poucos pontos pode estar só repassando preço."
+  },
+  {
+   "segmento": "health-hospitais-hospitais-publicos-e-privados",
+   "indicador": "Leitos totais",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Hospitais",
+    "setorValor": [
+     "Serviços Médicos"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "Capacidade do setor (leitos) contra a receita dos hospitais listados."
+  },
+  {
+   "segmento": "manufacturing-natural-resources-manufatura-industria-de-tran",
+   "indicador": "Produção física da indústria de transformação",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Manufatura",
+    "setorValor": [
+     "Mecânica",
+     "Veículos e Peças",
+     "Papel e Celulose",
+     "Química e Petroquímica",
+     "Eletroeletrônica",
+     "Mat. de Constr. e de Acabamento",
+     "Plásticos e Borracha"
+    ],
+    "max": 12
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "O indicador mede volume (desconta a inflação); a receita das empresas é nominal. Empresa crescendo acima do setor por poucos pontos pode estar só repassando preço."
+  },
+  {
+   "segmento": "manufacturing-natural-resources-manufatura-automotivo",
+   "indicador": "Produção física de veículos automotores",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Manufatura",
+    "setorValor": [
+     "Veículos e Peças"
+    ],
+    "excluir": [
+     "Embraer"
+    ],
+    "nomes": [
+     "Frasle Mobility",
+     "Tupy"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "O indicador mede volume (desconta a inflação); a receita das empresas é nominal. Empresa crescendo acima do setor por poucos pontos pode estar só repassando preço."
+  },
+  {
+   "segmento": "manufacturing-natural-resources-manufatura-maquinas-e-equipa",
+   "indicador": "Produção física de máquinas e equipamentos",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Manufatura",
+    "setorValor": [
+     "Mecânica"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "O indicador mede volume (desconta a inflação); a receita das empresas é nominal. Empresa crescendo acima do setor por poucos pontos pode estar só repassando preço."
+  },
+  {
+   "segmento": "manufacturing-natural-resources-manufatura-quimica-e-petroqu",
+   "indicador": "Produção física da indústria química",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Manufatura",
+    "setorValor": [
+     "Química e Petroquímica"
+    ],
+    "nomes": [
+     "Metanor S.A Metanol Do Nordeste"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "O indicador mede volume (desconta a inflação); a receita das empresas é nominal. Empresa crescendo acima do setor por poucos pontos pode estar só repassando preço."
+  },
+  {
+   "segmento": "manufacturing-natural-resources-manufatura-papel-e-celulose",
+   "indicador": "Exportações de celulose",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Manufatura",
+    "setorValor": [
+     "Papel e Celulose"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "A receita das empresas inclui operações fora do Brasil; o indicador é só do mercado brasileiro. As empresas também vendem papel e embalagens."
+  },
+  {
+   "segmento": "manufacturing-natural-resources-manufatura-eletroeletronicos",
+   "indicador": "Produção física de eletroeletrônicos",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Manufatura",
+    "setorValor": [
+     "Eletroeletrônica"
+    ],
+    "nomes": [
+     "Intelbras",
+     "Grupo Multilaser",
+     "Positivo"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "O indicador mede volume (desconta a inflação); a receita das empresas é nominal. Empresa crescendo acima do setor por poucos pontos pode estar só repassando preço."
+  },
+  {
+   "segmento": "manufacturing-natural-resources-metalurgia-e-siderurgia-side",
+   "indicador": "Produção física da metalurgia",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Metalurgia e Siderurgia",
+    "setorValor": [
+     "Metalurgia e Siderurgia"
+    ],
+    "nomes": [
+     "Usiminas",
+     "Ferbasa"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "O indicador mede volume (desconta a inflação); a receita das empresas é nominal. Empresa crescendo acima do setor por poucos pontos pode estar só repassando preço."
+  },
+  {
+   "segmento": "manufacturing-natural-resources-mineracao-mineracao",
+   "indicador": "Exportações minerais",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Mineração",
+    "nomes": [
+     "CBA"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "A receita das empresas inclui operações fora do Brasil; o indicador é só do mercado brasileiro."
+  },
+  {
+   "segmento": "power-utilities-energia-eletrica-geracao-transmissao-e-distr",
+   "indicador": "Carga de energia do SIN",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Energia elétrica",
+    "setorValor": [
+     "Energia Elétrica"
+    ],
+    "nomes": [
+     "Cemig",
+     "Copel"
+    ],
+    "max": 12
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "Demanda de energia contra a receita das empresas, que depende também de tarifa e de contratos de transmissão."
+  },
+  {
+   "segmento": "power-utilities-energias-renovaveis-solar-eolica-e-biomassa-",
+   "indicador": "Capacidade instalada solar, eólica e biomassa",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "nomes": [
+     "Serena Energia",
+     "Auren",
+     "Engie Brasil Energia",
+     "CTG Brasil",
+     "Cpfl Renováveis",
+     "Eneva"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "Capacidade do setor contra a receita das geradoras, que também operam hidrelétricas e térmicas."
+  },
+  {
+   "segmento": "power-utilities-petroleo-e-gas-exploracao-producao-refino-e-",
+   "indicador": "Produção de petróleo",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "nomes": [
+     "Petrobras",
+     "Prio",
+     "Brava Energia",
+     "PetroRecôncavo",
+     "Origem Energia"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "Produção contra a receita, que também depende do preço do petróleo e do câmbio."
+  },
+  {
+   "segmento": "power-utilities-petroleo-e-gas-exploracao-producao-refino-e-",
+   "indicador": "Vendas de combustíveis",
+   "nivel": "próxima",
+   "players": {
+    "base": "abertas",
+    "nomes": [
+     "Vibra",
+     "Ultrapar",
+     "Raízen"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "Volume de vendas em 12 meses contra a receita do trimestre, que também depende do preço dos combustíveis."
+  },
+  {
+   "segmento": "power-utilities-saneamento-agua-esgoto-e-residuos",
+   "indicador": "Investimentos em saneamento",
+   "nivel": "contexto",
+   "players": {
+    "base": "abertas",
+    "div": "Saneamento",
+    "setorValor": [
+     "Água, Saneamento e Serviços Ambientais"
+    ],
+    "nomes": [
+     "Sabesp"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": null,
+   "agregar": null,
+   "nota": "Não há uma métrica das empresas que se compare diretamente a este indicador: a lista mostra os players do ecossistema, com o crescimento de cada um, para situar a conversa."
+  },
+  {
+   "segmento": "public-services-bancos-publicos-bancos-comerciais-bancos-de-",
+   "indicador": "Carteira de crédito dos bancos públicos",
+   "nivel": "direta",
+   "players": {
+    "base": "abertas",
+    "nomes": [
+     "Banco do Brasil"
+    ]
+   },
+   "metrica": "crescCarteira",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "Entre os bancos públicos, só o Banco do Brasil divulga release trimestral na base do portal; Caixa e BNDES não são companhias abertas."
+  },
+  {
+   "segmento": "public-services-governo-federal-administracao-publica",
+   "indicador": "Resultado primário do governo central",
+   "nivel": "contexto",
+   "players": {
+    "base": "abertas",
+    "nomes": [
+     "Petrobras",
+     "Banco do Brasil"
+    ]
+   },
+   "metrica": "lucroLiquido",
+   "comparar": null,
+   "agregar": null,
+   "nota": "As estatais de capital aberto que mais pagam dividendos à União: o lucro delas entra nas receitas do governo central."
+  },
+  {
+   "segmento": "public-services-estados-administracao-publica-estadual",
+   "indicador": "Estados com Capag A ou B",
+   "nivel": "direta",
+   "players": {
+    "base": "capag_estados"
+   },
+   "metrica": "capag",
+   "comparar": null,
+   "agregar": null,
+   "nota": "Nota de capacidade de pagamento de cada estado (Tesouro Nacional). A e B podem tomar empréstimo com garantia da União."
+  },
+  {
+   "segmento": "public-services-municipios-administracao-publica-municipal",
+   "indicador": "Municípios com Capag A ou B",
+   "nivel": "direta",
+   "players": {
+    "base": "capag_capitais"
+   },
+   "metrica": "capag",
+   "comparar": null,
+   "agregar": null,
+   "nota": "Nota de capacidade de pagamento das capitais (Tesouro Nacional). A e B podem tomar empréstimo com garantia da União."
+  },
+  {
+   "segmento": "varejo-retail-varejo-geral",
+   "indicador": "Volume de vendas do varejo ampliado",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Retail",
+    "setorValor": [
+     "Comércio Varejista"
+    ],
+    "excluir": [
+     "Rodobens",
+     "União Pet"
+    ],
+    "max": 12
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "O indicador mede volume (desconta a inflação); a receita das empresas é nominal. Empresa crescendo acima do setor por poucos pontos pode estar só repassando preço."
+  },
+  {
+   "segmento": "varejo-retail-perfumaria-e-cosmeticos",
+   "indicador": "Produção física de higiene e cosméticos",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "nomes": [
+     "Natura Cosméticos"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "A Natura é a única empresa do setor nas bases do portal (O Boticário e as multinacionais não divulgam resultado no Brasil). O indicador mede volume (desconta a inflação); a receita das empresas é nominal. Empresa crescendo acima do setor por poucos pontos pode estar só repassando preço."
+  },
+  {
+   "segmento": "varejo-retail-farmacias-e-drogarias",
+   "indicador": "Receita nominal de artigos farmacêuticos",
+   "nivel": "próxima",
+   "players": {
+    "base": "abertas",
+    "nomes": [
+     "RD Saúde",
+     "Pague Menos",
+     "Panvel",
+     "Grupo Nissei",
+     "D1000 Varejo Farma Participações"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "Receita do setor (nominal) contra a receita de cada rede, no mesmo trimestre."
+  },
+  {
+   "segmento": "varejo-retail-supermercados-e-hipermercados",
+   "indicador": "Receita nominal de hiper e supermercados",
+   "nivel": "próxima",
+   "players": {
+    "base": "abertas",
+    "nomes": [
+     "Assaí",
+     "GPA",
+     "Grupo Mateus",
+     "Oba Hortifruti"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "Receita do setor (nominal) contra a receita de cada rede, no mesmo trimestre."
+  },
+  {
+   "segmento": "varejo-retail-vestuario",
+   "indicador": "Volume de vendas de tecidos, vestuário e calçados",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Retail",
+    "setorValor": [
+     "Indústria da Moda"
+    ],
+    "excluir": [
+     "Grupo SBF",
+     "Vivara"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "O indicador mede volume (desconta a inflação); a receita das empresas é nominal. Empresa crescendo acima do setor por poucos pontos pode estar só repassando preço."
+  },
+  {
+   "segmento": "transportes-logistica-transporte-de-carga-rodoviario-ferrovi",
+   "indicador": "Volume do transporte de cargas",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Transporte de carga",
+    "nomes": [
+     "Vli Multimodal"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "O indicador mede volume (desconta a inflação); a receita das empresas é nominal. Empresa crescendo acima do setor por poucos pontos pode estar só repassando preço."
+  },
+  {
+   "segmento": "transportes-logistica-logistica-e-armazenagem-operadores-log",
+   "indicador": "Volume de serviços de transporte e armazenagem",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Logística e armazenagem",
+    "setorValor": [
+     "Transportes e Logística"
+    ],
+    "nomes": [
+     "Jsl",
+     "Vix Logística"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "O indicador mede volume (desconta a inflação); a receita das empresas é nominal. Empresa crescendo acima do setor por poucos pontos pode estar só repassando preço."
+  },
+  {
+   "segmento": "transportes-logistica-infraestrutura-de-transporte-portos-ae",
+   "indicador": "Passageiros nos aeroportos",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Infraestrutura de transporte",
+    "setorValor": [
+     "Transportes e Logística"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "As concessionárias têm rodovias, aeroportos e portos: o movimento de passageiros explica só parte da receita."
+  },
+  {
+   "segmento": "transportes-logistica-mobilidade-de-passageiros-aviacao-rodo",
+   "indicador": "Frota das locadoras",
+   "nivel": "próxima",
+   "players": {
+    "base": "abertas",
+    "nomes": [
+     "Localiza",
+     "Movida Participações",
+     "Unidas",
+     "LM"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "Frota do setor (anual) contra a receita das locadoras no trimestre."
+  },
+  {
+   "segmento": "transportes-logistica-mobilidade-de-passageiros-aviacao-rodo",
+   "indicador": "Passageiros aéreos domésticos",
+   "nivel": "próxima",
+   "players": {
+    "base": "abertas",
+    "nomes": [
+     "Azul"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "soma",
+   "nota": "Gol e Latam não divulgam resultado na CVM: a comparação fica só com a Azul."
+  },
+  {
+   "segmento": "ti-telecom-telecomunicacoes-operadoras-de-telefonia-banda-la",
+   "indicador": "Receita de serviços de telecomunicações",
+   "nivel": "próxima",
+   "players": {
+    "base": "abertas",
+    "div": "Telecomunicações",
+    "setorValor": [
+     "TI & Telecom"
+    ],
+    "nomes": [
+     "Tim Brasil Serviços E Participações"
+    ],
+    "excluir": [
+     "TIM"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "Receita do setor (nominal) contra a receita de cada operadora, no mesmo trimestre."
+  },
+  {
+   "segmento": "ti-telecom-infraestrutura-digital-data-centers-redes-neutras",
+   "indicador": "Empresas de data centers e hospedagem",
+   "nivel": "aproximada",
+   "players": {
+    "base": "valor1000",
+    "div": "Infraestrutura digital"
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "Número de empresas do setor contra a receita de 2025 dos principais operadores (Valor 1000)."
+  },
+  {
+   "segmento": "ti-telecom-software-e-plataformas-software-saas-e-plataforma",
+   "indicador": "Receita de serviços de tecnologia da informação",
+   "nivel": "próxima",
+   "players": {
+    "base": "abertas",
+    "div": "Software e plataformas",
+    "setorValor": [
+     "TI & Telecom"
+    ],
+    "nomes": [
+     "Bionexo"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "Receita do setor (nominal) contra a receita de cada empresa, no mesmo trimestre."
+  },
+  {
+   "segmento": "ti-telecom-servicos-de-ti-integracao-outsourcing-e-consultor",
+   "indicador": "Volume de serviços de informação e comunicação",
+   "nivel": "aproximada",
+   "players": {
+    "base": "valor1000",
+    "div": "Serviços de TI"
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "Receita anual de 2025 (Valor 1000) contra o volume do último mês. O indicador mede volume (desconta a inflação); a receita das empresas é nominal. Empresa crescendo acima do setor por poucos pontos pode estar só repassando preço."
+  },
+  {
+   "segmento": "ti-telecom-hardware-e-equipamentos-hardware-dispositivos-e-c",
+   "indicador": "Produção física de informática e eletrônicos",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Hardware e equipamentos",
+    "nomes": [
+     "Intelbras",
+     "Grupo Multilaser"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "O indicador mede volume (desconta a inflação); a receita das empresas é nominal. Empresa crescendo acima do setor por poucos pontos pode estar só repassando preço."
+  },
+  {
+   "segmento": "outros-servicos-especializados-facilities-terceirizacao-bpo-",
+   "indicador": "Volume de serviços prestados às empresas",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Serviços especializados",
+    "setorValor": [
+     "Serviços Especializados"
+    ],
+    "nomes": [
+     "Contax Participações S.A. - Em Recuperação Judicial"
+    ]
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": "media",
+   "nota": "O indicador mede volume (desconta a inflação); a receita das empresas é nominal. Empresa crescendo acima do setor por poucos pontos pode estar só repassando preço."
+  },
+  {
+   "segmento": "outros-construcao-e-engenharia-construcao-civil-construcao-p",
+   "indicador": "PIB da construção",
+   "nivel": "aproximada",
+   "players": {
+    "base": "valor1000",
+    "div": "Construção e engenharia",
+    "max": 12
+   },
+   "metrica": "cresc",
+   "comparar": "valor",
+   "agregar": null,
+   "nota": "O indicador já é uma taxa de crescimento (PIB em 12 meses): a comparação é com o crescimento da receita de 2025 (Valor 1000)."
+  },
+  {
+   "segmento": "outros-empreendimentos-imobiliarios-incorporacao-shoppings-e",
+   "indicador": "Financiamento imobiliário",
+   "nivel": "aproximada",
+   "players": {
+    "base": "abertas",
+    "div": "Empreendimentos imobiliários",
+    "setorValor": [
+     "Empreendimentos Imobiliários"
+    ],
+    "excluir": [
+     "Grupo Allos",
+     "Iguatemi",
+     "JHSF"
+    ],
+    "nomes": [
+     "Cyrela Brazil Realty",
+     "Ez Tec Empreend. E Participações"
+    ],
+    "max": 12
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "Financiamento em 12 meses contra a receita do trimestre, que é reconhecida conforme a obra avança."
+  },
+  {
+   "segmento": "outros-comunicacao-e-midia-midia-publicidade-editorial-e-gra",
+   "indicador": "Investimento em mídia",
+   "nivel": "aproximada",
+   "players": {
+    "base": "valor1000",
+    "div": "Comunicação e mídia"
+   },
+   "metrica": "cresc",
+   "comparar": "var",
+   "agregar": null,
+   "nota": "Os dois números são de 2025: investimento em mídia do país e receita das empresas (Valor 1000)."
+  }
+ ]
+}
