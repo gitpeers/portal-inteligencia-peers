@@ -1361,17 +1361,17 @@ const COLUNAS_TRI = [
   {c:"cresc", l:"Cresc. a/a"},
   {c:"margemEbitda", l:"Margem EBITDA", dica:"Ajustada nos releases das empresas acompanhadas; na CVM, contábil (resultado operacional + depreciação e amortização)"},
   {c:"margemLiquida", l:"Margem líquida", dica:"Ajustada nos releases das empresas acompanhadas; contábil na CVM"},
-  {c:"lucroLiquido", l:"Lucro líquido (R$ mi)", dica:"Ajustado nos releases das empresas acompanhadas; contábil consolidado na CVM"},
+  {c:"lucroLiquido", l:"Lucro líquido (R$ mi)", dica:"Ajustado nos releases das empresas acompanhadas; na CVM, contábil atribuído aos controladores"},
   {c:"fonte", l:"Fonte e período", semOrdem:true}
 ];
 const COLUNAS_BANCO = [
   {c:"nome", l:"Banco"},
   {c:"margemFinanceira", l:"Margem fin. bruta (R$ mi)"},
-  {c:"lucroLiquido", l:"Lucro líquido (R$ mi)", dica:"Recorrente nos releases; contábil na CVM"},
-  {c:"roe", l:"ROE"},
-  {c:"carteira", l:"Carteira (R$ bi)"},
-  {c:"inadimplencia", l:"Inadimpl. +90d"},
-  {c:"cet1", l:"CET1"},
+  {c:"lucroLiquido", l:"Lucro líquido (R$ mi)", dica:"Recorrente nos releases; na CVM, contábil atribuído aos controladores"},
+  {c:"roe", l:"ROE", dica:"Releases nos bancos acompanhados; nos demais, IF.data do Banco Central (lucro do trimestre anualizado sobre o patrimônio líquido médio)"},
+  {c:"carteira", l:"Carteira (R$ bi)", dica:"Releases nos bancos acompanhados (carteira ampliada); nos demais, IF.data do Banco Central (carteira classificada do conglomerado prudencial)"},
+  {c:"inadimplencia", l:"Inadimpl. +90d", dica:"Só nos releases dos bancos acompanhados"},
+  {c:"cet1", l:"CET1", dica:"Releases nos bancos acompanhados; nos demais, índice de capital principal do IF.data"},
   {c:"fonte", l:"Fonte e período", semOrdem:true}
 ];
 
@@ -1510,7 +1510,7 @@ function abrirFichaTrimestral(id){
     '</div>' +
     '<div class="modal-body"><div id="tabFicha"></div>' +
       '<p class="cardnote" style="margin:14px 0 0">'+(e.fonte.tipo==="cvm"
-        ? 'Fonte: dados abertos da CVM (ITR do '+esc(e.fonte.periodo)+'), números contábeis consolidados; o EBITDA é o resultado operacional mais depreciação e amortização.'
+        ? 'Fonte: dados abertos da CVM (ITR do '+esc(e.fonte.periodo)+'), números contábeis consolidados; o lucro líquido é o atribuído aos controladores e o EBITDA é o resultado operacional mais depreciação e amortização.'
         : 'Fonte: release de resultados do '+esc(e.fonte.periodo)+' da empresa, com os números ajustados divulgados'+(e.fonte.release ? ' (<a href="'+esc(e.fonte.release)+'" target="_blank" rel="noopener">abrir release</a>)' : '')+'.')+' Valores em R$ milhões, salvo indicação.</p>' +
     '</div>';
   const tabela = (linhas, per) => '<table class="simple"><tr><th>Indicador</th><th style="text-align:right">'+esc(per||e.fonte.periodo)+'</th></tr>' +

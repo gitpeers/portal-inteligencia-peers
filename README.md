@@ -58,7 +58,7 @@ Supabase/
 | Radar e Movimentos | Feeds RSS dos veículos validados (`config/fontes_noticias.json`) | Diária |
 | Agenda | Calendário (`config/calendario.json`), IBGE e Câmara (`config/agenda_fontes.json`) | Diária |
 | Indicadores setoriais | Banco Central, IBGE, Tesouro e outras (`config/indicadores_fontes.json`) | Mensal |
-| Finanças · companhias abertas | CVM e releases (`config/financas_cvm.json`, `config/financas_releases.json`) | Semanal |
+| Finanças · companhias abertas | CVM e releases (`config/financas_cvm.json`, `config/financas_releases.json`); carteira, ROE e CET1 dos demais bancos pelo IF.data do Banco Central | Semanal |
 | Finanças · Valor 1000 | Planilha do ranking | Manual, uma vez por ano |
 | Indicadores · visão por player | Indicadores, Finanças (companhias abertas), Valor 1000 e Capag do Tesouro (`config/indicadores_players.json`) | Diária (recalcula; a leitura da IA muda quando Indicadores ou Finanças mudam) |
 | Concorrência | Google Notícias, edições Brasil e EUA (lista de concorrentes no Supabase; regras em `config/concorrencia_regras.json`) | Diária |
