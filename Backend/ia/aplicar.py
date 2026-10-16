@@ -29,6 +29,82 @@ LIMITE_FINANCAS, LIMITE_INDICADORES, LIMITE_APROFUNDAMENTO = 480, 380, 420
 CAMPOS_CONCORRENCIA = {"fato": (300, False), "sinal": (240, False), "impacto": (300, False)}
 SELOS = ("Ameaça", "Oportunidade", "Monitorar")
 LEITURA_SEMANA = (3, 5, 300)   # mínimo e máximo de pontos, caracteres por ponto
+# So what dos indicadores: quatro textos, as notícias citadas no "por que" e a frase fixa quando não há causa na fonte
+CAMPOS_SOWHAT = {"oQue": 260, "porQue": 280, "impacto": 320, "oportunidade": 260}
+SEM_CAUSA = "Causa não identificada nas fontes do portal."
+MAX_FONTES_SOWHAT = 2
+NUMERO = re.compile(r"\d+(?:[.,]\d+)*")
+
+
+def numero(texto):
+    """'1.234,5' → 1234.5; '2,6' → 2.6; '361.7' → 361.7."""
+    t = texto.replace(".", "") if re.fullmatch(r"\d{1,3}(\.\d{3})+(,\d+)?", texto) else texto
+    try:
+        return float(t.replace(",", "."))
+    except ValueError:
+        return None
+
+
+def numeros_permitidos(obj, saida=None):
+    """Todos os números de uma pendência (valores e números dentro de textos), mais as conversões de milhões
+    para bilhões, que são o arredondamento usual na escrita."""
+    saida = set() if saida is None else saida
+    if isinstance(obj, bool):
+        return saida
+    if isinstance(obj, (int, float)):
+        saida.update({float(obj), abs(float(obj))})
+        if abs(obj) >= 1000:
+            saida.add(abs(float(obj)) / 1000)
+    elif isinstance(obj, str):
+        saida.update(n for n in (numero(m) for m in NUMERO.findall(obj)) if n is not None)
+    elif isinstance(obj, dict):
+        for v in obj.values():
+            numeros_permitidos(v, saida)
+    elif isinstance(obj, list):
+        for v in obj:
+            numeros_permitidos(v, saida)
+    return saida
+
+
+def numeros_estranhos(texto, permitidos):
+    """Números do texto que não estão na pendência. Valem também os inteiros pequenos (contagens, meses) e os anos."""
+    fora = []
+    for m in NUMERO.findall(re.sub(r"\b[1-4]T\d{2}\b", "", texto)):
+        x = numero(m)
+        if x is None or (x.is_integer() and (x <= 12 or 1990 <= x <= 2035)):
+            continue
+        if not any(abs(x - a) <= max(0.051, abs(a) * 0.005) for a in permitidos):
+            fora.append(m)
+    return fora
+
+
+def conferir_sowhat(erros, pend, resp):
+    offerings = pend["referencia"]["offerings"]
+    for chave, c in resp.get("sowhat", {}).items():
+        item = pend.get("sowhat", {}).get(chave)
+        onde = f"sowhat/{chave}"
+        if not item:
+            erros.append(f"{onde}: fora das pendências"); continue
+        if not isinstance(c, dict) or set(c) != set(CAMPOS_SOWHAT) | {"fontes"}:
+            erros.append(f"{onde}: os campos são exatamente {sorted(set(CAMPOS_SOWHAT) | {'fontes'})}"); continue
+        for campo, limite in CAMPOS_SOWHAT.items():
+            conferir_texto(erros, f"{onde}.{campo}", c[campo], limite, False)
+        ids = {n["id"] for n in item["noticias"]}
+        fontes = c["fontes"]
+        if not isinstance(fontes, list) or len(fontes) > MAX_FONTES_SOWHAT or not set(fontes) <= ids:
+            erros.append(f"{onde}.fontes: lista de até {MAX_FONTES_SOWHAT} ids de noticias deste indicador")
+        elif not fontes and isinstance(c["porQue"], str) and c["porQue"].strip() != SEM_CAUSA:
+            erros.append(f'{onde}.porQue: sem notícia em fontes, escreva exatamente "{SEM_CAUSA}"')
+        elif fontes and isinstance(c["porQue"], str) and c["porQue"].strip() == SEM_CAUSA:
+            erros.append(f"{onde}.porQue: com notícia em fontes, explique a causa que ela mostra")
+        if isinstance(c["oportunidade"], str) and not any(c["oportunidade"].strip().startswith(o + ":") for o in offerings):
+            erros.append(f"{onde}.oportunidade: comece pelo nome exato de uma offering seguido de dois-pontos")
+        permitidos = numeros_permitidos(item)
+        for campo in CAMPOS_SOWHAT:
+            if isinstance(c[campo], str):
+                fora = numeros_estranhos(c[campo], permitidos)
+                if fora:
+                    erros.append(f"{onde}.{campo}: números que não estão nos dados deste indicador: {', '.join(fora)}")
 
 
 def ler_respostas():
@@ -135,6 +211,7 @@ def main():
         else:
             for k, ponto in enumerate(pontos):
                 conferir_texto(erros, f"concorrenciaSemana[{k}]", ponto, limite, False)
+    conferir_sowhat(erros, pend, resp)
     if erros:
         log("Respostas com problema (nada foi gravado):")
         for e in erros:
@@ -169,8 +246,17 @@ def main():
         s_ = pend["concorrenciaSemana"]
         analises["concorrencia"] = {"pontos": [p.strip() for p in resp["concorrenciaSemana"]],
                                     "inicio": s_["inicio"], "fim": s_["fim"], "geradoEm": hoje_iso()}
+    for chave, c in resp.get("sowhat", {}).items():
+        item = pend["sowhat"][chave]
+        noticias = {n["id"]: n for n in item["noticias"]}
+        # as notícias citadas vão copiadas: o Radar guarda só 30 dias, e o so what fica até o indicador mudar
+        analises.setdefault("sowhat", {})[chave] = {
+            **{k: c[k].strip() for k in CAMPOS_SOWHAT},
+            "fontes": [{k: noticias[i].get(k) for k in ("manchete", "fonte", "data", "url")} for i in c["fontes"]],
+            "base": item["base"], "geradoEm": hoje_iso()}
     gravar_json(ANALISES, analises)
     contagem["concorrencia"] = gravar_concorrencia(resp)
+    contagem["sowhat"] = len(resp.get("sowhat", {}))
     contagem["concorrenciaSemana"] = 1 if resp.get("concorrenciaSemana") else 0
     contagem["financas"] = len(resp.get("financas", {}))
     contagem["indicadores"] = len(resp.get("indicadores", {}))
@@ -195,6 +281,7 @@ def main():
             "radar": len(pend.get("radar", [])) - contagem["radar"],
             "movimentos": len(pend.get("movimentos", [])) - contagem["movimentos"],
             "concorrencia": len(pend.get("concorrencia", [])) - contagem["concorrencia"],
+            "sowhat": len(pend.get("sowhat", {})) - contagem["sowhat"],
             **{k: len(v) for k, v in faltando.items()},
         },
         "descartados": resp.get("descartar", {}),

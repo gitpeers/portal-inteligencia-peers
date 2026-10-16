@@ -51,13 +51,14 @@ Escreva as respostas em `Backend/ia/trabalho/respostas.json`. Com muitos itens, 
   "revisar":     { "<id>": "motivo" },
   "concorrencia":          { "<id>": { "fato": "...", "sinal": "...", "impacto": "...", "selo": "...", "offering": "..." } },
   "descartarConcorrencia": { "<id>": "motivo" },
-  "concorrenciaSemana":    [ "...", "...", "..." ]
+  "concorrenciaSemana":    [ "...", "...", "..." ],
+  "sowhat":      { "<segmento>|<indicador>": { "oQue": "...", "porQue": "...", "fontes": ["<id>"], "impacto": "...", "oportunidade": "..." } }
 }
 ```
 
 Responda todos os itens de `radar` e `movimentos` (em `radar`/`movimentos` ou em `descartar`), todos os itens de
-`concorrencia` (em `concorrencia` ou em `descartarConcorrencia`) e todas as chaves de `financas`, `indicadores` e
-`aprofundamento` que vierem nas pendências. Seções ausentes nas pendências ficam fora das respostas.
+`concorrencia` (em `concorrencia` ou em `descartarConcorrencia`) e todas as chaves de `financas`, `indicadores`,
+`aprofundamento` e `sowhat` que vierem nas pendências. Seções ausentes nas pendências ficam fora das respostas.
 
 ### Radar (cada notícia)
 
@@ -148,6 +149,33 @@ período, e o que isso indica (ganho ou perda de participação, risco maior ou 
 - Capag (estados ou capitais): quantos têm nota A ou B, quais estão nas piores notas e o que a nota permite.
 - Empresa com variação fora do comum (acima de 50% ou queda acima de 30%): cite como caso à parte; costuma ser
   aquisição, venda de ativo ou base fraca no ano anterior, e o arquivo não diz qual.
+
+### So what dos Indicadores (cada chave, quando vier `sowhat` nas pendências)
+
+É o que o consultor leva para a conversa com o cliente: o que o indicador mostra, por que, o que isso faz no
+resultado das empresas e que trabalho a Peers pode oferecer. Cada chave (`<segmento>|<indicador>`) traz o
+`indicador` (valor, variação, período, fonte e, quando houver, o `historico`), os `outrosIndicadoresDoSegmento`, as
+`empresas` da divisão em Finanças (números do último trimestre, em R$ milhões e %), a `visaoPorPlayer` (quando houver)
+e as `noticias` recentes do Radar da mesma indústria. Formato da resposta:
+
+```json
+"sowhat": { "<chave>": { "oQue": "...", "porQue": "...", "fontes": ["<id da notícia>"], "impacto": "...", "oportunidade": "..." } }
+```
+
+- **oQue** (até 260): o fato em uma ou duas frases, com o valor, a variação e o período. Se o `historico` mostrar
+  uma virada (sobe depois de cair, maior ou menor valor da série), diga.
+- **porQue** (até 280): a causa, só se uma das `noticias` deste indicador a mostrar. Ponha o id dela em `fontes`
+  (até 2). Sem notícia que explique, escreva exatamente `Causa não identificada nas fontes do portal.` e deixe
+  `fontes` vazio. Não use conhecimento geral para a causa: o consultor vai repetir isso ao cliente.
+- **impacto** (até 320): o que o movimento do indicador faz no resultado das empresas (receita, margem, crédito,
+  inadimplência), citando duas ou três `empresas` ou `visaoPorPlayer.players` com o número e o período. Se as empresas
+  andaram na direção contrária do setor, diga. Sem empresas no arquivo (ex.: Public Services), fale do efeito no
+  setor sem citar empresa.
+- **oportunidade** (até 260): comece pelo nome exato de uma offering de `referencia.offerings`, seguido de
+  dois-pontos, e diga que trabalho a Peers pode oferecer a quem é afetado. Ex.: `Supply Chain: planejar armazenagem
+  e escoamento para cooperativas com safra recorde e frete pressionado.`
+- **Números:** só os que estão na pendência deste indicador, iguais ou arredondados (pode passar de milhões para
+  bilhões). Não calcule números novos (somas, diferenças, médias). O `aplicar.py` recusa número que não esteja lá.
 
 ### Sessão trimestral de Finanças (quando vier `releases` nas pendências)
 

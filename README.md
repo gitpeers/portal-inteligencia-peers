@@ -63,6 +63,7 @@ Supabase/
 | Indicadores · visão por player | Indicadores, Finanças (companhias abertas), Valor 1000 e Capag do Tesouro (`config/indicadores_players.json`) | Diária (recalcula; a leitura da IA muda quando Indicadores ou Finanças mudam) |
 | Concorrência | Google Notícias, edições Brasil e EUA (lista de concorrentes no Supabase; regras em `config/concorrencia_regras.json`) | Diária |
 | Análises (resumos, "Por que importa", Ângulo Peers, leituras, impacto da concorrência) | Rotina de IA (`Backend/ia/ROTINA.md`) | Diária, às 07h05 |
+| So what dos Indicadores (o que aconteceu, por que, impacto financeiro, oportunidade) | Rotina de IA, com os números do portal e notícias do Radar como única fonte da causa | Quando o indicador muda; até 60 por dia |
 
 ## Ajustes sem programar (pasta Backend/config)
 
