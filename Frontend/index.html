@@ -190,6 +190,17 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 .chip.neutro.marcado{background:var(--navy);color:#fff;border-color:var(--navy)}
 .analise-ia{background:var(--serene-soft);border:1px solid var(--serene-mid);border-radius:var(--r-sm);padding:11px 14px;margin:0 0 12px;font-size:.79rem;line-height:1.55;color:var(--text2)}
 .analise-ia .selo-ia{margin-right:7px}
+.sowhat-lista{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.sowhat{border:1px solid var(--grey-border);border-radius:var(--r-sm);background:#fff;font-size:.79rem;line-height:1.55;color:var(--text2)}
+.sowhat summary{cursor:pointer;padding:9px 13px;font-weight:600;color:var(--navy);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.sowhat summary .selo-ia{margin-left:auto}
+.sowhat[open] summary{border-bottom:1px solid var(--grey-border)}
+.sw-tit{text-transform:uppercase;letter-spacing:.08em;font-size:.68rem;font-weight:700}
+.sowhat .sw-l{padding:7px 13px 0}
+.sw-r{display:block;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--grey-dark);margin-bottom:1px}
+.sw-fontes{padding:3px 13px 0;font-size:.72rem;color:var(--grey-dark)}
+.sw-fontes a{color:var(--blue-ink)}
+.sw-nota{padding:8px 13px 10px;font-size:.7rem;color:var(--grey-dark)}
 .selo-ia{background:#fff;color:var(--grey-dark);font-size:.64rem;font-weight:700;padding:3px 9px;text-transform:uppercase;letter-spacing:.08em;
   border-radius:var(--pill);border:1px solid var(--grey-border);white-space:nowrap}
 
@@ -718,7 +729,7 @@ async function carregarDados(){
     // itens que a rotina de IA descartou (sem relação com negócios) ficam guardados nos dados, mas não aparecem
     radar: radar.filter(i=>!i.oculto), movimentos: movimentos.filter(m=>!m.oculto), agenda,
     analises: {financas: analises.financas || {}, indicadores: analises.indicadores || {}, concorrencia: analises.concorrencia || null,
-               aprofundamento: analises.aprofundamento || {}},
+               aprofundamento: analises.aprofundamento || {}, sowhat: analises.sowhat || {}},
     // visão por player dos Indicadores, por "segmento|indicador"; sem ela, os indicadores não ficam clicáveis
     aprofundamento: Object.fromEntries(((porNome.aprofundamento || {}).pontes || []).map(p=>[p.segmento+"|"+p.indicador, p])),
     concorrencia: concorrencia.itens.filter(i=>!i.oculto),
@@ -1752,11 +1763,27 @@ function renderIndicadores(){
               (x.equivalente ? '<div class="sem-auto" title="'+esc(x.equivalente)+'">série equivalente</div>' : '') +
               (aprof ? '<div class="ver-players">ver players ›</div>' : '') +
               '</div>';
-          }).join("") + '</div>' +
+          }).join("") + '</div>' + blocoSowhat(s) +
         '</div>';
       }).join("") +
     '</div>';
   }).join("") : '<div class="card"><div class="vazio">Nenhum segmento para este recorte.</div></div>');
+}
+
+// So what de cada indicador (rotina de IA): o que aconteceu, por que (só com notícia do Radar como fonte),
+// impacto financeiro nas empresas e oportunidade para a Peers. Fica fora do briefing, que leva só números.
+function blocoSowhat(s){
+  const itens = indicadoresOrdenados(s).map(x=>[x, DADOS.analises.sowhat[chaveAprof(s, x)]]).filter(([,a])=>a && a.oQue);
+  if(!itens.length) return '';
+  const linha = (rotulo, texto) => '<div class="sw-l"><span class="sw-r">'+rotulo+'</span>'+esc(texto)+'</div>';
+  return '<div class="sowhat-lista">' + itens.map(([x, a])=>
+    '<details class="sowhat"><summary><span class="sw-tit">So what</span> · '+esc(x.nome)+'<span class="selo-ia">Gerado por IA</span></summary>' +
+      linha('O que aconteceu', a.oQue) + linha('Por que', a.porQue) +
+      ((a.fontes||[]).length ? '<div class="sw-fontes">Fonte: '+a.fontes.map(f=>
+        '<a href="'+esc(f.url)+'" target="_blank" rel="noopener">'+esc(f.manchete)+'</a> ('+esc(f.fonte)+', '+formatarData(f.data)+')').join('; ')+'</div>' : '') +
+      linha('Impacto financeiro', a.impacto) + linha('Oportunidade', a.oportunidade) +
+      '<div class="sw-nota">Escrito em '+formatarData(a.geradoEm)+' com os dados do portal; confira os números na fonte antes de usar com cliente.</div>' +
+    '</details>').join("") + '</div>';
 }
 
 // Bloco do briefing: cada segmento marcado com seus indicadores, valor, variação, período e fonte.

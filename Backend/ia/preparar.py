@@ -27,6 +27,9 @@ MAX_MOVIMENTOS = 80
 MAX_CONCORRENCIA = 100   # a carga inicial (6 meses) é dividida em alguns dias
 DIAS_LEITURA_SEMANA = 7  # a Leitura da semana da Concorrência é reescrita uma vez por semana
 DIAS_ESPERA_RELEASES = 50  # depois disso, processa os releases que já saíram mesmo sem a fila completa
+MAX_SOWHAT = 60          # so what dos indicadores: a primeira carga (225) é dividida em alguns dias
+DIAS_NOTICIAS = 60       # notícias do Radar que podem explicar o "por que" do indicador
+MAX_NOTICIAS, MAX_EMPRESAS = 8, 8
 FIM_TRIMESTRE = {"1": "03-31", "2": "06-30", "3": "09-30", "4": "12-31"}
 
 
@@ -117,6 +120,53 @@ def aprofundamento():
     return saida
 
 
+def sowhat():
+    """So what de cada indicador: o que aconteceu, por que, impacto financeiro e oportunidade. Para cada indicador vão
+    o valor e a série, as empresas da divisão em Finanças, a visão por player (quando houver) e as notícias recentes
+    do Radar da mesma indústria, que são as únicas fontes aceitas para o "por que". Entra o indicador novo ou que
+    mudou (valor, período ou trimestre das empresas), o mais recente primeiro, até MAX_SOWHAT por execução."""
+    feitos = (ler_json(DADOS / "analises.json") if (DADOS / "analises.json").exists() else {}).get("sowhat", {})
+    por_div = {}
+    for e in ler_json(DADOS / "companhias_abertas.json")["empresas"]:
+        por_div.setdefault((e["ind"], e["div"]), []).append(e)
+    aprof = ({f'{p["segmento"]}|{p["indicador"]}': p for p in ler_json(DADOS / "aprofundamento.json")["pontes"]}
+             if (DADOS / "aprofundamento.json").exists() else {})
+    desde = (date.fromisoformat(hoje_iso()) - timedelta(days=DIAS_NOTICIAS)).isoformat()
+    radar = [i for i in ler_json(DADOS / "radar.json") if not i.get("oculto") and i["data"] >= desde]
+    candidatos = []
+    for s in ler_json(DADOS / "indicadores.json"):
+        empresas = por_div.get((s["industria"], s["divisao"]), [])
+        periodos = [e["periodo"] for e in empresas]
+        periodo_emp = max(set(periodos), key=periodos.count) if periodos else ""
+        # da mesma divisão primeiro, depois o resto da indústria; as mais recentes antes
+        noticias = sorted((i for i in radar if i["industria"] == s["industria"]),
+                          key=lambda i: (i.get("divisao") == s["divisao"], i["data"]), reverse=True)[:MAX_NOTICIAS]
+        grandes = sorted(empresas, key=lambda e: -(e["metr"].get("receita") or e["metr"].get("margemFinanceira") or 0))[:MAX_EMPRESAS]
+        for x in s["indicadores"]:
+            if x.get("status") != "real":
+                continue
+            chave = f'{s["id"]}|{x["nome"]}'
+            base = f'{x.get("valor")}|{x.get("periodo")}|{periodo_emp}'
+            if feitos.get(chave, {}).get("base") == base:
+                continue
+            p = aprof.get(chave)
+            candidatos.append((x.get("atualizadoEm", ""), chave, {
+                "base": base, "industria": s["industria"], "divisao": s["divisao"], "segmento": s["segmento"],
+                "indicador": {k: x.get(k) for k in ("nome", "valor", "unidade", "var", "varPP", "varUnidade", "comparacao",
+                                                    "periodo", "periodicidade", "fonte", "historico") if x.get(k) is not None},
+                "outrosIndicadoresDoSegmento": [{k: o.get(k) for k in ("nome", "valor", "unidade", "var", "periodo")}
+                                                for o in s["indicadores"] if o is not x and o.get("status") == "real"],
+                "empresas": [{"nome": e["nome"], "periodo": e["periodo"], "fonte": e["fonte"],
+                              **{k: v for k, v in e["metr"].items() if isinstance(v, (int, float))}} for e in grandes],
+                "visaoPorPlayer": {"nivel": p["nivel"], "nota": p["nota"], "metrica": p.get("rotuloMetrica"),
+                                   "setor": p.get("setor"), "players": p.get("players")} if p else None,
+                "noticias": [{k: i.get(k) for k in ("id", "manchete", "resumo", "porQueImporta", "fonte", "data", "url")}
+                             for i in noticias],
+            }))
+    candidatos.sort(key=lambda c: c[0], reverse=True)
+    return {chave: item for _, chave, item in candidatos[:MAX_SOWHAT]}, max(0, len(candidatos) - MAX_SOWHAT)
+
+
 def concorrencia():
     """Movimentos dos concorrentes sem análise e, uma vez por semana, o material da Leitura da semana."""
     caminho_lista, caminho_itens = DADOS / "concorrentes.json", DADOS / "concorrencia.json"
@@ -185,6 +235,9 @@ def main():
         pend["concorrencia"] = conc["itens"]
     if semana:
         pend["concorrenciaSemana"] = semana
+    sw, sw_fora = sowhat()
+    if sw:
+        pend["sowhat"] = sw
 
     TRABALHO.mkdir(exist_ok=True)
     for velho in TRABALHO.glob("respostas*.json"):      # respostas de uma execução anterior não valem mais
@@ -194,9 +247,10 @@ def main():
               "financas": len(pend.get("financas", {})), "indicadores": len(pend.get("indicadores", {})),
               "releases": len(rel["prontos"]) if rel else 0,
               "aprofundamento": len(pend.get("aprofundamento", {})),
-              "concorrencia": len(pend.get("concorrencia", [])), "concorrenciaSemana": 1 if semana else 0}
+              "concorrencia": len(pend.get("concorrencia", [])), "concorrenciaSemana": 1 if semana else 0,
+              "sowhat": len(sw)}
     log(f"Pendências: {resumo} (ficaram para outro dia: {max(0, len(radar) - MAX_RADAR)} do Radar, "
-        f"{max(0, len(movs) - MAX_MOVIMENTOS)} de Movimentos, {conc_fora} da Concorrência)")
+        f"{max(0, len(movs) - MAX_MOVIMENTOS)} de Movimentos, {conc_fora} da Concorrência, {sw_fora} do so what)")
     sys.exit(0 if any(resumo.values()) else 4)
 
 
