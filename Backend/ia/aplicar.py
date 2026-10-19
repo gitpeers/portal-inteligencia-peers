@@ -6,12 +6,15 @@ Números, datas, links e classificações nunca são alterados aqui: só resumo,
 
     python Backend/ia/aplicar.py
 """
+import html
 import re
 import sys
+import unicodedata
+import urllib.parse
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from comum import DADOS, RAIZ, agora, gravar_json, hoje_iso, ler_json, log  # noqa: E402
+from comum import DADOS, RAIZ, agora, baixar, gravar_json, hoje_iso, ler_json, log  # noqa: E402
 
 IA = Path(__file__).resolve().parent
 TRABALHO = IA / "trabalho"
@@ -33,7 +36,48 @@ LEITURA_SEMANA = (3, 5, 300)   # mínimo e máximo de pontos, caracteres por pon
 CAMPOS_SOWHAT = {"oQue": 260, "porQue": 280, "impacto": 320, "oportunidade": 260}
 SEM_CAUSA = "Causa não identificada nas fontes do portal."
 MAX_FONTES_SOWHAT = 2
+LIMITE_TITULO_FONTE, TRECHO = 160, (20, 400)   # fonte oficial: título da página e trecho copiado dela (mín., máx.)
 NUMERO = re.compile(r"\d+(?:[.,]\d+)*")
+_PAGINAS = {}
+
+
+def site_permitido(url, sites):
+    """O endereço é de um dos sites oficiais (sem https e sem www; vale subdomínio e página abaixo do caminho)?"""
+    u = urllib.parse.urlsplit(url)
+    host = u.hostname or ""
+    for s in sites:
+        s_host, _, s_caminho = s.partition("/")
+        # gov.br/<órgão> é só o portal federal: subdomínios de gov.br são estados e prefeituras, não a fonte
+        dominio_ok = host in (s_host, "www." + s_host) if s_host == "gov.br" else (host == s_host or host.endswith("." + s_host))
+        if dominio_ok and u.path.lstrip("/").startswith(s_caminho):
+            return u.scheme == "https"
+    return False
+
+
+def so_letras(texto):
+    """Minúsculas, sem acentos e só letras e números: compara o trecho com a página sem tropeçar em espaços,
+    pontuação ou marcação."""
+    t = unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode().lower()
+    return re.sub(r"[^a-z0-9]", "", t)
+
+
+def trecho_na_pagina(url, trecho):
+    """Abre a página e confere se o trecho está nela. Em PDF, confere só se o arquivo existe. Devolve o problema
+    encontrado ou None."""
+    if url not in _PAGINAS:
+        try:
+            _PAGINAS[url] = baixar(url, tentativas=2, timeout=40)
+        except Exception as e:
+            _PAGINAS[url] = e
+    pagina = _PAGINAS[url]
+    if isinstance(pagina, Exception):
+        return f"não abriu ({str(pagina)[:60]})"
+    if pagina[:5] == b"%PDF-":
+        return None
+    texto = pagina.decode("utf-8", "replace")
+    texto = re.sub(r"(?is)<(script|style)\b.*?</\1>", " ", texto)
+    texto = html.unescape(re.sub(r"<[^>]+>", " ", texto))
+    return None if so_letras(trecho) in so_letras(texto) else "o trecho não está na página"
 
 
 def numero(texto):
@@ -90,19 +134,40 @@ def conferir_sowhat(erros, pend, resp):
         for campo, limite in CAMPOS_SOWHAT.items():
             conferir_texto(erros, f"{onde}.{campo}", c[campo], limite, False)
         ids = {n["id"] for n in item["noticias"]}
-        fontes = c["fontes"]
-        if not isinstance(fontes, list) or len(fontes) > MAX_FONTES_SOWHAT or not set(fontes) <= ids:
-            erros.append(f"{onde}.fontes: lista de até {MAX_FONTES_SOWHAT} ids de noticias deste indicador")
-        elif not fontes and isinstance(c["porQue"], str) and c["porQue"].strip() != SEM_CAUSA:
-            erros.append(f'{onde}.porQue: sem notícia em fontes, escreva exatamente "{SEM_CAUSA}"')
+        sites = (item.get("fonteOficial") or {}).get("sites", [])
+        fontes, trechos = c["fontes"], []
+        if not isinstance(fontes, list) or len(fontes) > MAX_FONTES_SOWHAT:
+            erros.append(f"{onde}.fontes: lista de até {MAX_FONTES_SOWHAT} fontes"); fontes = []
+        for k, f in enumerate(fontes):
+            if isinstance(f, str):
+                if f not in ids:
+                    erros.append(f"{onde}.fontes[{k}]: {f} não está nas noticias deste indicador")
+            elif isinstance(f, dict) and set(f) == {"url", "titulo", "trecho"} and all(isinstance(v, str) for v in f.values()):
+                if not site_permitido(f["url"], sites):
+                    erros.append(f"{onde}.fontes[{k}].url: precisa ser https e de um site de fonteOficial.sites {sites}")
+                    continue
+                conferir_texto(erros, f"{onde}.fontes[{k}].titulo", f["titulo"], LIMITE_TITULO_FONTE, False)
+                if not TRECHO[0] <= len(f["trecho"].strip()) <= TRECHO[1]:
+                    erros.append(f"{onde}.fontes[{k}].trecho: de {TRECHO[0]} a {TRECHO[1]} caracteres copiados da página")
+                    continue
+                problema = trecho_na_pagina(f["url"], f["trecho"])
+                if problema:
+                    erros.append(f"{onde}.fontes[{k}]: {problema}; corrija o trecho ou use \"{SEM_CAUSA}\"")
+                else:
+                    trechos.append(f["trecho"])
+            else:
+                erros.append(f'{onde}.fontes[{k}]: id de notícia ou {{"url", "titulo", "trecho"}} da fonte oficial')
+        if not fontes and isinstance(c["porQue"], str) and c["porQue"].strip() != SEM_CAUSA:
+            erros.append(f'{onde}.porQue: sem fonte, escreva exatamente "{SEM_CAUSA}"')
         elif fontes and isinstance(c["porQue"], str) and c["porQue"].strip() == SEM_CAUSA:
-            erros.append(f"{onde}.porQue: com notícia em fontes, explique a causa que ela mostra")
+            erros.append(f"{onde}.porQue: com fonte, explique a causa que ela mostra")
         if isinstance(c["oportunidade"], str) and not any(c["oportunidade"].strip().startswith(o + ":") for o in offerings):
             erros.append(f"{onde}.oportunidade: comece pelo nome exato de uma offering seguido de dois-pontos")
         permitidos = numeros_permitidos(item)
         for campo in CAMPOS_SOWHAT:
             if isinstance(c[campo], str):
-                fora = numeros_estranhos(c[campo], permitidos)
+                # os números do "por que" também podem vir do trecho conferido na fonte oficial
+                fora = numeros_estranhos(c[campo], permitidos | numeros_permitidos(trechos) if campo == "porQue" else permitidos)
                 if fora:
                     erros.append(f"{onde}.{campo}: números que não estão nos dados deste indicador: {', '.join(fora)}")
 
@@ -249,11 +314,14 @@ def main():
     for chave, c in resp.get("sowhat", {}).items():
         item = pend["sowhat"][chave]
         noticias = {n["id"]: n for n in item["noticias"]}
-        # as notícias citadas vão copiadas: o Radar guarda só 30 dias, e o so what fica até o indicador mudar
+        oficial = (item.get("fonteOficial") or {}).get("nome")
+        # as fontes citadas vão copiadas: o Radar guarda só 30 dias, e o so what fica até o indicador mudar
         analises.setdefault("sowhat", {})[chave] = {
             **{k: c[k].strip() for k in CAMPOS_SOWHAT},
-            "fontes": [{k: noticias[i].get(k) for k in ("manchete", "fonte", "data", "url")} for i in c["fontes"]],
-            "base": item["base"], "geradoEm": hoje_iso()}
+            "fontes": [{k: noticias[f].get(k) for k in ("manchete", "fonte", "data", "url")} if isinstance(f, str)
+                       else {"manchete": f["titulo"].strip(), "fonte": f"{oficial}, fonte oficial", "data": hoje_iso(),
+                             "url": f["url"], "oficial": True} for f in c["fontes"]],
+            "buscouFonteOficial": bool(oficial), "base": item["base"], "geradoEm": hoje_iso()}
     gravar_json(ANALISES, analises)
     contagem["concorrencia"] = gravar_concorrencia(resp)
     contagem["sowhat"] = len(resp.get("sowhat", {}))

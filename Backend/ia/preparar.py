@@ -120,11 +120,25 @@ def aprofundamento():
     return saida
 
 
+_FONTES_OFICIAIS = None
+
+
+def fonte_oficial(fonte):
+    """Sites oficiais da fonte do indicador (config/sowhat_fontes.json), únicos aceitos além do Radar no "por que"."""
+    global _FONTES_OFICIAIS
+    if _FONTES_OFICIAIS is None:
+        caminho = CONFIG / "sowhat_fontes.json"
+        _FONTES_OFICIAIS = ler_json(caminho)["fontes"] if caminho.exists() else {}
+    nome = next((k for k in sorted(_FONTES_OFICIAIS, key=len, reverse=True) if fonte.lower().startswith(k.lower())), None)
+    return {"nome": nome, "sites": _FONTES_OFICIAIS[nome]} if nome else None
+
+
 def sowhat():
     """So what de cada indicador: o que aconteceu, por que, impacto financeiro e oportunidade. Para cada indicador vão
-    o valor e a série, as empresas da divisão em Finanças, a visão por player (quando houver) e as notícias recentes
-    do Radar da mesma indústria, que são as únicas fontes aceitas para o "por que". Entra o indicador novo ou que
-    mudou (valor, período ou trimestre das empresas), o mais recente primeiro, até MAX_SOWHAT por execução."""
+    o valor e a série, as empresas da divisão em Finanças, a visão por player (quando houver), as notícias recentes
+    do Radar da mesma indústria e os sites oficiais da fonte do indicador, as únicas fontes aceitas para o "por que".
+    Entra o indicador novo ou que mudou (valor, período ou trimestre das empresas), o mais recente primeiro, até
+    MAX_SOWHAT por execução; depois, os que ficaram sem causa e ainda não buscaram a fonte oficial."""
     feitos = (ler_json(DADOS / "analises.json") if (DADOS / "analises.json").exists() else {}).get("sowhat", {})
     por_div = {}
     for e in ler_json(DADOS / "companhias_abertas.json")["empresas"]:
@@ -147,10 +161,14 @@ def sowhat():
                 continue
             chave = f'{s["id"]}|{x["nome"]}'
             base = f'{x.get("valor")}|{x.get("periodo")}|{periodo_emp}'
-            if feitos.get(chave, {}).get("base") == base:
+            feito = feitos.get(chave, {})
+            oficial = fonte_oficial(x.get("fonte", ""))
+            # refaz quando o indicador muda; sem causa, tenta uma vez a fonte oficial (os primeiros so what só tinham o Radar)
+            if feito.get("base") == base and (feito.get("fontes") or feito.get("buscouFonteOficial") or not oficial):
                 continue
             p = aprof.get(chave)
-            candidatos.append((x.get("atualizadoEm", ""), chave, {
+            prioridade = x.get("atualizadoEm", "") if feito.get("base") != base else ""
+            candidatos.append((prioridade, chave, {
                 "base": base, "industria": s["industria"], "divisao": s["divisao"], "segmento": s["segmento"],
                 "indicador": {k: x.get(k) for k in ("nome", "valor", "unidade", "var", "varPP", "varUnidade", "comparacao",
                                                     "periodo", "periodicidade", "fonte", "historico") if x.get(k) is not None},
@@ -162,6 +180,7 @@ def sowhat():
                                    "setor": p.get("setor"), "players": p.get("players")} if p else None,
                 "noticias": [{k: i.get(k) for k in ("id", "manchete", "resumo", "porQueImporta", "fonte", "data", "url")}
                              for i in noticias],
+                "fonteOficial": oficial,
             }))
     candidatos.sort(key=lambda c: c[0], reverse=True)
     return {chave: item for _, chave, item in candidatos[:MAX_SOWHAT]}, max(0, len(candidatos) - MAX_SOWHAT)
