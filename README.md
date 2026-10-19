@@ -76,6 +76,9 @@ Supabase/
   métrica de cada uma e o cuidado de método mostrado no painel. O indicador ligado aparece primeiro no cartão.
 - `concorrencia_regras.json`: palavras de cada tipo de movimento dos concorrentes, filtros de ruído e a lista de
   empresas de tecnologia do mapa de parcerias. Não tem nomes de concorrentes (ver abaixo).
+- `sowhat_fontes.json`: sites oficiais de cada fonte de indicador aceitos como prova do "por que" no so what. A
+  rotina de IA cita a página com um trecho copiado dela, e o `aplicar.py` abre a página e confere o trecho; os
+  mesmos sites precisam estar liberados na rede do ambiente da rotina.
 
 Depois de editar um arquivo pelo site do GitHub, rode a atualização manualmente: aba **Actions** >
 **Atualizar e publicar o portal** > **Run workflow**.

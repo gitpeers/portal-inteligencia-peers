@@ -155,18 +155,30 @@ período, e o que isso indica (ganho ou perda de participação, risco maior ou 
 É o que o consultor leva para a conversa com o cliente: o que o indicador mostra, por que, o que isso faz no
 resultado das empresas e que trabalho a Peers pode oferecer. Cada chave (`<segmento>|<indicador>`) traz o
 `indicador` (valor, variação, período, fonte e, quando houver, o `historico`), os `outrosIndicadoresDoSegmento`, as
-`empresas` da divisão em Finanças (números do último trimestre, em R$ milhões e %), a `visaoPorPlayer` (quando houver)
-e as `noticias` recentes do Radar da mesma indústria. Formato da resposta:
+`empresas` da divisão em Finanças (números do último trimestre, em R$ milhões e %), a `visaoPorPlayer` (quando
+houver), as `noticias` recentes do Radar da mesma indústria e a `fonteOficial` (nome e `sites` de quem publica o
+indicador). Formato da resposta:
 
 ```json
-"sowhat": { "<chave>": { "oQue": "...", "porQue": "...", "fontes": ["<id da notícia>"], "impacto": "...", "oportunidade": "..." } }
+"sowhat": { "<chave>": { "oQue": "...", "porQue": "...",
+                          "fontes": ["<id da notícia>", {"url": "https://...", "titulo": "...", "trecho": "..."}],
+                          "impacto": "...", "oportunidade": "..." } }
 ```
 
 - **oQue** (até 260): o fato em uma ou duas frases, com o valor, a variação e o período. Se o `historico` mostrar
   uma virada (sobe depois de cair, maior ou menor valor da série), diga.
-- **porQue** (até 280): a causa, só se uma das `noticias` deste indicador a mostrar. Ponha o id dela em `fontes`
-  (até 2). Sem notícia que explique, escreva exatamente `Causa não identificada nas fontes do portal.` e deixe
-  `fontes` vazio. Não use conhecimento geral para a causa: o consultor vai repetir isso ao cliente.
+- **porQue** (até 280): a causa da variação, só com fonte. Duas fontes valem (até 2 no total em `fontes`):
+  1. **A publicação oficial** (a melhor): quando houver `fonteOficial`, procure (WebSearch e WebFetch) a divulgação
+     de quem publica o indicador sobre o mesmo `periodo` (ex.: a nota do IBGE na Agência de Notícias sobre a
+     produção industrial de agosto; o levantamento da Conab da safra; a nota do Banco Central sobre crédito). A
+     página precisa ser de um dos `fonteOficial.sites`. Em `fontes`, ponha `{"url", "titulo", "trecho"}`: o
+     endereço exato da página, o título dela e um `trecho` de 20 a 400 caracteres **copiado literalmente** da
+     página, que mostre a causa. O `aplicar.py` abre a página e recusa se o trecho não estiver lá (em PDF, confere
+     só se o arquivo existe). Os números do `porQue` podem vir desse trecho.
+  2. **Uma das `noticias`** do Radar deste indicador que mostre a causa: ponha o id dela em `fontes`.
+  Sem fonte que explique, escreva exatamente `Causa não identificada nas fontes do portal.` e deixe `fontes` vazio.
+  Não use conhecimento geral para a causa: o consultor vai repetir isso ao cliente. Divida as buscas entre os
+  subagentes; se uma página não abrir, tente outra do mesmo site ou fique sem causa.
 - **impacto** (até 320): o que o movimento do indicador faz no resultado das empresas (receita, margem, crédito,
   inadimplência), citando duas ou três `empresas` ou `visaoPorPlayer.players` com o número e o período. Se as empresas
   andaram na direção contrária do setor, diga. Sem empresas no arquivo (ex.: Public Services), fale do efeito no

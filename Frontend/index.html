@@ -1780,7 +1780,7 @@ function blocoSowhat(s){
     '<details class="sowhat"><summary><span class="sw-tit">So what</span> · '+esc(x.nome)+'<span class="selo-ia">Gerado por IA</span></summary>' +
       linha('O que aconteceu', a.oQue) + linha('Por que', a.porQue) +
       ((a.fontes||[]).length ? '<div class="sw-fontes">Fonte: '+a.fontes.map(f=>
-        '<a href="'+esc(f.url)+'" target="_blank" rel="noopener">'+esc(f.manchete)+'</a> ('+esc(f.fonte)+', '+formatarData(f.data)+')').join('; ')+'</div>' : '') +
+        '<a href="'+esc(f.url)+'" target="_blank" rel="noopener">'+esc(f.manchete)+'</a> ('+esc(f.fonte)+', '+(f.oficial ? 'consultado em ' : '')+formatarData(f.data)+')').join('; ')+'</div>' : '') +
       linha('Impacto financeiro', a.impacto) + linha('Oportunidade', a.oportunidade) +
       '<div class="sw-nota">Escrito em '+formatarData(a.geradoEm)+' com os dados do portal; confira os números na fonte antes de usar com cliente.</div>' +
     '</details>').join("") + '</div>';
