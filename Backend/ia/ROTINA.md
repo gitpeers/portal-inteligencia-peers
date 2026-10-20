@@ -63,7 +63,8 @@ Responda todos os itens de `radar` e `movimentos` (em `radar`/`movimentos` ou em
 ### Radar (cada notícia)
 
 - **resumo** (até 350 caracteres): o fato em 2 ou 3 frases: quem, o quê, quanto e quando, com o que está na
-  manchete e no trecho. Sem opinião.
+  manchete e no trecho. Sem opinião. O resumo é lido em voz alta no podcast: ignore legenda de foto e crédito de
+  imagem que venham no trecho (ex.: "Reprodução/BBC", "Arquivo Pessoal", "Daniel Corrá/g1").
 - **porQueImporta** (até 220): uma frase sobre o efeito no setor: custo, demanda, regulação, concorrência ou risco.
 - **anguloPeers** (até 240, pode ficar vazio): comece pelo nome exato de uma offering da lista em
   `referencia.offerings`, seguido de dois-pontos, e diga que trabalho a Peers poderia oferecer a quem é afetado.
