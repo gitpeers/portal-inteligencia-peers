@@ -26,6 +26,31 @@ CVM_IPE = "https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/IPE/DADOS/ipe_cia_abert
 ATOM = "{http://www.w3.org/2005/Atom}"
 
 
+CREDITO_FOTO = re.compile(r"/|reprodu[çc][ãa]o|divulga[çc][ãa]o|arquivo|\bfotos?\b|ag[êe]ncia|getty|reuters|\bafp\b|"
+                          r"\bap\b|estad[ãa]o conte[úu]do|shutterstock|freepik|unsplash", re.I)
+
+
+def sem_legenda(bruto):
+    """Tira a foto do começo da descrição e, logo depois dela, as linhas de legenda e crédito (ex.: g1: "<img ...>",
+    "Instituto Tecnológico de Aeronáutica (ITA)", "Daniel Corrá/g1"), que viravam o começo do resumo e eram lidas no
+    podcast. Usa as quebras de linha, que ainda separam legenda, crédito e texto antes de o resumo virar uma linha só."""
+    t = html.unescape(bruto or "").replace("<![CDATA[", "").replace("]]>", "")
+    if not re.match(r"\s*(<a\b[^>]*>\s*)?<img\b", t, re.I):
+        return bruto
+    t = re.sub(r"(?is)^\s*(<a\b[^>]*>\s*)?<img\b[^>]*>\s*(</a>)?\s*(<br\s*/?>\s*)*", "", t)
+    linhas = [l.strip() for l in re.sub(r"(?i)<br\s*/?>", "\n", t).split("\n") if l.strip()]
+    # um par legenda + crédito (às vezes repetido), ou um crédito sozinho
+    while linhas:
+        credito = lambda l: len(l) <= 70 and CREDITO_FOTO.search(l) and not l.endswith(".")
+        if len(linhas) >= 2 and len(linhas[0]) <= 200 and credito(linhas[1]):
+            linhas = linhas[2:]
+        elif credito(linhas[0]):
+            linhas = linhas[1:]
+        else:
+            break
+    return "\n".join(linhas)
+
+
 def texto_limpo(bruto, limite=None):
     t = re.sub(r"<[^>]+>", " ", html.unescape(bruto or ""))
     t = re.sub(r"\s+", " ", t).strip()
@@ -143,7 +168,7 @@ def coletar(fontes, cfg):
             if not n["titulo"] or not n["link"] or not quando or quando < limite or quando > futuro:
                 continue
             n["titulo"] = texto_limpo(n["titulo"])
-            n["resumo"] = texto_limpo(n["resumo"], 320)
+            n["resumo"] = texto_limpo(sem_legenda(n["resumo"]), 320)
             n["quando"] = quando
             n["fonte"] = fonte
             candidatos.append(n)
