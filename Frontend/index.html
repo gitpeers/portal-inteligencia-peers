@@ -2494,6 +2494,20 @@ function temaDominante(lista){
 function semente(){ const d = dataLocal(HOJE); return d.getDate() + d.getMonth(); }
 function variante(opcoes, n){ return opcoes[Math.abs(n) % opcoes.length]; }
 
+// O podcast diz de onde veio cada matéria: o crédito é do veículo, e a fala fica curta para não quebrar o ritmo.
+// "Folha (Educação)" vira "Folha"; o fato relevante da CVM é dito como tal.
+function fonteFalada(fonte){ return (fonte || "").replace(/\s*\([^)]*\)/g, "").trim(); }
+function creditoManchete(fonte, n){
+  if(!fonte) return "";
+  if(/^CVM/i.test(fonte)) return ", em fato relevante enviado à CVM";
+  return ", " + variante(["segundo ", "de acordo com ", "conforme publicou "], n) + fonteFalada(fonte);
+}
+function creditoFrase(fonte, n){
+  if(!fonte) return "";
+  if(/^CVM/i.test(fonte)) return " Isso veio em fato relevante enviado à CVM.";
+  return " " + variante(["Quem trouxe foi ", "A informação é de "], n) + fonteFalada(fonte) + ".";
+}
+
 // Monta uma observação a partir de OUTRA aba do portal. Só entra se o dado existir,
 // e prefere um tipo de cruzamento que ainda não foi usado no mesmo episódio.
 function comentarioCruzado(r, n, usados){
@@ -2588,7 +2602,7 @@ function montarRoteiro(cfg){
     ], S + i*3);
 
     B.push((i===0 ? abre : variante(["Segunda. ","Indo para a próxima. ","E tem mais essa. ","Terceira e última. "], S+i)) +
-      r.manchete + "." + (cfg.resumo ? " " + r.resumo : ""));
+      r.manchete.replace(/[\s.!?…]+$/, "") + creditoManchete(r.fonte, S + i) + "." + (cfg.resumo ? " " + r.resumo : ""));
 
     if(r.porQueImporta) B.push(variante([
       "E por que isso te importa? " + r.porQueImporta,
@@ -2626,6 +2640,7 @@ function montarRoteiro(cfg){
       let t = (i===0 ? "Em " : "E em ") + dataFalada(m.data, false) + ", " + m.player + ": " +
         m.tese.charAt(0).toLowerCase() + m.tese.slice(1);
       if(m.valor && m.valor !== "—" && m.valor !== "Não divulgado") t += " " + m.valor + ".";
+      t += creditoFrase(m.fonte, S + i);
       if(m.leitura) t += " " + variante([
         "A leitura aqui é que ", "O que isso revela é que ", "Na prática, isso mostra que "
       ], S + i + 5) + m.leitura.charAt(0).toLowerCase() + m.leitura.slice(1);
