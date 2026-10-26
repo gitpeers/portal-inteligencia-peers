@@ -8,7 +8,6 @@
 --   3. Só deixa ler os dados quem fez login com e-mail do domínio (RLS). Ninguém escreve pelo site:
 --      só os scripts do Backend, que usam a chave secreta.
 --   4. Barra o cadastro de qualquer e-mail de fora do domínio (nem o código chega a ser enviado).
---   5. Cria o espaço privado de arquivos "analises" (aba Análises trimestrais), com a mesma regra de leitura.
 
 -- 1. Tabela ------------------------------------------------------------------------------------------
 create table if not exists public.secoes (
@@ -64,16 +63,3 @@ drop trigger if exists barrar_email_de_fora on auth.users;
 create trigger barrar_email_de_fora
   before insert or update of email on auth.users
   for each row execute function public.barrar_email_de_fora();
-
--- 5. Arquivos da aba Análises trimestrais ------------------------------------------------------------
--- O dashboard de resultados trimestrais fica num bucket privado do Storage. Só quem fez login com e-mail do
--- domínio lê; ninguém envia pelo site (o envio usa a chave secreta: Backend/publicar_trimestral.py ou o painel).
-insert into storage.buckets (id, name, public)
-values ('analises', 'analises', false)
-on conflict (id) do nothing;
-
-drop policy if exists "Análises: leitura para e-mails da Peers" on storage.objects;
-create policy "Análises: leitura para e-mails da Peers" on storage.objects
-  for select
-  to authenticated
-  using (bucket_id = 'analises' and public.dominio_permitido(auth.jwt() ->> 'email'));

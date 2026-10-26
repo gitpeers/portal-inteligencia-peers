@@ -35,7 +35,7 @@ Backend/
   comum.py              funções compartilhadas
   config/               o que a R&I pode ajustar sem mexer no código (ver abaixo)
 Supabase/
-  configuracao.sql      tabela, regras de acesso, trava do domínio e espaço privado das análises (rodar no Supabase)
+  configuracao.sql      tabela, regras de acesso e trava do domínio (rodar uma vez no Supabase)
 .github/workflows/portal.yml  o agendamento (baixar, atualizar, devolver ao Supabase) e a publicação da página
 ```
 
@@ -131,10 +131,13 @@ Para corrigir uma seção à mão (ex.: Valor 1000): `baixar_dados.py`, editar o
 `python enviar_dados.py valor1000`.
 
 **Aba Análises trimestrais.** Abre em tela cheia o dashboard do projeto de resultados trimestrais (pasta
-02. Workspace / Resultados 3T26), guardado no espaço privado `analises` do Supabase, e não no repositório. Só é baixado
-quando alguém abre a aba. Para atualizar depois de regerar o dashboard, na pasta Backend, com as duas variáveis
-definidas: `python publicar_trimestral.py "<pasta do projeto>\dashboard\index.html"`. Também dá para arrastar o
-arquivo em Supabase > Storage > analises, com o nome `trimestral.html`.
+02. Workspace / Resultados 3T26), guardado na linha `trimestral` da tabela secoes, e não no repositório. Só é baixado
+quando alguém abre a aba; os scripts do robô não o leem. Quem publica é a tarefa agendada "Portal Peers - Publicar
+análises trimestrais", no computador do Kayo: a cada 15 minutos, se o projeto está na branch main e o
+`dashboard/index.html` mudou, ela roda `publicar_trimestral.py --automatico`. A chave do Supabase fica guardada
+criptografada pelo Windows em `%USERPROFILE%\.portal-peers-git\supabase_chave.txt` (só a conta do Windows que a gravou
+consegue ler). Para publicar na hora, na pasta Backend, com as duas variáveis definidas:
+`python publicar_trimestral.py "<pasta do projeto>"`.
 
 ## Editar pela pasta do SharePoint
 
