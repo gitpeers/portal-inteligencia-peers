@@ -1060,7 +1060,7 @@ function montarAbas(){
    Também alimenta o quadro "Quem da Peers chega a..." no Radar, em Movimentos e na ficha da empresa.
    ========================================================= */
 let USUARIO_EMAIL = "";
-const estadoConx = {busca:"", industria:"todas", aberta:null, limite:60};
+const estadoConx = {busca:"", industria:"todas", aberta:null, limite:60, comoExec:""};   // comoExec: "ver como" um executivo
 // nomes de empresa que também são palavras comuns: não são procurados no texto das notícias (só no nome exato do player)
 const PALAVRAS_COMUNS = new Set(["vivo","claro","azul","gol","via","elo","oi","tim","ultra","nova","sim","bem","rede",
   "natural","alpha","porto","sul","america","energia","saude","grupo","banco","digital","mercado","capital","global"]);
@@ -1127,7 +1127,7 @@ function fatosDaEmpresa(e){
   if(!CONEXOES.fatos){
     CONEXOES.fatos = new Map();
     const itens = DADOS.radar.map(r=>({tipo:"Radar", data:r.data, titulo:r.manchete, texto:r.manchete+" "+r.resumo,
-        nota:r.anguloPeers, url:r.url, fonte:r.fonte}))
+        nota:r.anguloPeers, offering:r.offering, url:r.url, fonte:r.fonte}))
       .concat(DADOS.movimentos.map(m=>({tipo:"Movimento", data:m.data, titulo:m.player+": "+m.tese, texto:m.tese,
         nota:m.leitura, url:m.url, fonte:m.fonte, player:m.player})));
     itens.forEach(it=>{
@@ -1142,7 +1142,9 @@ function fatosDaEmpresa(e){
 
 function renderConexoes(){
   const c = CONEXOES, b = normConx(estadoConx.busca);
+  const como = estadoConx.comoExec==="" ? null : +estadoConx.comoExec;
   const lista = c.empresas
+    .filter(e=>como===null || e.execs.has(como))
     .filter(e=>!estado.industrias.size || estado.industrias.has(e.industria))
     .filter(e=>estadoConx.industria==="todas" || e.industria===estadoConx.industria)
     .filter(e=>!b || normConx(e.nome+" "+e.grupo).includes(b))
@@ -1151,14 +1153,41 @@ function renderConexoes(){
   const inds = [...new Set(c.empresas.map(e=>e.industria))].sort();
   const leads = lista.reduce((s,x)=>s+x.e.leads.length, 0), bando = lista.reduce((s,x)=>s+x.e.bando, 0);
   const execs = new Set(); lista.forEach(x=>x.e.execs.forEach(i=>execs.add(i)));
-  const kpis = [["a","Empresas",lista.length,"no recorte"],["b","Leads",leads,"sêniores, 1º grau"],
-    ["c","Em bando",bando,"2 ou mais executivos"],["d","Executivos Peers",execs.size,"com conexão no recorte"]];
+  const exComo = como===null ? null : c.execs[como];
+  const meus = como===null ? 0 : lista.reduce((s,x)=>s+x.e.leads.filter(l=>l.ex.includes(como)).length, 0);
+  const soEle = como===null ? 0 : lista.filter(x=>x.e.execs.size===1).length;
+  const kpis = como===null
+    ? [["a","Empresas",lista.length,"no recorte"],["b","Leads",leads,"sêniores, 1º grau"],
+       ["c","Em bando",bando,"2 ou mais executivos"],["d","Executivos Peers",execs.size,"com conexão no recorte"]]
+    : [["a","Empresas na carteira",lista.length,"onde há conexão"],["b","Conexões",meus,"leads sêniores, 1º grau"],
+       ["c","Com fato novo",lista.filter(x=>x.f).length,"notícia ou movimento no portal"],["d","Único elo da Peers",soEle,"só esta pessoa conhece alguém"]];
+  // "Oportunidades da semana" da visão do N1: empresas da carteira com fato no portal, com quem ele conhece lá
+  const oport = como===null ? [] : lista.filter(x=>x.f).slice(0, 5).map(x=>{
+    const f = fatosDaEmpresa(x.e)[0];
+    const dele = x.e.leads.filter(l=>l.ex.includes(como));
+    const outros = new Set(); x.e.leads.forEach(l=>l.ex.forEach(i=>{ if(i!==como) outros.add(i); }));
+    return '<div class="conx-fato" style="padding:9px 0"><b>'+esc(x.e.nome)+'</b> · '+esc(f.tipo)+' · '+formatarData(f.data)+' · ' +
+      (f.url ? '<a href="'+esc(f.url)+'" target="_blank" rel="noopener">'+esc(f.titulo)+'</a>' : esc(f.titulo)) +
+      (f.offering ? ' <span class="chip" style="margin-left:4px">'+esc(f.offering)+'</span>' : '') +
+      '<div class="sub" style="color:var(--grey-dark);margin-top:3px">Você conhece <b>'+esc(dele[0].nome)+'</b> ('+esc(dele[0].cargo)+')' +
+        (dele.length>1 ? ' e mais '+(dele.length-1) : '') +
+        (outros.size ? ' · '+outros.size+(outros.size===1?' colega também chega lá':' colegas também chegam lá') : ' · só você chega lá') +
+        ' <button type="button" class="lnk-conx" data-abrir="'+x.e.i+'" style="background:none;border:none;color:var(--blue-ink);font-weight:700;cursor:pointer;font-family:inherit">abrir ›</button></div></div>';
+  });
+  const opcoesComo = c.execs.map((x, i)=>({x, i})).sort((a,b)=>(ORDEM_NIVEL[a.x.nivel]??9)-(ORDEM_NIVEL[b.x.nivel]??9) || a.x.nome.localeCompare(b.x.nome));
   return '' +
-  '<div class="sec-head"><h2>Conexões por empresa</h2>' +
-  '<p>Quem da Peers conhece alguém em cada empresa-alvo, pelo Mapa de Conexões (conexões de 1º grau no LinkedIn). ' +
-  'Empresas com notícia ou movimento no portal vêm primeiro; dentro de cada empresa, os leads em bando (2 ou mais executivos), ' +
-  'os melhores para uma abordagem coordenada. Visível só para a lista de acesso comercial.</p></div>' +
+  '<div class="sec-head"><h2>'+(exComo ? 'Minha carteira · exemplo: '+esc(nomeCurto(exComo.nome))+' ('+esc(exComo.nivel)+')' : 'Conexões por empresa')+'</h2>' +
+  (exComo
+    ? '<p>Como esta pessoa veria o portal: só as empresas onde ela tem conexão, as conexões dela destacadas, quantos colegas também chegam lá e as empresas com fato novo no portal primeiro. Exemplo para demonstração.</p></div>'
+    : '<p>Quem da Peers conhece alguém em cada empresa-alvo, pelo Mapa de Conexões (conexões de 1º grau no LinkedIn). ' +
+      'Empresas com notícia ou movimento no portal vêm primeiro; dentro de cada empresa, os leads em bando (2 ou mais executivos), ' +
+      'os melhores para uma abordagem coordenada. Visível só para a lista de acesso comercial.</p></div>') +
+  '<div class="conx-filtros" style="margin-bottom:12px"><span class="flt-label">Ver como</span>' +
+    '<select class="flt" id="conxComo"><option value="">Marketing (todos os executivos)</option>' +
+      opcoesComo.map(o=>'<option value="'+o.i+'" '+(String(como)===String(o.i)?'selected':'')+'>'+esc(o.x.nivel)+' · '+esc(o.x.nome)+'</option>').join("") +
+    '</select></div>' +
   '<div class="kpi-strip">' + kpis.map(k=>'<div class="kpi '+k[0]+'"><div class="kpi-label">'+k[1]+'</div><div class="kpi-value">'+k[2]+'</div><div class="kpi-sub">'+k[3]+'</div></div>').join("") + '</div>' +
+  (oport.length ? '<div class="card"><div class="card-title"><span class="dot"></span>Oportunidades da semana<span class="hint">empresas da carteira com fato novo no portal</span></div>' + oport.join("") + '</div>' : '') +
   '<div class="conx-filtros">' +
     '<input id="conxBusca" type="search" placeholder="Buscar empresa ou grupo" value="'+esc(estadoConx.busca)+'">' +
     '<span class="flt-label">Indústria</span><select class="flt" id="conxInd"><option value="todas">Todas</option>' +
@@ -1179,10 +1208,12 @@ function renderConexoes(){
 
 function detalheConx(e){
   const fatos = fatosDaEmpresa(e).slice(0, 4);
-  const chip = x=>{ const ex = CONEXOES.execs[x];
-    return '<span class="chip-ex'+(ex.voce?' voce':'')+'" title="'+esc(ex.vertical||"")+'">'+esc(nomeCurto(ex.nome))+' · '+esc(ex.nivel)+(ex.voce?' · você':'')+'</span>'; };
-  const ordenar = l=>l.ex.slice().sort((a,b)=>(ORDEM_NIVEL[CONEXOES.execs[a].nivel]??9)-(ORDEM_NIVEL[CONEXOES.execs[b].nivel]??9));
-  const leads = e.leads.slice(0, 60);
+  const como = estadoConx.comoExec==="" ? null : +estadoConx.comoExec;
+  const ehVoce = x=>como===null ? CONEXOES.execs[x].voce : x===como;
+  const chip = x=>{ const ex = CONEXOES.execs[x], v = ehVoce(x);
+    return '<span class="chip-ex'+(v?' voce':'')+'" title="'+esc(ex.vertical||"")+'">'+esc(nomeCurto(ex.nome))+' · '+esc(ex.nivel)+(v?' · você':'')+'</span>'; };
+  const ordenar = l=>l.ex.slice().sort((a,b)=>ehVoce(b)-ehVoce(a) || (ORDEM_NIVEL[CONEXOES.execs[a].nivel]??9)-(ORDEM_NIVEL[CONEXOES.execs[b].nivel]??9));
+  const leads = (como===null ? e.leads : e.leads.slice().sort((a,b)=>b.ex.includes(como)-a.ex.includes(como))).slice(0, 60);
   return (fatos.length ? '<div class="card-title" style="margin-bottom:6px"><span class="dot"></span>No portal</div>' +
       fatos.map(f=>'<div class="conx-fato"><b>'+esc(f.tipo)+' · '+formatarData(f.data)+'</b> · ' +
         (f.url ? '<a href="'+esc(f.url)+'" target="_blank" rel="noopener">'+esc(f.titulo)+'</a>' : esc(f.titulo)) +
@@ -1218,6 +1249,9 @@ function ligarConexoes(){
   }
   const ind = document.getElementById("conxInd");
   if(ind) ind.addEventListener("change", ()=>{ estadoConx.industria = ind.value; estadoConx.limite = 60; renderizar(); });
+  const comoSel = document.getElementById("conxComo");
+  if(comoSel) comoSel.addEventListener("change", ()=>{ estadoConx.comoExec = comoSel.value; estadoConx.limite = 60; renderizar(); });
+  document.querySelectorAll("[data-abrir]").forEach(bt=>bt.addEventListener("click", ()=>{ estadoConx.aberta = +bt.dataset.abrir; renderizar(); }));
   const mais = document.getElementById("conxMais");
   if(mais) mais.addEventListener("click", ()=>{ estadoConx.limite += 60; renderizar(); });
   document.querySelectorAll("details.conx-emp").forEach(d=>{
