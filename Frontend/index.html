@@ -1022,7 +1022,26 @@ function sincronizarFiltros(){
   });
 }
 
+// Lembra, só neste navegador, a aba aberta e o estado da aba de conexões: o F5 volta para o mesmo lugar.
+const LEMBRAR = "portal_peers_lugar";
+function guardarLugar(){
+  try{ localStorage.setItem(LEMBRAR, JSON.stringify({aba:estado.aba, conx:{comoExec:estadoConx.comoExec, busca:estadoConx.busca, industria:estadoConx.industria}})); }
+  catch(e){ /* sem armazenamento: só não lembra */ }
+}
+function voltarAoLugar(){
+  try{
+    const l = JSON.parse(localStorage.getItem(LEMBRAR) || "null");
+    if(!l) return;
+    if(ABAS.some(a=>a.id===l.aba) && l.aba!=="trimestral" && (l.aba!=="conexoes" || CONEXOES)) estado.aba = l.aba;
+    if(l.aba==="conexoes" && CONEXOES && l.conx){
+      if(l.conx.comoExec==="" || CONEXOES.execs[+l.conx.comoExec]) estadoConx.comoExec = l.conx.comoExec;
+      estadoConx.busca = l.conx.busca || ""; estadoConx.industria = l.conx.industria || "todas";
+    }
+  }catch(e){ /* sem armazenamento ou valor antigo: abre na Edição do dia */ }
+}
+
 function init(){
+  voltarAoLugar();
   montarFiltros();
 
   document.querySelectorAll(".vbtn[data-v]").forEach(b=>{
@@ -1405,6 +1424,7 @@ document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !document.getEl
    ========================================================= */
 function renderizar(){
   sincronizarFiltros();
+  guardarLugar();
   document.getElementById("headerSub").innerHTML =
     'Recorte atual: <b style="color:var(--neon)">' + esc(rotuloRecorte()) + '</b>';
   document.getElementById("chipRestrito").innerHTML =
