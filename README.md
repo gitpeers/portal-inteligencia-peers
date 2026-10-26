@@ -29,12 +29,13 @@ Backend/
   baixar_dados.py       traz os dados do Supabase para Frontend/dados, antes dos scripts trabalharem
   enviar_dados.py       devolve os arquivos de Frontend/dados ao Supabase, depois dos scripts
   supabase_api.py       acesso à tabela secoes do Supabase (usado pelos dois acima)
+  publicar_trimestral.py  envia o dashboard de resultados trimestrais para a aba Análises trimestrais
   validar_fontes.py     testa se cada fonte de notícias tem feed ativo (rodar uma vez por mês)
   ia/                   rotina de IA: instruções (ROTINA.md) e scripts que preparam e aplicam as análises
   comum.py              funções compartilhadas
   config/               o que a R&I pode ajustar sem mexer no código (ver abaixo)
 Supabase/
-  configuracao.sql      tabela, regras de acesso e trava do domínio (rodar uma vez no Supabase)
+  configuracao.sql      tabela, regras de acesso, trava do domínio e espaço privado das análises (rodar no Supabase)
 .github/workflows/portal.yml  o agendamento (baixar, atualizar, devolver ao Supabase) e a publicação da página
 ```
 
@@ -128,6 +129,12 @@ python enviar_dados.py --todos
 
 Para corrigir uma seção à mão (ex.: Valor 1000): `baixar_dados.py`, editar o arquivo em `Frontend/dados` e
 `python enviar_dados.py valor1000`.
+
+**Aba Análises trimestrais.** Abre em tela cheia o dashboard do projeto de resultados trimestrais (pasta
+02. Workspace / Resultados 3T26), guardado no espaço privado `analises` do Supabase, e não no repositório. Só é baixado
+quando alguém abre a aba. Para atualizar depois de regerar o dashboard, na pasta Backend, com as duas variáveis
+definidas: `python publicar_trimestral.py "<pasta do projeto>\dashboard\index.html"`. Também dá para arrastar o
+arquivo em Supabase > Storage > analises, com o nome `trimestral.html`.
 
 ## Editar pela pasta do SharePoint
 

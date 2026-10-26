@@ -96,6 +96,17 @@ body.bloqueado #login{display:flex;min-height:100vh;align-items:center;justify-c
 .nav-item.active{color:var(--neon)}
 @media(max-width:560px){.nav-tab{padding:12px 10px 10px;font-size:.78rem}.nav-atual{display:none}
   .nav-tabs{position:relative}.nav-grupo{position:static}.nav-menu{left:8px;right:8px;min-width:0}}
+
+/* ---- ANÁLISES TRIMESTRAIS: o dashboard de resultados em tela cheia, dentro do portal ---- */
+#trimestral{position:fixed;inset:0;z-index:850;background:var(--bg);display:flex;flex-direction:column}
+#trimestral[hidden]{display:none}
+.tri-barra{background:var(--navy);color:#fff;display:flex;align-items:center;gap:14px;padding:9px 16px;flex:none}
+.tri-barra button{background:none;border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:var(--r-sm);
+  padding:6px 13px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:inherit}
+.tri-barra button:hover{border-color:var(--neon);color:var(--neon)}
+.tri-barra span{font-size:.82rem;color:rgba(255,255,255,.75)}
+#trimestral iframe{flex:1;width:100%;border:0;background:#fff}
+.tri-msg{margin:auto;color:var(--grey-dark);font-size:.88rem;text-align:center;padding:24px}
 .filters-bar{background:#fff;border-bottom:1px solid var(--grey-border);padding:11px 40px;display:flex;
   gap:9px;align-items:center;flex-wrap:wrap}
 .flt-label{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--grey)}
@@ -488,6 +499,11 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
   </div>
 </div>
 
+<div id="trimestral" hidden>
+  <div class="tri-barra"><button type="button" onclick="fecharTrimestral()">← Voltar ao portal</button><span>Análises trimestrais</span></div>
+  <div class="tri-msg" id="triMsg">Carregando…</div>
+</div>
+
 <div class="topbar">
   <div class="nav-tabs" id="navTabs"></div>
   <div class="filters-bar">
@@ -767,7 +783,8 @@ const GRUPOS = [
   {id:"players", label:"Players e concorrência", desc:"empresas, decisões e concorrentes", abas:[
     {id:"financas", desc:"resultados das empresas e do ranking Valor 1000"},
     {id:"movimentos", desc:"aquisições, parcerias e trocas de comando"},
-    {id:"concorrencia", desc:"o que as consultorias concorrentes estão fazendo"}]}
+    {id:"concorrencia", desc:"o que as consultorias concorrentes estão fazendo"}]},
+  {id:"trimestral"}     // abre o dashboard de resultados em tela cheia, sem trocar a aba atual
 ];
 const ABAS = [
   {id:"home", label:"Edição do dia"},
@@ -776,7 +793,8 @@ const ABAS = [
   {id:"indicadores", label:"Indicadores setoriais"},
   {id:"movimentos", label:"Movimentos estratégicos"},
   {id:"concorrencia", label:"Concorrência"},
-  {id:"agenda", label:"Agenda setorial"}
+  {id:"agenda", label:"Agenda setorial"},
+  {id:"trimestral", label:"Análises trimestrais"}
 ];
 
 /* =========================================================
@@ -983,6 +1001,7 @@ function montarAbas(){
   nav.querySelectorAll("[data-s]").forEach(t=>{
     t.addEventListener("click", ()=>{
       pararFala();            // trocar de aba interrompe o resumo falado
+      if(t.dataset.s==="trimestral"){ fechar(); abrirTrimestral(); return; }
       estado.aba = t.dataset.s;
       montarAbas();
       renderizar();
@@ -1003,6 +1022,50 @@ function montarAbas(){
     montarAbas.ligado = true;
   }
 }
+
+/* =========================================================
+   ANÁLISES TRIMESTRAIS
+   O dashboard de resultados (projeto Resultados 3T26) fica num espaço privado do Supabase (bucket "analises"),
+   com a mesma regra de leitura da tabela de dados: só quem fez login. É baixado só quando a aba é aberta
+   (cerca de 0,5 MB comprimido) e guardado na memória até sair do portal. Para atualizar:
+   python Backend/publicar_trimestral.py <index.html do dashboard>.
+   ========================================================= */
+const TRIMESTRAL = {bucket:"analises", arquivo:"trimestral.html", html:null};
+
+async function abrirTrimestral(){
+  const tela = document.getElementById("trimestral");
+  tela.hidden = false;
+  document.body.style.overflow = "hidden";
+  if(tela.querySelector("iframe")) return;
+  const msg = document.getElementById("triMsg");
+  msg.hidden = false; msg.textContent = "Carregando as análises trimestrais…";
+  try{
+    if(!TRIMESTRAL.html){
+      const {data, error} = await sb.storage.from(TRIMESTRAL.bucket).download(TRIMESTRAL.arquivo);
+      if(error) throw error;
+      TRIMESTRAL.html = await data.text();
+    }
+    const f = document.createElement("iframe");
+    f.title = "Análises trimestrais";
+    // o dashboard só funciona com a mesma origem do portal (isolado, ele para ao carregar); vale porque o arquivo é
+    // nosso: só a chave secreta publica no bucket, e ele só carrega o ECharts, do mesmo CDN do login do portal
+    f.setAttribute("sandbox", "allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-downloads allow-modals");
+    f.setAttribute("allow", "clipboard-write");
+    f.srcdoc = TRIMESTRAL.html;
+    msg.hidden = true;
+    tela.appendChild(f);
+  }catch(e){
+    const naoAchou = /not found|404|object not found/i.test(String((e && (e.message || e.statusCode)) || e));
+    msg.textContent = naoAchou ? "As análises trimestrais ainda não foram publicadas no portal."
+                               : "Não foi possível abrir as análises trimestrais. Verifique a conexão e tente de novo.";
+  }
+}
+
+function fecharTrimestral(){
+  document.getElementById("trimestral").hidden = true;
+  document.body.style.overflow = "";
+}
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !document.getElementById("trimestral").hidden) fecharTrimestral(); });
 
 /* =========================================================
    RENDER GERAL
