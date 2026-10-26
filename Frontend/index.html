@@ -107,6 +107,29 @@ body.bloqueado #login{display:flex;min-height:100vh;align-items:center;justify-c
 .tri-barra span{font-size:.82rem;color:rgba(255,255,255,.75)}
 #trimestral iframe{flex:1;width:100%;border:0;background:#fff}
 .tri-msg{margin:auto;color:var(--grey-dark);font-size:.88rem;text-align:center;padding:24px}
+
+/* ---- CONEXÕES (visão comercial: só a lista de acesso) ---- */
+.box-conx{background:#fff;border:1.5px solid var(--navy);border-radius:var(--r-sm);padding:9px 12px;margin:8px 0;font-size:.78rem;line-height:1.5}
+.box-conx .rot{font-weight:700;color:var(--navy);margin-right:4px}
+.box-conx button{background:none;border:none;color:var(--blue-ink);font-weight:700;cursor:pointer;font-family:inherit;font-size:.76rem;padding:0;margin-left:4px}
+.conx-filtros{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.conx-filtros input{border:1px solid var(--grey-strong);border-radius:var(--r-sm);padding:7px 11px;font-size:.82rem;min-width:240px;font-family:inherit}
+.conx-emp{background:#fff;border:1px solid var(--grey-border);border-radius:var(--r-md);margin-bottom:8px}
+.conx-emp>summary{list-style:none;cursor:pointer;padding:11px 14px;display:grid;grid-template-columns:1.6fr 1fr .7fr .7fr .9fr;gap:10px;align-items:center;font-size:.8rem}
+.conx-emp>summary::-webkit-details-marker{display:none}
+.conx-emp>summary b{font-size:.9rem}
+.conx-emp[open]>summary{border-bottom:1px solid var(--grey-border)}
+.conx-cab{display:grid;grid-template-columns:1.6fr 1fr .7fr .7fr .9fr;gap:10px;padding:0 14px 6px;font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--grey)}
+.conx-det{padding:12px 14px 14px}
+.conx-fato{font-size:.78rem;padding:6px 0;border-top:1px dashed var(--grey-border)}
+.conx-fato:first-child{border-top:0}
+.conx-lead{display:grid;grid-template-columns:1.3fr 1.4fr 2fr;gap:10px;font-size:.78rem;padding:7px 0;border-top:1px solid var(--grey-light);align-items:start}
+.conx-lead a{color:var(--navy);font-weight:700}
+.conx-lead .sub{color:var(--grey-dark);font-size:.72rem}
+.chip-ex{display:inline-block;font-size:.68rem;font-weight:600;border-radius:var(--pill);padding:2px 8px;margin:1px 3px 1px 0;background:var(--serene-soft);border:1px solid var(--serene)}
+.chip-ex.voce{background:var(--neon);border-color:var(--neon-strong)}
+.tag-bando{display:inline-block;font-size:.64rem;font-weight:700;border-radius:var(--pill);padding:2px 8px;background:var(--blue-soft);color:var(--blue-ink)}
+@media(max-width:820px){.conx-emp>summary,.conx-cab{grid-template-columns:1fr 1fr}.conx-cab{display:none}.conx-lead{grid-template-columns:1fr}}
 .filters-bar{background:#fff;border-bottom:1px solid var(--grey-border);padding:11px 40px;display:flex;
   gap:9px;align-items:center;flex-wrap:wrap}
 .flt-label{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--grey)}
@@ -668,6 +691,7 @@ async function confirmarCodigo(ev){
 function abrirPortal(sessao){
   if(portalAberto) return;
   portalAberto = true;
+  USUARIO_EMAIL = sessao.user.email || "";
   document.getElementById("usuarioEmail").textContent = sessao.user.email;
   document.body.classList.remove("bloqueado");
   carregarDados().then(init).catch(e=>{
@@ -713,7 +737,7 @@ async function iniciarAcesso(){
    DADOS · lidos da tabela "secoes" do Supabase, que recebe uma cópia dos arquivos em dados/
    sempre que os scripts do Backend ou a rotina de IA os atualizam
    ========================================================= */
-let HOJE, PERIODO_TRI, VALOR1000_CAMPOS, VALOR1000, TAXONOMIA, TRIMESTRAL_2T26, INDICADORES_SETORIAIS, DADOS;
+let HOJE, PERIODO_TRI, VALOR1000_CAMPOS, VALOR1000, TAXONOMIA, TRIMESTRAL_2T26, INDICADORES_SETORIAIS, DADOS, CONEXOES = null;
 
 async function carregarDados(){
   const nomes = ["edicao","taxonomia","radar","movimentos","agenda","valor1000","companhias_abertas","indicadores"];
@@ -753,6 +777,9 @@ async function carregarDados(){
   };
   const dataBr = formatarData(HOJE);
   document.querySelector(".header-badge").textContent = "EDIÇÃO DE " + dataBr;
+  // Visão comercial (Mapa de Conexões): só para a lista de acesso (Supabase/comercial.sql). Para os demais, a
+  // consulta volta vazia e a aba e os quadros não aparecem.
+  CONEXOES = await carregarConexoes();
 }
 
 /* =========================================================
@@ -784,6 +811,7 @@ const GRUPOS = [
     {id:"financas", desc:"resultados das empresas e do ranking Valor 1000"},
     {id:"movimentos", desc:"aquisições, parcerias e trocas de comando"},
     {id:"concorrencia", desc:"o que as consultorias concorrentes estão fazendo"}]},
+  {id:"conexoes"},      // só aparece para a lista de acesso comercial
   {id:"trimestral"}     // abre o dashboard de resultados em tela cheia, sem trocar a aba atual
 ];
 const ABAS = [
@@ -794,6 +822,7 @@ const ABAS = [
   {id:"movimentos", label:"Movimentos estratégicos"},
   {id:"concorrencia", label:"Concorrência"},
   {id:"agenda", label:"Agenda setorial"},
+  {id:"conexoes", label:"Conexões por empresa"},
   {id:"trimestral", label:"Análises trimestrais"}
 ];
 
@@ -986,7 +1015,7 @@ function init(){
 function montarAbas(){
   const nav = document.getElementById("navTabs");
   const rot = id => ABAS.find(a=>a.id===id).label;
-  nav.innerHTML = GRUPOS.map(g=>{
+  nav.innerHTML = GRUPOS.filter(g=>g.id!=="conexoes" || CONEXOES).map(g=>{
     if(!g.abas) return '<button type="button" class="nav-tab '+(g.id===estado.aba?'active':'')+'" data-s="'+g.id+'">'+rot(g.id)+'</button>';
     const ativo = g.abas.some(a=>a.id===estado.aba);
     return '<div class="nav-grupo" data-g="'+g.id+'">' +
@@ -1020,6 +1049,189 @@ function montarAbas(){
     document.addEventListener("click", e=>{ if(!e.target.closest(".nav-grupo")) document.querySelectorAll(".nav-grupo.open").forEach(g=>g.classList.remove("open")); });
     document.addEventListener("keydown", e=>{ if(e.key==="Escape") document.querySelectorAll(".nav-grupo.open").forEach(g=>g.classList.remove("open")); });
     montarAbas.ligado = true;
+  }
+}
+
+/* =========================================================
+   CONEXÕES POR EMPRESA (visão comercial)
+   O Mapa de Conexões (LinkedIn, 1º grau dos executivos Peers) fica na tabela "conexoes" do Supabase, que só entrega
+   dados a quem está na lista acesso_comercial (Supabase/comercial.sql). Publicado por Backend/publicar_conexoes.py,
+   só com o necessário: executivo, lead (nome, cargo, senioridade, LinkedIn), empresa e indústria; sem e-mail.
+   Também alimenta o quadro "Quem da Peers chega a..." no Radar, em Movimentos e na ficha da empresa.
+   ========================================================= */
+let USUARIO_EMAIL = "";
+const estadoConx = {busca:"", industria:"todas", aberta:null, limite:60};
+// nomes de empresa que também são palavras comuns: não são procurados no texto das notícias (só no nome exato do player)
+const PALAVRAS_COMUNS = new Set(["vivo","claro","azul","gol","via","elo","oi","tim","ultra","nova","sim","bem","rede",
+  "natural","alpha","porto","sul","america","energia","saude","grupo","banco","digital","mercado","capital","global"]);
+const ORDEM_NIVEL = {"N0":0, "N1":1, "N2":2};
+
+function normConx(s){
+  return String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+}
+function nomeCurto(n){ const p = String(n||"").split(/\s+/).filter(Boolean); return p.length>1 ? p[0]+" "+p[p.length-1] : (p[0]||""); }
+
+async function carregarConexoes(){
+  try{
+    const {data, error} = await sb.from("conexoes").select("conteudo").eq("nome", "mapa").maybeSingle();
+    if(error || !data || !data.conteudo) return null;     // sem acesso, ou a tabela ainda não existe
+    return prepararConexoes(data.conteudo);
+  }catch(e){ return null; }
+}
+
+function prepararConexoes(c){
+  const partesEmail = normConx(USUARIO_EMAIL.split("@")[0].replace(/\./g," ")).split(" ").filter(p=>p.length>2);
+  const execs = c.execs.map(([nome, nivel, vertical])=>{
+    const n = " "+normConx(nome)+" ";
+    return {nome, nivel, vertical, voce: partesEmail.length>1 && partesEmail.every(p=>n.includes(" "+p+" "))};
+  });
+  const empresas = c.empresas.map(([nome, grupo, industria], i)=>({i, nome, grupo:grupo||"", industria, leads:[], bando:0, execs:new Set()}));
+  c.leads.forEach(([nome, cargo, sen, url, ei, ex])=>{
+    const e = empresas[ei];
+    e.leads.push({nome, cargo, sen, url, ex});
+    if(ex.length >= 2) e.bando++;
+    ex.forEach(x=>e.execs.add(x));
+  });
+  empresas.forEach(e=>{
+    const k = normConx(e.nome), semGrupo = k.replace(/^grupo /, "");
+    e.chaveExata = k;
+    e.chaves = [k, semGrupo].filter((x, j, a)=>a.indexOf(x)===j && x.length>=4 && !PALAVRAS_COMUNS.has(x));
+  });
+  return {versao:c.versao, geradoEm:c.geradoEm, execs, empresas, fatos:null};
+}
+
+// Empresas do Mapa citadas num texto (notícia) ou com o nome igual ao de um player (exato).
+function empresasNoTexto(texto, exato){
+  const t = " "+normConx(texto)+" ", n = normConx(texto);
+  return CONEXOES.empresas.filter(e=>(exato && n===e.chaveExata) || e.chaves.some(k=>t.includes(" "+k+" ")));
+}
+
+function execsMaisConectados(e, n){
+  const cont = {};
+  e.leads.forEach(l=>l.ex.forEach(x=>{ cont[x] = (cont[x]||0) + 1; }));
+  return Object.entries(cont).sort((a,b)=>b[1]-a[1]).slice(0, n).map(([x, q])=>({...CONEXOES.execs[x], q}));
+}
+
+function caixaConexoes(texto, exato){
+  if(!CONEXOES) return "";
+  return empresasNoTexto(texto, exato).slice(0, 2).map(e=>
+    '<div class="box-conx"><span class="rot">Quem da Peers chega a '+esc(e.nome)+':</span>' +
+      e.leads.length+(e.leads.length===1?' lead':' leads') + (e.bando ? ' · '+e.bando+' em bando' : '') +
+      ' · mais conectados: ' + execsMaisConectados(e, 3).map(x=>esc(nomeCurto(x.nome))+' ('+esc(x.nivel)+', '+x.q+')').join(", ") +
+      '<button type="button" onclick="irConexoes('+e.i+')">ver conexões ›</button></div>'
+  ).join("");
+}
+
+// Notícias do Radar e movimentos que citam cada empresa (calculado uma vez, na primeira vez que a aba abre).
+function fatosDaEmpresa(e){
+  if(!CONEXOES.fatos){
+    CONEXOES.fatos = new Map();
+    const itens = DADOS.radar.map(r=>({tipo:"Radar", data:r.data, titulo:r.manchete, texto:r.manchete+" "+r.resumo,
+        nota:r.anguloPeers, url:r.url, fonte:r.fonte}))
+      .concat(DADOS.movimentos.map(m=>({tipo:"Movimento", data:m.data, titulo:m.player+": "+m.tese, texto:m.tese,
+        nota:m.leitura, url:m.url, fonte:m.fonte, player:m.player})));
+    itens.forEach(it=>{
+      const achadas = new Set(empresasNoTexto(it.texto, false).map(x=>x.i));
+      if(it.player) empresasNoTexto(it.player, true).forEach(x=>achadas.add(x.i));
+      achadas.forEach(i=>{ if(!CONEXOES.fatos.has(i)) CONEXOES.fatos.set(i, []); CONEXOES.fatos.get(i).push(it); });
+    });
+    CONEXOES.fatos.forEach(l=>l.sort((a,b)=>b.data.localeCompare(a.data)));
+  }
+  return CONEXOES.fatos.get(e.i) || [];
+}
+
+function renderConexoes(){
+  const c = CONEXOES, b = normConx(estadoConx.busca);
+  const lista = c.empresas
+    .filter(e=>!estado.industrias.size || estado.industrias.has(e.industria))
+    .filter(e=>estadoConx.industria==="todas" || e.industria===estadoConx.industria)
+    .filter(e=>!b || normConx(e.nome+" "+e.grupo).includes(b))
+    .map(e=>({e, f:fatosDaEmpresa(e).length}))
+    .sort((x,y)=>(y.f>0)-(x.f>0) || y.e.bando-x.e.bando || y.e.leads.length-x.e.leads.length || x.e.nome.localeCompare(y.e.nome));
+  const inds = [...new Set(c.empresas.map(e=>e.industria))].sort();
+  const leads = lista.reduce((s,x)=>s+x.e.leads.length, 0), bando = lista.reduce((s,x)=>s+x.e.bando, 0);
+  const execs = new Set(); lista.forEach(x=>x.e.execs.forEach(i=>execs.add(i)));
+  const kpis = [["a","Empresas",lista.length,"no recorte"],["b","Leads",leads,"sêniores, 1º grau"],
+    ["c","Em bando",bando,"2 ou mais executivos"],["d","Executivos Peers",execs.size,"com conexão no recorte"]];
+  return '' +
+  '<div class="sec-head"><h2>Conexões por empresa</h2>' +
+  '<p>Quem da Peers conhece alguém em cada empresa-alvo, pelo Mapa de Conexões (conexões de 1º grau no LinkedIn). ' +
+  'Empresas com notícia ou movimento no portal vêm primeiro; dentro de cada empresa, os leads em bando (2 ou mais executivos), ' +
+  'os melhores para uma abordagem coordenada. Visível só para a lista de acesso comercial.</p></div>' +
+  '<div class="kpi-strip">' + kpis.map(k=>'<div class="kpi '+k[0]+'"><div class="kpi-label">'+k[1]+'</div><div class="kpi-value">'+k[2]+'</div><div class="kpi-sub">'+k[3]+'</div></div>').join("") + '</div>' +
+  '<div class="conx-filtros">' +
+    '<input id="conxBusca" type="search" placeholder="Buscar empresa ou grupo" value="'+esc(estadoConx.busca)+'">' +
+    '<span class="flt-label">Indústria</span><select class="flt" id="conxInd"><option value="todas">Todas</option>' +
+      inds.map(i=>'<option value="'+esc(i)+'" '+(estadoConx.industria===i?'selected':'')+'>'+esc(i)+'</option>').join("") + '</select>' +
+    '<span class="cardnote" style="margin:0">Mapa de Conexões '+esc(c.versao)+' · '+esc(c.geradoEm)+'</span>' +
+  '</div>' +
+  '<div class="conx-cab"><span>Empresa</span><span>Indústria</span><span>Leads</span><span>Em bando</span><span>No portal</span></div>' +
+  (lista.length ? lista.slice(0, estadoConx.limite).map(x=>
+    '<details class="conx-emp" data-conx="'+x.e.i+'"><summary>' +
+      '<span><b>'+esc(x.e.nome)+'</b>'+(x.e.grupo && normConx(x.e.grupo)!==x.e.chaveExata ? '<span class="subnome">'+esc(x.e.grupo)+'</span>' : '')+'</span>' +
+      '<span>'+esc(x.e.industria)+'</span><span>'+x.e.leads.length+'</span>' +
+      '<span>'+(x.e.bando ? '<span class="tag-bando">'+x.e.bando+'</span>' : '·')+'</span>' +
+      '<span>'+(x.f ? x.f+(x.f===1?' fato':' fatos') : '·')+'</span>' +
+    '</summary><div class="conx-det"></div></details>').join("") +
+    (lista.length > estadoConx.limite ? '<button class="btn-sec" id="conxMais" style="margin-top:8px">Mostrar mais '+Math.min(60, lista.length-estadoConx.limite)+' de '+(lista.length-estadoConx.limite)+'</button>' : '')
+   : '<div class="card"><div class="vazio">Nenhuma empresa para este recorte.</div></div>');
+}
+
+function detalheConx(e){
+  const fatos = fatosDaEmpresa(e).slice(0, 4);
+  const chip = x=>{ const ex = CONEXOES.execs[x];
+    return '<span class="chip-ex'+(ex.voce?' voce':'')+'" title="'+esc(ex.vertical||"")+'">'+esc(nomeCurto(ex.nome))+' · '+esc(ex.nivel)+(ex.voce?' · você':'')+'</span>'; };
+  const ordenar = l=>l.ex.slice().sort((a,b)=>(ORDEM_NIVEL[CONEXOES.execs[a].nivel]??9)-(ORDEM_NIVEL[CONEXOES.execs[b].nivel]??9));
+  const leads = e.leads.slice(0, 60);
+  return (fatos.length ? '<div class="card-title" style="margin-bottom:6px"><span class="dot"></span>No portal</div>' +
+      fatos.map(f=>'<div class="conx-fato"><b>'+esc(f.tipo)+' · '+formatarData(f.data)+'</b> · ' +
+        (f.url ? '<a href="'+esc(f.url)+'" target="_blank" rel="noopener">'+esc(f.titulo)+'</a>' : esc(f.titulo)) +
+        (f.nota ? '<div class="sub" style="color:var(--grey-dark)">'+esc(f.nota)+'</div>' : '')+'</div>').join("") : '') +
+    '<div class="card-title" style="margin:14px 0 4px"><span class="dot"></span>Quem da Peers chega aqui' +
+      '<span class="hint">'+e.leads.length+(e.leads.length===1?' lead':' leads')+(e.bando?' · '+e.bando+' em bando':'')+'</span></div>' +
+    leads.map(l=>'<div class="conx-lead">' +
+      '<div>'+(l.url ? '<a href="'+esc(l.url)+'" target="_blank" rel="noopener">'+esc(l.nome)+'</a>' : '<b>'+esc(l.nome)+'</b>') +
+        (l.ex.length>=2 ? ' <span class="tag-bando">bando</span>' : '')+'<div class="sub">'+esc(l.sen)+'</div></div>' +
+      '<div>'+esc(l.cargo)+'</div>' +
+      '<div>'+ordenar(l).map(chip).join("")+'</div></div>').join("") +
+    (e.leads.length > leads.length ? '<p class="cardnote" style="margin:8px 0 0">Mais '+(e.leads.length-leads.length)+' leads nesta empresa: use a busca para filtrar.</p>' : '') +
+    '<p class="cardnote" style="margin:10px 0 0">Fonte: Mapa de Conexões '+esc(CONEXOES.versao)+'. O nome abre o perfil no LinkedIn.</p>';
+}
+
+function irConexoes(i){
+  if(typeof fecharModal === "function"){ try{ fecharModal("Ficha"); }catch(e){} }
+  estadoConx.busca = ""; estadoConx.industria = "todas"; estadoConx.aberta = i;
+  const pos = CONEXOES.empresas[i];
+  if(estado.industrias.size && !estado.industrias.has(pos.industria)) estadoConx.busca = pos.nome;   // fora do recorte: busca pelo nome
+  estado.aba = "conexoes"; montarAbas(); renderizar();
+}
+
+function ligarConexoes(){
+  if(estado.aba!=="conexoes" || !CONEXOES) return;
+  const busca = document.getElementById("conxBusca");
+  if(busca){
+    if(estadoConx.focar){ busca.focus(); busca.setSelectionRange(busca.value.length, busca.value.length); estadoConx.focar = false; }
+    busca.addEventListener("input", ()=>{
+      clearTimeout(estadoConx.espera);
+      estadoConx.espera = setTimeout(()=>{ estadoConx.busca = busca.value; estadoConx.limite = 60; estadoConx.focar = true; renderizar(); }, 250);
+    });
+  }
+  const ind = document.getElementById("conxInd");
+  if(ind) ind.addEventListener("change", ()=>{ estadoConx.industria = ind.value; estadoConx.limite = 60; renderizar(); });
+  const mais = document.getElementById("conxMais");
+  if(mais) mais.addEventListener("click", ()=>{ estadoConx.limite += 60; renderizar(); });
+  document.querySelectorAll("details.conx-emp").forEach(d=>{
+    d.addEventListener("toggle", ()=>{
+      const det = d.querySelector(".conx-det");
+      if(d.open && !det.innerHTML) det.innerHTML = detalheConx(CONEXOES.empresas[+d.dataset.conx]);
+    });
+  });
+  if(estadoConx.aberta !== null){
+    let d = document.querySelector('details.conx-emp[data-conx="'+estadoConx.aberta+'"]');
+    if(!d){ estadoConx.busca = CONEXOES.empresas[estadoConx.aberta].nome; renderizar(); return; }
+    estadoConx.aberta = null;
+    d.open = true;
+    d.scrollIntoView({behavior:"smooth", block:"start"});
   }
 }
 
@@ -1093,6 +1305,7 @@ function renderizar(){
   else if(estado.aba==="movimentos") c.innerHTML = renderMovimentos();
   else if(estado.aba==="concorrencia") c.innerHTML = renderConcorrencia();
   else if(estado.aba==="agenda") c.innerHTML = renderAgenda();
+  else if(estado.aba==="conexoes") c.innerHTML = CONEXOES ? renderConexoes() : '';
   if(estado.modoVisualizacao==="comercial") c.insertAdjacentHTML("afterbegin", barraComercial());
   atualizarContador();
   if(estado.aba==="home") ajustarManchetes();
@@ -1239,7 +1452,7 @@ function renderCardRadar(item){
     (item.anguloPeers ? '<div class="box-angulo"><span class="rot">Ângulo Peers:</span> '+esc(item.anguloPeers)+'</div>' : '') +
     (estado.modoVisualizacao==="comercial" && item.oportunidade
       ? '<div class="box-com"><span class="rot">Oportunidade comercial:</span> '+item.oportunidade+'</div>' : '') +
-    caixaClientes(textoRadar(item)) +
+    caixaClientes(textoRadar(item)) + caixaConexoes(item.manchete + ' ' + item.resumo) +
     '<div>' +
       '<span class="chip">'+esc(rotuloInd(item))+'</span>' +
       (item.offering ? '<span class="chip">'+item.offering+'</span>' : '') +
@@ -1585,7 +1798,7 @@ function abrirFichaTrimestral(id){
       '<button class="tbtn" data-t="op">Indicadores operacionais</button>' +
       (v ? '<button class="tbtn" data-t="valor">No Valor 1000</button>' : '') +
     '</div>' +
-    '<div class="modal-body"><div id="tabFicha"></div>' +
+    '<div class="modal-body">' + caixaConexoes(e.nome, true) + '<div id="tabFicha"></div>' +
       '<p class="cardnote" style="margin:14px 0 0">'+(e.fonte.tipo==="cvm"
         ? 'Fonte: dados abertos da CVM (ITR do '+esc(e.fonte.periodo)+'), números contábeis consolidados; o lucro líquido é o atribuído aos controladores e o EBITDA é o resultado operacional mais depreciação e amortização.'
         : 'Fonte: release de resultados do '+esc(e.fonte.periodo)+' da empresa, com os números ajustados divulgados'+(e.fonte.release ? ' (<a href="'+esc(e.fonte.release)+'" target="_blank" rel="noopener">abrir release</a>)' : '')+'.')+' Valores em R$ milhões, salvo indicação.</p>' +
@@ -2143,7 +2356,7 @@ function itemMovimento(m){
     '<h4><span class="lnk-player" data-player="'+esc(m.player)+'">'+esc(m.player)+'</span></h4>' +
     '<p class="tese">'+esc(m.tese)+(m.valor && m.valor!=='—' && m.valor!=='Não divulgado' ? ' <b>('+esc(m.valor)+')</b>' : '')+'</p>' +
     (m.leitura ? '<p class="leitura"><span class="rot">Leitura Peers:</span> '+esc(m.leitura)+'</p>' : '') +
-    caixaClientes(textoMov(m)) +
+    caixaClientes(textoMov(m)) + caixaConexoes(m.player, true) +
     '<p class="cardnote" style="margin:4px 0 8px">Fonte: '+linkFonte(m.fonte, m.url)+'</p>' +
     '<label class="cbx"><input type="checkbox" class="chk" data-tipo="movimento" data-id="'+m.id+'" ' +
       (estado.selecionados.has("movimento:"+m.id)?'checked':'')+'> incluir no briefing</label>' +
@@ -2407,6 +2620,7 @@ function renderAgenda(){
    EVENTOS PÓS-RENDER
    ========================================================= */
 function ligarEventos(){
+  ligarConexoes();
   document.querySelectorAll(".chk").forEach(chk=>{
     chk.addEventListener("change", ()=>{
       const key = chk.dataset.tipo+":"+chk.dataset.id;
