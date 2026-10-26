@@ -30,12 +30,14 @@ Backend/
   enviar_dados.py       devolve os arquivos de Frontend/dados ao Supabase, depois dos scripts
   supabase_api.py       acesso à tabela secoes do Supabase (usado pelos dois acima)
   publicar_trimestral.py  envia o dashboard de resultados trimestrais para a aba Análises trimestrais
+  publicar_conexoes.py  envia o Mapa de Conexões para a aba Conexões por empresa (só a lista de acesso comercial)
   validar_fontes.py     testa se cada fonte de notícias tem feed ativo (rodar uma vez por mês)
   ia/                   rotina de IA: instruções (ROTINA.md) e scripts que preparam e aplicam as análises
   comum.py              funções compartilhadas
   config/               o que a R&I pode ajustar sem mexer no código (ver abaixo)
 Supabase/
   configuracao.sql      tabela, regras de acesso e trava do domínio (rodar uma vez no Supabase)
+  comercial.sql         tabela fechada das conexões e lista de acesso comercial (rodar uma vez no Supabase)
 .github/workflows/portal.yml  o agendamento (baixar, atualizar, devolver ao Supabase) e a publicação da página
 ```
 
@@ -157,3 +159,12 @@ uma tarefa agendada no computador do Kayo ("Portal Peers - Sincronizar GitHub", 
 
 - O GitHub pausa agendamentos de repositórios sem atividade por 60 dias. Os envios automáticos de dados contam
   como atividade; se a pausa acontecer, reative em Actions.
+
+**Aba Conexões por empresa (visão comercial).** Mostra, por empresa, quem da Peers conhece alguém lá (Mapa de Conexões,
+conexões de 1º grau no LinkedIn), com o link do perfil, os leads em bando e as notícias e movimentos da empresa no
+portal; também põe o quadro "Quem da Peers chega a..." no Radar, em Movimentos e na ficha da empresa. Os dados ficam na
+tabela `conexoes`, que só entrega a quem está em `acesso_comercial` (Supabase/comercial.sql); para os demais a aba não
+aparece. Para dar ou tirar acesso: Supabase > Table Editor > acesso_comercial (e-mail em minúsculas). Vai para o portal
+só executivo, lead (nome, cargo, senioridade, LinkedIn), empresa e indústria: sem e-mail, rede interna, classificações
+comerciais nem funil. Para publicar a base mais recente (base_conexoes_peers_v<N>.xlsx, na pasta Extração de Leads), na
+pasta Backend, com as duas variáveis definidas: `python publicar_conexoes.py "<pasta Extração de Leads>"`.
