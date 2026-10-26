@@ -500,7 +500,7 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 </div>
 
 <div id="trimestral" hidden>
-  <div class="tri-barra"><button type="button" onclick="fecharTrimestral()">← Voltar ao portal</button><span>Análises trimestrais</span></div>
+  <div class="tri-barra"><button type="button" onclick="fecharTrimestral()">← Voltar ao portal</button><span>Análises trimestrais <span id="triData"></span></span></div>
   <div class="tri-msg" id="triMsg">Carregando…</div>
 </div>
 
@@ -1025,12 +1025,12 @@ function montarAbas(){
 
 /* =========================================================
    ANÁLISES TRIMESTRAIS
-   O dashboard de resultados (projeto Resultados 3T26) fica num espaço privado do Supabase (bucket "analises"),
-   com a mesma regra de leitura da tabela de dados: só quem fez login. É baixado só quando a aba é aberta
-   (cerca de 0,5 MB comprimido) e guardado na memória até sair do portal. Para atualizar:
-   python Backend/publicar_trimestral.py <index.html do dashboard>.
+   O dashboard de resultados (projeto Resultados 3T26) fica na linha "trimestral" da tabela de dados, com a mesma
+   regra de leitura: só quem fez login. Não vem com os outros dados no login: é baixado só quando a aba é aberta
+   (cerca de 0,5 MB comprimido) e guardado na memória até sair do portal. Quem publica é a tarefa agendada no
+   computador da R&I, com Backend/publicar_trimestral.py (ver README).
    ========================================================= */
-const TRIMESTRAL = {bucket:"analises", arquivo:"trimestral.html", html:null};
+const TRIMESTRAL = {html:null, geradoEm:""};
 
 async function abrirTrimestral(){
   const tela = document.getElementById("trimestral");
@@ -1041,9 +1041,12 @@ async function abrirTrimestral(){
   msg.hidden = false; msg.textContent = "Carregando as análises trimestrais…";
   try{
     if(!TRIMESTRAL.html){
-      const {data, error} = await sb.storage.from(TRIMESTRAL.bucket).download(TRIMESTRAL.arquivo);
+      const {data, error} = await sb.from("secoes").select("conteudo").eq("nome", "trimestral").maybeSingle();
       if(error) throw error;
-      TRIMESTRAL.html = await data.text();
+      if(!data || !data.conteudo || !data.conteudo.html) throw new Error("not found");
+      TRIMESTRAL.html = data.conteudo.html;
+      TRIMESTRAL.geradoEm = data.conteudo.geradoEm || "";
+      document.getElementById("triData").textContent = TRIMESTRAL.geradoEm ? "· versão de " + TRIMESTRAL.geradoEm : "";
     }
     const f = document.createElement("iframe");
     f.title = "Análises trimestrais";

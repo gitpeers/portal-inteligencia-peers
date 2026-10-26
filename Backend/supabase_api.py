@@ -39,9 +39,13 @@ def chamar(metodo, caminho, corpo=None, cabecalhos=None):
     return json.loads(bruto) if bruto else None
 
 
+TRIMESTRAL = "trimestral"   # o dashboard de resultados (3 MB): só a aba Análises trimestrais e publicar_trimestral.py o usam
+
+
 def ler_secoes():
-    """Todas as seções: {nome: conteúdo}."""
-    return {l["nome"]: l["conteudo"] for l in chamar("GET", f"{TABELA}?select=nome,conteudo")}
+    """Todas as seções de dados: {nome: conteúdo}. Fica de fora o dashboard trimestral, que os scripts não usam
+    (e que, baixado e devolvido pelo robô, poderia sobrescrever uma versão publicada no meio da execução)."""
+    return {l["nome"]: l["conteudo"] for l in chamar("GET", f"{TABELA}?select=nome,conteudo&nome=neq.{TRIMESTRAL}")}
 
 
 def gravar_secao(nome, conteudo, quando):
