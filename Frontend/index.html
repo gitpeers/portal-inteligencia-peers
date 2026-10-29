@@ -121,6 +121,16 @@ body.bloqueado #login{display:flex;min-height:100vh;align-items:center;justify-c
 .conx-emp[open]>summary{border-bottom:1px solid var(--grey-border)}
 .conx-cab{display:grid;grid-template-columns:1.6fr 1fr .7fr .7fr .9fr;gap:10px;padding:0 14px 6px;font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--grey)}
 .conx-det{padding:12px 14px 14px}
+.conx-caixa{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;margin-right:9px;vertical-align:-3px;border:1.5px solid var(--grey-strong);border-radius:4px;background:#fff;color:#fff;font-size:.7rem;font-weight:700;cursor:pointer}
+.conx-caixa:hover{border-color:var(--navy)}
+.conx-caixa.marcada{background:var(--navy);border-color:var(--navy)}
+.conx-sel{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:#fff;border:1px dashed var(--grey-strong);border-radius:var(--r-md);padding:9px 14px;margin-bottom:12px;font-size:.78rem;color:var(--grey-dark)}
+.conx-sel b{color:var(--navy)}
+.conx-sel-bts{display:flex;gap:8px;flex-wrap:wrap}
+.conx-sel button{border:1px solid var(--navy);border-radius:var(--r-sm);padding:6px 13px;font-size:.74rem;font-weight:600;cursor:pointer;font-family:inherit}
+.conx-sel button.pri{background:var(--navy);color:#fff}
+.conx-sel button.sec{background:#fff;color:var(--navy)}
+.conx-sel button:disabled{opacity:.6;cursor:wait}
 .conx-fato{font-size:.78rem;padding:6px 0;border-top:1px dashed var(--grey-border)}
 .conx-fato:first-child{border-top:0}
 .conx-lead{display:grid;grid-template-columns:1.3fr 1.4fr 2fr;gap:10px;font-size:.78rem;padding:7px 0;border-top:1px solid var(--grey-light);align-items:start}
@@ -1110,7 +1120,8 @@ function montarAbas(){
    Também alimenta o quadro "Quem da Peers chega a..." no Radar, em Movimentos e na ficha da empresa.
    ========================================================= */
 let USUARIO_EMAIL = "";
-const estadoConx = {busca:"", industria:"todas", aberta:null, limite:60, comoExec:""};   // comoExec: "ver como" um executivo
+// comoExec: "ver como" um executivo; sel: empresas marcadas para a planilha (continuam marcadas ao mudar a busca)
+const estadoConx = {busca:"", industria:"todas", aberta:null, limite:60, comoExec:"", sel:new Set(), naLista:[]};
 // nomes de empresa que também são palavras comuns: não são procurados no texto das notícias (só no nome exato do player)
 const PALAVRAS_COMUNS = new Set(["vivo","claro","azul","gol","via","elo","oi","tim","ultra","nova","sim","bem","rede",
   "natural","alpha","porto","sul","america","energia","saude","grupo","banco","digital","mercado","capital","global"]);
@@ -1211,6 +1222,7 @@ function renderConexoes(){
     .filter(e=>!b || normConx(e.nome+" "+e.grupo).includes(b) || normConx(e.nome+" "+e.grupo).replace(/ /g,"").includes(b.replace(/ /g,"")))   // "loreal" acha L'Oréal
     .map(e=>({e, f:fatosDaEmpresa(e).length}))
     .sort((x,y)=>(y.f>0)-(x.f>0) || y.e.bando-x.e.bando || y.e.leads.length-x.e.leads.length || x.e.nome.localeCompare(y.e.nome));
+  estadoConx.naLista = lista.map(x=>x.e.i);
   const inds = [...new Set(c.empresas.map(e=>e.industria))].sort();
   const leads = lista.reduce((s,x)=>s+x.e.leads.length, 0), bando = lista.reduce((s,x)=>s+x.e.bando, 0);
   const execs = new Set(); lista.forEach(x=>x.e.execs.forEach(i=>execs.add(i)));
@@ -1243,11 +1255,12 @@ function renderConexoes(){
       inds.map(i=>'<option value="'+esc(i)+'" '+(estadoConx.industria===i?'selected':'')+'>'+esc(i)+'</option>').join("") + '</select>' +
     '<span class="cardnote" style="margin:0">Mapa de Conexões '+esc(c.versao)+' · '+esc(c.geradoEm)+'</span>' +
   '</div>' +
+  '<div class="conx-sel" id="conxSel">'+barraSelecao()+'</div>' +
   (como!==null ? carteiraConx(lista, como, meus, soEle) :
   '<div class="conx-cab"><span>Empresa</span><span>Indústria</span><span>Leads</span><span>Em bando</span><span>No portal</span></div>' +
   (lista.length ? lista.slice(0, estadoConx.limite).map(x=>
     '<details class="conx-emp" data-conx="'+x.e.i+'"><summary>' +
-      '<span><b>'+esc(x.e.nome)+'</b>'+(x.e.grupo && normConx(x.e.grupo)!==x.e.chaveExata ? '<span class="subnome">'+esc(x.e.grupo)+'</span>' : '')+'</span>' +
+      '<span>'+caixaSel(x.e.i)+'<b>'+esc(x.e.nome)+'</b>'+(x.e.grupo && normConx(x.e.grupo)!==x.e.chaveExata ? '<span class="subnome">'+esc(x.e.grupo)+'</span>' : '')+'</span>' +
       '<span>'+esc(x.e.industria)+'</span><span>'+x.e.leads.length+'</span>' +
       '<span>'+(x.e.bando ? '<span class="tag-bando">'+x.e.bando+'</span>' : '·')+'</span>' +
       '<span>'+(x.f ? x.f+(x.f===1?' fato':' fatos') : '·')+'</span>' +
@@ -1283,7 +1296,7 @@ function carteiraConx(lista, como, meus, soEle){
   const linha = x=>{
     const e = x.e, deles = e.leads.filter(l=>l.ex.includes(como)).length, colegas = colegasDe(e).size;
     return '<details class="conx-emp" data-conx="'+e.i+'"><summary>' +
-      '<span><b>'+esc(e.nome)+'</b>'+(e.grupo && normConx(e.grupo)!==e.chaveExata ? '<span class="subnome">'+esc(e.grupo)+'</span>' : '')+'</span>' +
+      '<span>'+caixaSel(e.i)+'<b>'+esc(e.nome)+'</b>'+(e.grupo && normConx(e.grupo)!==e.chaveExata ? '<span class="subnome">'+esc(e.grupo)+'</span>' : '')+'</span>' +
       '<span>'+esc(e.industria)+'</span><span>'+deles+'</span>' +
       '<span>'+(colegas ? '<span class="tag-bando">'+colegas+'</span>' : 'só você')+'</span>' +
       '<span>'+(x.f ? x.f+(x.f===1?' fato':' fatos') : '·')+'</span>' +
@@ -1316,6 +1329,237 @@ function copiarDupla(i, botao){
     '. Topa montarmos uma abordagem juntos?';
   try{ navigator.clipboard.writeText(txt); botao.textContent = "Mensagem copiada"; }
   catch(e2){ prompt("Copie a mensagem:", txt); }
+}
+
+/* Planilha de relacionamentos: as empresas marcadas viram um Excel igual ao feito para a BytePlus (visão geral, contatos
+   com o LinkedIn e premissas). Gerada no navegador com o ExcelJS, carregado só na hora de baixar. */
+const SEN_DECISOR = ["C-Level", "VP - Vice Presidente", "Superintendente", "Diretor/Head", "Gerente", "Coordenador"];
+const COR_FORCA = {"Forte":"FFC6EFCE", "Médio":"FFDDEBF7", "Fraco":"FFFFF2CC", "Nenhum":"FFF2F2F2"};
+
+function caixaSel(i){
+  const m = estadoConx.sel.has(i);
+  return '<span class="conx-caixa'+(m?' marcada':'')+'" role="checkbox" aria-checked="'+m+'" data-sel="'+i+'" title="Incluir na planilha">'+(m?'✓':'')+'</span>';
+}
+function barraSelecao(){
+  const n = estadoConx.sel.size, nomes = [...estadoConx.sel].map(i=>CONEXOES.empresas[i].nome);
+  const todas = estadoConx.naLista.length && estadoConx.naLista.length <= 300 && estadoConx.naLista.some(i=>!estadoConx.sel.has(i))
+    ? '<button type="button" class="sec" id="conxMarcarTodas">Marcar as '+estadoConx.naLista.length+' da lista</button>' : '';
+  return n
+    ? '<span><b>'+n+(n===1?' empresa marcada':' empresas marcadas')+'</b> · '+esc(nomes.slice(0, 4).join(", "))+(n>4?' e mais '+(n-4):'')+'</span>' +
+      '<span class="conx-sel-bts">'+todas+'<button type="button" class="pri" id="conxBaixar">Baixar planilha (Excel)</button>' +
+      '<button type="button" class="sec" id="conxLimpar">Limpar</button></span>'
+    : '<span>Marque as empresas (caixinha ao lado do nome) para baixar a planilha de relacionamentos, com o LinkedIn de cada contato.</span>' +
+      '<span class="conx-sel-bts">'+todas+'</span>';
+}
+function atualizarSelecao(){
+  document.querySelectorAll("[data-sel]").forEach(cx=>{
+    const m = estadoConx.sel.has(+cx.dataset.sel);
+    cx.classList.toggle("marcada", m); cx.setAttribute("aria-checked", m); cx.textContent = m ? "✓" : "";
+  });
+  const barra = document.getElementById("conxSel");
+  if(barra){ barra.innerHTML = barraSelecao(); ligarSelecao(); }
+}
+function ligarSelecao(){
+  const bt = (id, f)=>{ const b = document.getElementById(id); if(b) b.addEventListener("click", f); };
+  bt("conxLimpar", ()=>{ estadoConx.sel.clear(); atualizarSelecao(); });
+  bt("conxMarcarTodas", ()=>{ estadoConx.naLista.forEach(i=>estadoConx.sel.add(i)); atualizarSelecao(); });
+  bt("conxBaixar", ev=>baixarPlanilhaConx(ev.currentTarget));
+}
+
+function carregarExcelJS(){
+  if(window.ExcelJS) return Promise.resolve();
+  return new Promise((ok, falha)=>{
+    const s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js";
+    s.onload = ok; s.onerror = ()=>falha(new Error("não carregou o ExcelJS"));
+    document.head.appendChild(s);
+  });
+}
+
+// "Partner" de RH/finanças não é sócio e "Account Executive" não é diretor (o classificador da base erra os dois)
+function senioridadeAjustada(l){
+  const t = String(l.cargo||"").toLowerCase();
+  if(l.sen==="C-Level" && /\b(hr|people|business|finance|talent)\s+(business\s+)?partner|\bhrbp\b/.test(t)) return "Gerente";
+  if(l.sen==="Diretor/Head" && /account executive|executive assistant|sales executive/.test(t)) return "Especialista";
+  return l.sen;
+}
+function nomePessoa(n){
+  return String(n||"").toLowerCase().split(/\s+/).filter(Boolean)
+    .map(p=>["de","da","do","dos","das","e"].includes(p) ? p : p.charAt(0).toUpperCase()+p.slice(1)).join(" ");
+}
+
+// Mesma regra da planilha BytePlus: quem conhece mais decisores; empate vai para o nível mais alto (N0 > N1 > N2);
+// um N2 não fica em primeiro se houver N0 ou N1 com contato na empresa (passa a ser a segunda opção).
+function relacaoEmpresa(e){
+  const execs = CONEXOES.execs;
+  const rank = x=>ORDEM_NIVEL[execs[x].nivel] ?? 9;
+  const dec = e.leads.map(l=>({...l, sen:senioridadeAjustada(l)})).filter(l=>SEN_DECISOR.includes(l.sen))
+    .sort((a,b)=>SEN_DECISOR.indexOf(a.sen)-SEN_DECISOR.indexOf(b.sen) || b.ex.length-a.ex.length || a.nome.localeCompare(b.nome));
+  const cont = new Map();
+  dec.forEach(l=>l.ex.forEach(x=>cont.set(x, (cont.get(x)||0)+1)));
+  const ordem = [...cont.keys()].sort((a,b)=>cont.get(b)-cont.get(a) || rank(a)-rank(b) || execs[a].nome.localeCompare(execs[b].nome));
+  if(ordem.length && rank(ordem[0])>=2){
+    const acima = ordem.find(x=>rank(x)<2);
+    if(acima!==undefined){ ordem.splice(ordem.indexOf(acima), 1); ordem.unshift(acima); }
+  }
+  const forca = !dec.length ? "Nenhum" : dec.length>=10 && cont.size>=3 ? "Forte" : dec.length>=3 ? "Médio" : "Fraco";
+  return {e, dec, cont, ordem, forca};
+}
+
+async function baixarPlanilhaConx(botao){
+  const txt = botao.textContent;
+  botao.disabled = true; botao.textContent = "Gerando…";
+  try{
+    await carregarExcelJS();
+    const execs = CONEXOES.execs, NAVY = "FF0B1F3A";
+    const ordF = ["Forte","Médio","Fraco","Nenhum"];
+    const rels = [...estadoConx.sel].map(i=>relacaoEmpresa(CONEXOES.empresas[i]))
+      .sort((a,b)=>ordF.indexOf(a.forca)-ordF.indexOf(b.forca) || b.dec.length-a.dec.length || a.e.nome.localeCompare(b.e.nome));
+    const wb = new ExcelJS.Workbook();
+    const ov = wb.addWorksheet("Relacionamentos Peers", {views:[{state:"frozen", ySplit:5, xSplit:1, showGridLines:false}]});
+    const ct = wb.addWorksheet("Contatos Peers", {views:[{state:"frozen", ySplit:5, xSplit:2, showGridLines:false}], properties:{outlineProperties:{summaryBelow:false}}});
+    const pr = wb.addWorksheet("Premissas", {views:[{showGridLines:false}]});
+    const fina = {bottom:{style:"thin", color:{argb:"FFDDE3EA"}}};
+    const link = (cel, url, texto)=>{ cel.value = {text:texto||url, hyperlink:url}; cel.font = {color:{argb:"FF2F63B0"}, underline:true}; };
+    const cabecalho = (ws, titulos, larguras)=>{
+      const r = ws.getRow(5);
+      titulos.forEach((t, j)=>{ const c = r.getCell(j+1); c.value = t; c.font = {bold:true, color:{argb:"FFFFFFFF"}};
+        c.fill = {type:"pattern", pattern:"solid", fgColor:{argb:NAVY}}; c.alignment = {vertical:"middle", wrapText:true}; });
+      r.height = 40;
+      larguras.forEach((w, j)=>{ ws.getColumn(j+1).width = w; });
+    };
+    const titulo = (ws, a1, a2)=>{
+      ws.getCell("A1").value = a1; ws.getCell("A1").font = {size:16, bold:true, color:{argb:NAVY}};
+      ws.getCell("A2").value = a2; ws.getCell("A2").font = {size:10, color:{argb:"FF4A5462"}};
+    };
+    const hoje = new Date().toLocaleDateString("pt-BR");
+
+    // Contatos (antes, para os links da visão geral apontarem para a faixa de cada empresa)
+    titulo(ct, "Quem da Peers conhece quem em cada empresa",
+      "Cada linha é um executivo da Peers e um decisor que ele tem no LinkedIn, na ordem de \"Quem procurar primeiro\". Use os botões 1 e 2 à esquerda para recolher ou abrir as empresas. Em amarelo: outro executivo também conhece o contato.");
+    ct.getCell("A3").value = {text:"← Voltar para a visão geral", hyperlink:"#'Relacionamentos Peers'!A1"};
+    ct.getCell("A3").font = {color:{argb:"FF2F63B0"}, underline:true};
+    cabecalho(ct, ["Empresa","Executivo Peers","Nível","Contato","Cargo do contato","Senioridade","Também conhece esse contato","LinkedIn do contato"],
+      [22, 34, 7, 28, 52, 15, 50, 52]);
+    let r = 5;
+    const faixa = {};
+    rels.filter(x=>x.dec.length).forEach(x=>{
+      r++; faixa[x.e.i] = r;
+      const fx = ct.getRow(r);
+      fx.values = [x.e.nome, x.e.nome.toUpperCase()+"  ·  "+x.dec.length+" decisores  ·  "+x.cont.size+" executivos da Peers"];
+      for(let j=1; j<=8; j++){ const c = fx.getCell(j); c.fill = {type:"pattern", pattern:"solid", fgColor:{argb:"FFE1E8F0"}}; c.font = {bold:true, color:{argb:NAVY}}; }
+      fx.height = 22;
+      x.ordem.forEach(ex=>x.dec.filter(l=>l.ex.includes(ex)).forEach(l=>{
+        r++;
+        const outros = l.ex.filter(o=>o!==ex).sort((a,b)=>x.ordem.indexOf(a)-x.ordem.indexOf(b)).map(o=>nomePessoa(execs[o].nome)).join(", ");
+        const lin = ct.getRow(r);
+        lin.values = [x.e.nome, nomePessoa(execs[ex].nome), execs[ex].nivel, l.nome, l.cargo, l.sen==="VP - Vice Presidente"?"VP":l.sen, outros, ""];
+        lin.outlineLevel = 1;
+        lin.eachCell({includeEmpty:true}, c=>{ c.border = fina; c.alignment = {vertical:"top"}; });
+        lin.getCell(1).font = {color:{argb:"FF8A93A3"}};
+        lin.getCell(3).alignment = {vertical:"top", horizontal:"center"};
+        lin.getCell(7).alignment = {vertical:"top", wrapText:true};
+        if(outros) lin.getCell(7).fill = {type:"pattern", pattern:"solid", fgColor:{argb:"FFF9FFCC"}};
+        if(l.url) link(lin.getCell(8), l.url);
+      }));
+    });
+    ct.autoFilter = "A5:H"+r;
+
+    // Visão geral
+    const comDec = rels.filter(x=>x.dec.length).length;
+    titulo(ov, "Onde a Peers tem relacionamento nas empresas selecionadas",
+      "Temos contato com decisores em "+comDec+" das "+rels.length+" empresas. Para cada uma: quem da Peers procurar primeiro e quem essa pessoa conhece lá. Clique no nome da empresa para ver todos os contatos.");
+    ov.getCell("A3").value = "Mapa de Conexões "+CONEXOES.versao+" ("+CONEXOES.geradoEm+") · planilha gerada no portal em "+hoje+".   Forte = 10+ decisores e 3+ executivos · Médio = 3 a 9 decisores · Fraco = 1 ou 2 · Nenhum = não achamos decisor.";
+    ov.getCell("A3").font = {size:9, italic:true, color:{argb:"FF677185"}};
+    ov.getCell("A4").value = {text:"Ver premissas e limites →", hyperlink:"#'Premissas'!A1"};
+    ov.getCell("A4").font = {size:10, color:{argb:"FF2F63B0"}, underline:true};
+    cabecalho(ov, ["Empresa","Indústria","Relacionamento","Decisores que conhecemos","Executivos da Peers com contato",
+      "Quem procurar primeiro","Contato mais sênior que ele tem lá","LinkedIn do contato","Segunda opção"], [28, 20, 16, 14, 15, 48, 70, 52, 48]);
+    rels.forEach((x, k)=>{
+      const lin = ov.getRow(6+k), ex = x.ordem[0], seg = x.ordem[1];
+      const melhor = ex!==undefined ? x.dec.find(l=>l.ex.includes(ex)) : null;
+      lin.values = [x.e.nome, x.e.industria, x.forca, x.dec.length, x.cont.size,
+        ex!==undefined ? nomePessoa(execs[ex].nome)+" ("+execs[ex].nivel+") · conhece "+x.cont.get(ex) : "—",
+        melhor ? melhor.nome+" · "+melhor.cargo : "—", "",
+        seg!==undefined ? nomePessoa(execs[seg].nome)+" ("+execs[seg].nivel+") · conhece "+x.cont.get(seg) : "—"];
+      lin.eachCell({includeEmpty:true}, c=>{ c.border = fina; c.alignment = {vertical:"middle"}; });
+      [4,5].forEach(j=>{ lin.getCell(j).alignment = {vertical:"middle", horizontal:"center"}; });
+      lin.getCell(3).fill = {type:"pattern", pattern:"solid", fgColor:{argb:COR_FORCA[x.forca]}};
+      lin.getCell(3).font = {bold:true}; lin.getCell(3).alignment = {vertical:"middle", horizontal:"center"};
+      if(faixa[x.e.i]){
+        lin.getCell(1).value = {text:x.e.nome, hyperlink:"#'Contatos Peers'!A"+faixa[x.e.i]};
+        lin.getCell(1).font = {bold:true, color:{argb:"FF2F63B0"}, underline:true};
+        lin.getCell(6).font = {bold:true};
+      } else lin.eachCell({includeEmpty:true}, c=>{ c.font = {color:{argb:"FF8A93A3"}}; });
+      if(melhor && melhor.url) link(lin.getCell(8), melhor.url);
+      lin.height = 20;
+    });
+    ov.autoFilter = "A5:I"+(5+rels.length);
+
+    // Premissas
+    pr.getColumn(1).width = 34; pr.getColumn(2).width = 110;
+    titulo(pr, "Premissas das abas de relacionamento", "Como foram montadas as abas \"Relacionamentos Peers\" e \"Contatos Peers\".");
+    pr.getCell("A3").value = {text:"← Voltar para a visão geral", hyperlink:"#'Relacionamentos Peers'!A1"};
+    pr.getCell("A3").font = {size:10, color:{argb:"FF2F63B0"}, underline:true};
+    const blocos = [
+      ["De onde vêm os dados", [
+        ["Fonte", "Conexões de 1º grau no LinkedIn dos executivos da Peers, do Mapa de Conexões Peers ("+CONEXOES.versao+", "+CONEXOES.geradoEm+"), como aparece no Portal de Inteligência."],
+        ["Quem ficou de fora", "Conexões com colegas da própria Peers (rede interna) e cargos de nível iniciante (estágio, trainee, aprendiz e júnior)."]]],
+      ["Quem conta como decisor", [
+        ["Decisor", "Contato com senioridade C-Level, VP, Superintendente, Diretor/Head, Gerente ou Coordenador. Analistas, especialistas e cargos não identificados não entram."],
+        ["Senioridade", "Inferida pelo cargo escrito no LinkedIn. Dois ajustes: \"Business/People/HR/Finance Partner\" conta como Gerente (não como sócio) e \"Account/Sales Executive\" não conta como diretor."]]],
+      ["Classificação do relacionamento (por empresa)", [
+        ["Forte", "10 ou mais decisores conhecidos e pelo menos 3 executivos da Peers diferentes conectados a eles."],
+        ["Médio", "De 3 a 9 decisores, ou 10 ou mais concentrados em menos de 3 executivos."],
+        ["Fraco", "1 ou 2 decisores."],
+        ["Nenhum", "Nenhum decisor encontrado."],
+        ["Por que 3 executivos", "Para que uma única pessoa da Peers com muitos contatos não deixe a empresa como \"Forte\" sozinha."]]],
+      ["Quem procurar primeiro", [
+        ["Regra principal", "O executivo da Peers que conhece mais decisores na empresa."],
+        ["Empate", "Em caso de empate no número de decisores, vem primeiro o nível mais alto da Peers (N0, depois N1, depois N2)."],
+        ["Regra do N2", "Um N2 não aparece como primeiro quando há um N0 ou N1 com contato na mesma empresa: o N0/N1 que conhece mais gente passa a ser o primeiro e o N2 vira a segunda opção. Um N1 pode ficar na frente de um N0 se conhecer mais decisores."],
+        ["Segunda opção", "O próximo executivo nessa mesma ordem."]]],
+      ["Como ler as colunas", [
+        ["Contato mais sênior", "O decisor de maior senioridade que o executivo de \"Quem procurar primeiro\" conhece lá."],
+        ["Também conhece esse contato", "Outros executivos da Peers conectados à mesma pessoa. Em amarelo: dá para fazer a abordagem em dupla."],
+        ["Ordem", "Empresas por força do relacionamento. Dentro de cada empresa, executivos na ordem de \"Quem procurar primeiro\" e contatos por senioridade."]]],
+      ["Limites", [
+        ["Proximidade", "Uma conexão no LinkedIn não mostra se o executivo tem relação de fato com a pessoa. A classificação mede quantas pessoas conhecemos, não a força de cada relação."],
+        ["Cargo", "A classificação não pesa o cargo: 10 gerentes contam o mesmo que 10 C-Levels."],
+        ["Cobertura", "\"Nenhum\" quer dizer que não achamos decisor na base atual, não que ninguém da Peers conheça a empresa."],
+        ["Cargos desatualizados", "O cargo é o do momento da extração e pode ter mudado."]]],
+      ["Uso dos dados", [
+        ["Confidencialidade", "A aba \"Contatos Peers\" tem nomes e perfis de conexões pessoais dos executivos (dado pessoal, LGPD). Uso interno da Peers: não enviar essa aba para fora da empresa."]]],
+    ];
+    let p = 4;
+    blocos.forEach(([tit, itens])=>{
+      const t = pr.getRow(p);
+      t.values = [tit]; t.height = 22;
+      [1,2].forEach(j=>{ t.getCell(j).fill = {type:"pattern", pattern:"solid", fgColor:{argb:NAVY}}; t.getCell(j).font = {size:12, bold:true, color:{argb:"FFFFFFFF"}}; });
+      itens.forEach(([k, v])=>{
+        p++;
+        const lin = pr.getRow(p);
+        lin.values = [k, v];
+        lin.getCell(1).font = {bold:true};
+        [1,2].forEach(j=>{ lin.getCell(j).alignment = {wrapText:true, vertical:"top"}; lin.getCell(j).border = fina; });
+        lin.height = 15 * Math.max(1, Math.ceil(v.length/105));
+      });
+      p += 2;
+    });
+
+    const blob = new Blob([await wb.xlsx.writeBuffer()], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "Relacionamentos Peers - "+(rels.length===1 ? rels[0].e.nome.replace(/[\\/:*?"<>|]/g,"") : rels.length+" empresas")+" - "+hoje.replace(/\//g,"-")+".xlsx";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 10000);
+    botao.textContent = "Planilha baixada";
+    setTimeout(()=>{ botao.textContent = txt; botao.disabled = false; }, 2500);
+  }catch(err){
+    console.error(err);
+    botao.textContent = "Não deu para gerar: tente de novo";
+    botao.disabled = false;
+  }
 }
 
 function detalheConx(e){
@@ -1371,6 +1615,14 @@ function ligarConexoes(){
     estadoConx.aberta = +bt.dataset.vertudo; renderizar(); }));
   const mais = document.getElementById("conxMais");
   if(mais) mais.addEventListener("click", ()=>{ estadoConx.limite += 60; renderizar(); });
+  // a caixinha fica dentro do <summary>: o preventDefault evita que o clique abra ou feche a empresa
+  document.querySelectorAll("[data-sel]").forEach(cx=>cx.addEventListener("click", ev=>{
+    ev.preventDefault(); ev.stopPropagation();
+    const i = +cx.dataset.sel;
+    if(estadoConx.sel.has(i)) estadoConx.sel.delete(i); else estadoConx.sel.add(i);
+    atualizarSelecao();
+  }));
+  ligarSelecao();
   document.querySelectorAll("details.conx-emp").forEach(d=>{
     d.addEventListener("toggle", ()=>{
       const det = d.querySelector(".conx-det");

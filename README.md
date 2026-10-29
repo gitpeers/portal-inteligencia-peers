@@ -166,7 +166,9 @@ portal; também põe o quadro "Quem da Peers chega a..." no Radar, em Movimentos
 tabela `conexoes`, que só entrega a quem está em `acesso_comercial` (Supabase/comercial.sql); para os demais a aba não
 aparece. Para dar ou tirar acesso: Supabase > Table Editor > acesso_comercial (e-mail em minúsculas). O perfil
 `marketing` vê a visão geral e pode "ver como" qualquer executivo; o perfil `executivo` vê a visão geral e só a
-própria carteira (o executivo cujo nome bate com o e-mail). Vai para o portal
+própria carteira (o executivo cujo nome bate com o e-mail). Na lista de empresas, a caixinha ao lado do nome marca a
+empresa para a planilha de relacionamentos: "Baixar planilha (Excel)" gera no navegador (ExcelJS) o mesmo formato da
+planilha feita para a BytePlus (visão geral com quem procurar primeiro, contatos com o LinkedIn e premissas). Vai para o portal
 só executivo, lead (nome, cargo, senioridade, LinkedIn), empresa e indústria: sem e-mail, rede interna, classificações
 comerciais nem funil. Para publicar a base mais recente (base_conexoes_peers_v<N>.xlsx, na pasta Extração de Leads), na
 pasta Backend, com as duas variáveis definidas: `python publicar_conexoes.py "<pasta Extração de Leads>"`.
