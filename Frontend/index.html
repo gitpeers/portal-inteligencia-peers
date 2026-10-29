@@ -1208,7 +1208,7 @@ function renderConexoes(){
     .filter(e=>como===null || e.execs.has(como))
     .filter(e=>!estado.industrias.size || estado.industrias.has(e.industria))
     .filter(e=>estadoConx.industria==="todas" || e.industria===estadoConx.industria)
-    .filter(e=>!b || normConx(e.nome+" "+e.grupo).includes(b))
+    .filter(e=>!b || normConx(e.nome+" "+e.grupo).includes(b) || normConx(e.nome+" "+e.grupo).replace(/ /g,"").includes(b.replace(/ /g,"")))   // "loreal" acha L'Oréal
     .map(e=>({e, f:fatosDaEmpresa(e).length}))
     .sort((x,y)=>(y.f>0)-(x.f>0) || y.e.bando-x.e.bando || y.e.leads.length-x.e.leads.length || x.e.nome.localeCompare(y.e.nome));
   const inds = [...new Set(c.empresas.map(e=>e.industria))].sort();
