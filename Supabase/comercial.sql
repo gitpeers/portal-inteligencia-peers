@@ -12,7 +12,8 @@
 create table if not exists public.acesso_comercial (
   email     text primary key,                -- sempre em minúsculas
   nome      text,
-  perfil    text not null default 'marketing', -- marketing: vê a rede de todos, por empresa
+  perfil    text not null default 'marketing', -- marketing: vê a rede de todos, por empresa, e "ver como" qualquer
+                                             -- executivo; executivo: a visão geral e só a própria carteira
   criado_em timestamptz not null default now()
 );
 alter table public.acesso_comercial enable row level security;
