@@ -2931,7 +2931,31 @@ function carregarJsPDF(){
   });
 }
 
-// O PDF é montado no navegador com o jsPDF (texto de verdade, links clicáveis), baixado e aberto numa aba do navegador.
+// Logo do concorrente: o ícone do site dele (campo "site" da lista de concorrentes ou, sem ele, nome-sem-espaços.com).
+// Se não carregar em 3 segundos, o PDF usa o círculo com a sigla.
+function logoConcorrente(c){
+  const dominio = (c.site || (String(c.nome||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/&/g,"and").replace(/[^a-z0-9]/g,"")+".com"))
+    .replace(/^https?:\/\//,"").replace(/\/.*$/,"");
+  return new Promise(ok=>{
+    const img = new Image(), fim = setTimeout(()=>ok(null), 3000);
+    img.crossOrigin = "anonymous";
+    img.onload = ()=>{
+      clearTimeout(fim);
+      try{
+        if(img.naturalWidth < 32) return ok(null);           // ícone genérico de "sem site": usa a sigla
+        const cv = document.createElement("canvas"); cv.width = cv.height = 64;
+        cv.getContext("2d").drawImage(img, 0, 0, 64, 64);
+        ok(cv.toDataURL("image/png"));
+      }catch(e){ ok(null); }
+    };
+    img.onerror = ()=>{ clearTimeout(fim); ok(null); };
+    img.src = "https://www.google.com/s2/favicons?sz=64&domain="+encodeURIComponent(dominio);
+  });
+}
+
+// Briefing de Concorrentes: PDF montado no navegador com o jsPDF (texto de verdade, links clicáveis), baixado e aberto
+// numa aba. Sumário, conclusão, So What e recomendações vêm da síntese da IA (analises.concorrenciaBriefing, últimos
+// 30 dias, ver Backend/ia/ROTINA.md); sem ela, um resumo montado dos próprios itens.
 async function briefingConcorrentes(dias){
   const DIAS = Math.min(30, Math.max(1, Math.round(dias) || 15)), hoje = new Date();   // a pessoa escolhe de 1 a 30 dias
   const nomeEd = DIAS===7 ? "Semanal" : DIAS===15 ? "Quinzenal" : DIAS===30 ? "Mensal" : "";
@@ -2943,16 +2967,27 @@ async function briefingConcorrentes(dias){
   if(aba) aba.document.write('<p style="font-family:Arial;padding:24px">Gerando o briefing…</p>');
   try{
     await carregarJsPDF();
-    const lw = DADOS.analises.concorrencia;
-    const sumario = lw && lw.pontos && lw.pontos.length ? lw.pontos : itens.slice(0, 5).map(i=>i.nome+": "+(i.fato || i.manchete));
-    const relevantes = itens.filter(i=>(i.selo==="Ameaça" || i.selo==="Oportunidade") && i.impacto);
+    const ids = [...new Set(itens.map(i=>i.concorrente))];
+    const logos = {};
+    await Promise.all(ids.map(async id=>{ logos[id] = await logoConcorrente(concorrenteDe(id)); }));
+
+    const B = DADOS.analises.concorrenciaBriefing;
     const ma = itens.filter(i=>/aquisi|fus|participa/i.test(i.tipo));
+    const relevantes = itens.filter(i=>(i.selo==="Ameaça" || i.selo==="Oportunidade") && i.impacto);
+    const plural = (n, um, varios)=>n+" "+(n===1 ? um : varios);
+    const lw = DADOS.analises.concorrencia;
+    const sumario = B ? B.sumario : (lw && lw.pontos && lw.pontos.length ? lw.pontos : itens.slice(0, 5).map(i=>i.nome+". "+(i.fato || i.manchete)));
+    const conclusao = B ? B.conclusao : ["No período, "+plural(itens.length, "movimento", "movimentos")+" de "+plural(ids.length, "concorrente", "concorrentes")+": "+
+      plural(itens.filter(i=>i.selo==="Ameaça").length, "marcado como ameaça", "marcados como ameaça")+", "+
+      plural(itens.filter(i=>i.selo==="Oportunidade").length, "como oportunidade", "como oportunidade")+" e "+plural(ma.length, "de M&A", "de M&A")+" (aquisição, fusão ou participação)."];
+    const soWhat = B ? B.soWhat : (relevantes[0] ? relevantes[0].nome+": "+relevantes[0].impacto : "");
+    const recs = B ? B.recomendacoes : relevantes.slice(1, 6).map(i=>({tema:i.offering || i.tipo, texto:i.impacto}));
     const porGrupo = [...new Set(DADOS.concorrentes.map(c=>c.grupo))].map(g=>[g, itens.filter(i=>i.grupo===g)]).filter(([, l])=>l.length);
     const titulo = "Briefing "+(nomeEd ? nomeEd+" " : "")+"de Concorrentes";
 
     const doc = new window.jspdf.jsPDF({unit:"mm", format:"a4"});
     const W = 210, H = 297, M = 18, LARG = W - 2*M;
-    const NAVY = [0,18,51], LIMA = [228,255,0], TINTA = [11,31,58], CINZA = [122,133,151];
+    const NAVY = [0,18,51], LIMA = [228,255,0], TINTA = [11,31,58], CINZA = [122,133,151], AZUL = [47,99,176];
     // a fonte padrão do PDF só tem o alfabeto latino: troca o que ela não desenha
     const t = s=>String(s||"").replace(/[‐-―−]/g,"-").replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/…/g,"...")
       .replace(/→/g,"->").replace(/[^\x20-\x7E\xA0-\xFF\n•–—€]/g,"");
@@ -2982,87 +3017,100 @@ async function briefingConcorrentes(dias){
     };
     const cabe = h=>{ if(y + h > H - 18) novaPagina(); };
     const fonte = (tam, negrito, cor)=>{ doc.setFont("helvetica", negrito ? "bold" : "normal"); doc.setFontSize(tam); doc.setTextColor(...(cor||TINTA)); };
-    const alt = tam=>tam*0.42;                                    // altura da linha em mm
-    const texto = (s, o={})=>{
-      const tam = o.tam||10, rec = o.recuo||0;
-      fonte(tam, o.negrito, o.cor);
-      doc.splitTextToSize(t(s), LARG - rec).forEach(l=>{
+    const alt = tam=>tam*0.44;                                    // altura da linha em mm
+
+    // Parágrafo com trechos em negrito, justificado (a última linha fica alinhada à esquerda).
+    // partes: [[texto, negrito], ...]. Com medir, só devolve a altura, sem desenhar.
+    const rico = (partes, o={})=>{
+      const tam = o.tam||10, x0 = M + (o.recuo||0), larg = o.larg || (LARG - (o.recuo||0));
+      const palavras = [];
+      partes.forEach(([s, b])=>t(s).split(/\s+/).filter(Boolean).forEach(p=>palavras.push({p, b})));
+      const mede = w=>{ fonte(tam, w.b); return doc.getTextWidth(w.p); };
+      fonte(tam, false); const esp = doc.getTextWidth(" ");
+      const linhas = []; let atual = [], usado = 0;
+      palavras.forEach(w=>{ const lw = mede(w); w.w = lw;
+        if(atual.length && usado + esp + lw > larg){ linhas.push(atual); atual = []; usado = 0; }
+        usado += (atual.length ? esp : 0) + lw; atual.push(w); });
+      if(atual.length) linhas.push(atual);
+      if(o.medir) return linhas.length*alt(tam);
+      linhas.forEach((ln, k)=>{
         cabe(alt(tam));
-        if(o.url) doc.textWithLink(l, M+rec, y, {url:o.url}); else doc.text(l, M+rec, y);
+        if(k===0 && o.marcador){ fonte(tam, false); doc.text("•", x0-4, y); }
+        const soma = ln.reduce((s, w)=>s + w.w, 0);
+        const gap = (k < linhas.length-1 && ln.length > 1) ? (larg - soma)/(ln.length - 1) : esp;
+        let x = x0;
+        ln.forEach(w=>{ fonte(tam, w.b, o.cor); doc.text(w.p, x, y); x += w.w + gap; });
         y += alt(tam);
       });
+      return linhas.length*alt(tam);
     };
-    const titulo2 = s=>{ cabe(16); y += 3; texto(s, {tam:16, negrito:true}); y += 2; };
-    const titulo3 = s=>{ cabe(12); y += 2; texto(s, {tam:12, negrito:true}); y += 1; };
-    const marcador = (s, o={})=>{
-      const tam = o.tam||10;
-      fonte(tam, false);
-      const linhas = doc.splitTextToSize(t(s), LARG - 5);
-      cabe(alt(tam));
-      doc.text("•", M+1, y);
-      linhas.forEach(l=>{ cabe(alt(tam)); doc.text(l, M+5, y); y += alt(tam); });
-      y += 1.2;
-    };
-    // fonte curta: o nome do veículo e "Acesse a matéria aqui", clicável, no lugar do endereço inteiro
-    const fonteDe = i=>{
+    // "Título curto. Resto do texto": o título vai em negrito, como no briefing original
+    const comTitulo = s=>{ const m = String(s).match(/^(.{3,90}?[.:])\s+(.+)$/); return m ? [[m[1], true], [m[2], false]] : [[s, false]]; };
+    const titulo2 = s=>{ cabe(18); y += 4; fonte(16, true); doc.text(t(s), M, y); y += 8; };
+    const titulo3 = s=>{ cabe(14); y += 2; fonte(12, true); doc.text(t(s), M, y); y += 6; };
+    const fonteDe = i=>{          // fonte curta: o veículo e "Acesse a matéria aqui", clicável
       cabe(alt(8));
       fonte(8, false, CINZA);
       const pre = t("Fonte: "+(i.fonte||"")+(i.url ? "  ·  " : ""));
       doc.text(pre, M+5, y);
       if(i.url){
-        fonte(8, true, [47,99,176]);
+        fonte(8, true, AZUL);
         const x = M+5+doc.getTextWidth(pre), rot = t("Acesse a matéria aqui");
         doc.textWithLink(rot, x, y, {url:i.url});
-        doc.setDrawColor(47,99,176); doc.setLineWidth(0.2); doc.line(x, y+0.6, x+doc.getTextWidth(rot), y+0.6);
+        doc.setDrawColor(...AZUL); doc.setLineWidth(0.2); doc.line(x, y+0.6, x+doc.getTextWidth(rot), y+0.6);
       }
-      y += alt(8) + 1.5;
+      y += alt(8) + 2.5;
     };
-    const caixa = (cor, cabecalho, linhas)=>{
-      fonte(10, false);
-      const partes = linhas.map(l=>doc.splitTextToSize(t(l), LARG - 14));
-      const h = 10 + partes.reduce((s, p)=>s + p.length*alt(10) + 1.5, 0);
-      cabe(Math.min(h, 120));
+    const caixa = (cor, cabecalho, blocos)=>{      // blocos: listas de partes (cada uma vira um parágrafo)
+      const larg = LARG - 12;
+      const h = 12 + blocos.reduce((s, b)=>s + rico(b.partes, {medir:true, larg, tam:10}) + 2, 0);
+      cabe(Math.min(h, 150));
       doc.setFillColor(...cor); doc.rect(M, y-4, LARG, h, "F");
       doc.setFillColor(...NAVY); doc.rect(M, y-4, 1.6, h, "F");
-      fonte(11, true); doc.text(t(cabecalho), M+5, y+1.5); y += 7;
-      fonte(10, false);
-      partes.forEach(p=>{ p.forEach((l, k)=>{ if(k===0) doc.text("•", M+5, y); doc.text(l, M+9, y); y += alt(10); }); y += 1.5; });
-      y += 4;
+      fonte(11, true); doc.text(t(cabecalho), M+6, y+1.5); y += 8;
+      blocos.forEach(b=>{ rico(b.partes, {recuo: b.marcador ? 10 : 6, larg: b.marcador ? larg-4 : larg, tam:10, marcador:b.marcador}); y += 2; });
+      y += 5;
     };
 
     novaPagina();
     titulo2("1. Sumário executivo");
-    sumario.forEach(p=>marcador(p));
+    sumario.forEach(p=>{ rico(comTitulo(p), {recuo:5, marcador:true}); y += 1.8; });
     titulo2("2. Conclusão e implicações para a Peers");
-    texto("No período, "+itens.length+" movimentos de "+new Set(itens.map(i=>i.concorrente)).size+" concorrentes: "+
-      itens.filter(i=>i.selo==="Ameaça").length+" marcados como ameaça, "+itens.filter(i=>i.selo==="Oportunidade").length+
-      " como oportunidade e "+ma.length+" de M&A (aquisição, fusão ou participação).");
-    y += 4;
-    if(relevantes.length){
-      caixa([220,232,240], "So What para a Peers", relevantes.slice(0, 2).map(i=>i.nome+": "+i.impacto));
-      caixa([242,255,153], "Recomendações de Ação para a Peers", relevantes.slice(0, 6).map(i=>(i.offering || i.tipo)+": "+i.impacto));
-    }
+    conclusao.forEach(p=>{ rico([[p, false]]); y += 2.5; });
+    y += 2;
+    if(soWhat) caixa([220,232,240], "So What para a Peers", [{partes:[[soWhat, false]]}]);
+    if(recs.length) caixa([242,255,153], "Recomendações de Ação para a Peers",
+      recs.map(r=>({partes:[[r.tema+":", true], [r.texto, false]], marcador:true})));
     titulo2("3. M&A no setor de consultoria");
     if(ma.length){
-      texto("Movimentos do período, do mais recente ao mais antigo. Valores apenas quando divulgados.", {tam:8.5, cor:CINZA});
+      rico([["Movimentos do período, do mais recente ao mais antigo. Valores apenas quando divulgados.", false]], {tam:9, cor:CINZA});
       y += 2;
-      ma.forEach(i=>{ texto(br(i.data)+". "+i.nome+". "+(i.fato || i.manchete)); fonteDe(i); });
-    } else texto("Nenhum movimento de M&A no período.");
+      ma.forEach(i=>{ rico([[br(i.data)+".", true], [i.nome+": "+(i.fato || i.manchete), false]]); y += 0.8; fonteDe(i); });
+    } else rico([["Nenhum movimento de M&A no período.", false]]);
     titulo2("4. Concorrentes por categoria");
     porGrupo.forEach(([g, l], k)=>{
       titulo3("4."+(k+1)+" "+g);
       [...new Set(l.map(i=>i.concorrente))].forEach(c=>{
         const doC = l.filter(i=>i.concorrente===c);
-        cabe(14); y += 2;
-        const sigla = t(doC[0].nome).replace(/[^A-Za-z\xC0-\xFF ]/g,"").split(/\s+/).filter(Boolean).slice(0,2).map(p=>p[0]).join("").toUpperCase();
-        doc.setFillColor(...NAVY); doc.setDrawColor(...LIMA); doc.setLineWidth(0.5); doc.circle(M+3.5, y-1.5, 3.5, "FD");
-        fonte(6.5, true, LIMA); doc.text(sigla, M+3.5, y-0.4, {align:"center"});
-        fonte(12, true); doc.text(t(doC[0].nome), M+10, y); y += 6;
-        doC.forEach(i=>{ marcador(br(i.data)+". "+(i.fato || i.manchete)+(i.sinal ? " "+i.sinal : "")); y -= 1.2; fonteDe(i); });
+        cabe(16); y += 2;
+        if(logos[c]){
+          doc.setFillColor(255,255,255); doc.setDrawColor(...LIMA); doc.setLineWidth(0.5); doc.circle(M+3.5, y-1.5, 3.8, "FD");
+          doc.addImage(logos[c], "PNG", M+1, y-4, 5, 5);
+        } else {
+          const sigla = t(doC[0].nome).replace(/[^A-Za-z\xC0-\xFF ]/g,"").split(/\s+/).filter(Boolean).slice(0,2).map(p=>p[0]).join("").toUpperCase();
+          doc.setFillColor(...NAVY); doc.setDrawColor(...LIMA); doc.setLineWidth(0.5); doc.circle(M+3.5, y-1.5, 3.8, "FD");
+          fonte(6.5, true, LIMA); doc.text(sigla, M+3.5, y-0.4, {align:"center"});
+        }
+        fonte(12, true); doc.text(t(doC[0].nome), M+10, y); y += 6.5;
+        doC.forEach(i=>{
+          rico([[br(i.data)+".", true], [(i.fato || i.manchete)+(i.sinal ? " "+i.sinal : ""), false]], {recuo:5, marcador:true});
+          y += 0.8; fonteDe(i);
+        });
       });
     });
     y += 4;
-    texto("Fonte: movimentos coletados pelo Portal de Inteligência Peers (Google Notícias, Brasil e exterior) e analisados por IA. Uso interno.", {tam:8.5, cor:CINZA});
+    rico([["Fonte: movimentos coletados pelo Portal de Inteligência Peers (Google Notícias, Brasil e exterior) e analisados por IA"+
+      (B ? "; síntese da IA de "+br(B.inicio)+" a "+br(B.fim) : "")+". Uso interno.", false]], {tam:8.5, cor:CINZA});
 
     const total = doc.getNumberOfPages();
     for(let p = 2; p <= total; p++){ doc.setPage(p); fonte(8, false, CINZA); doc.text("Página "+p, W/2, H-8, {align:"center"}); }

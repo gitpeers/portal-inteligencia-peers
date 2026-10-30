@@ -32,6 +32,37 @@ LIMITE_FINANCAS, LIMITE_INDICADORES, LIMITE_APROFUNDAMENTO = 480, 380, 420
 CAMPOS_CONCORRENCIA = {"fato": (300, False), "sinal": (240, False), "impacto": (300, False)}
 SELOS = ("Ameaça", "Oportunidade", "Monitorar")
 LEITURA_SEMANA = (3, 5, 300)   # mínimo e máximo de pontos, caracteres por ponto
+# síntese do Briefing de Concorrentes: listas (mínimo, máximo, caracteres por texto) e textos únicos (caracteres)
+BRIEFING_LISTAS = {"sumario": (3, 6, 320), "conclusao": (1, 2, 650)}
+BRIEFING_TEXTOS = {"soWhat": 750}
+BRIEFING_RECS = (3, 5, 60, 380)    # recomendações: mínimo, máximo, caracteres do tema e do texto
+
+
+def conferir_briefing(erros, pend, resp):
+    b = resp.get("concorrenciaBriefing")
+    if b is None:
+        return
+    if "concorrenciaBriefing" not in pend:
+        erros.append("concorrenciaBriefing: a síntese do briefing não está nas pendências de hoje"); return
+    campos = set(BRIEFING_LISTAS) | set(BRIEFING_TEXTOS) | {"recomendacoes"}
+    if not isinstance(b, dict) or set(b) != campos:
+        erros.append(f"concorrenciaBriefing: os campos são exatamente {sorted(campos)}"); return
+    for campo, (minimo, maximo, limite) in BRIEFING_LISTAS.items():
+        if not isinstance(b[campo], list) or not minimo <= len(b[campo]) <= maximo:
+            erros.append(f"concorrenciaBriefing.{campo}: uma lista de {minimo} a {maximo} textos"); continue
+        for k, txt in enumerate(b[campo]):
+            conferir_texto(erros, f"concorrenciaBriefing.{campo}[{k}]", txt, limite, False)
+    for campo, limite in BRIEFING_TEXTOS.items():
+        conferir_texto(erros, f"concorrenciaBriefing.{campo}", b[campo], limite, False)
+    minimo, maximo, lim_tema, lim_texto = BRIEFING_RECS
+    recs = b["recomendacoes"]
+    if not isinstance(recs, list) or not minimo <= len(recs) <= maximo:
+        erros.append(f"concorrenciaBriefing.recomendacoes: uma lista de {minimo} a {maximo} itens"); return
+    for k, r in enumerate(recs):
+        if not isinstance(r, dict) or set(r) != {"tema", "texto"}:
+            erros.append(f"concorrenciaBriefing.recomendacoes[{k}]: os campos são tema e texto"); continue
+        conferir_texto(erros, f"concorrenciaBriefing.recomendacoes[{k}].tema", r["tema"], lim_tema, False)
+        conferir_texto(erros, f"concorrenciaBriefing.recomendacoes[{k}].texto", r["texto"], lim_texto, False)
 # So what dos indicadores: quatro textos, as notícias citadas no "por que" e a frase fixa quando não há causa na fonte
 CAMPOS_SOWHAT = {"oQue": 260, "porQue": 280, "impacto": 320, "oportunidade": 260}
 SEM_CAUSA = "Causa não identificada nas fontes do portal."
@@ -277,6 +308,7 @@ def main():
             for k, ponto in enumerate(pontos):
                 conferir_texto(erros, f"concorrenciaSemana[{k}]", ponto, limite, False)
     conferir_sowhat(erros, pend, resp)
+    conferir_briefing(erros, pend, resp)
     if erros:
         log("Respostas com problema (nada foi gravado):")
         for e in erros:
@@ -311,6 +343,12 @@ def main():
         s_ = pend["concorrenciaSemana"]
         analises["concorrencia"] = {"pontos": [p.strip() for p in resp["concorrenciaSemana"]],
                                     "inicio": s_["inicio"], "fim": s_["fim"], "geradoEm": hoje_iso()}
+    if resp.get("concorrenciaBriefing"):
+        b, p_ = resp["concorrenciaBriefing"], pend["concorrenciaBriefing"]
+        analises["concorrenciaBriefing"] = {
+            "sumario": [s.strip() for s in b["sumario"]], "conclusao": [s.strip() for s in b["conclusao"]],
+            "soWhat": b["soWhat"].strip(), "recomendacoes": [{k: r[k].strip() for k in ("tema", "texto")} for r in b["recomendacoes"]],
+            "inicio": p_["inicio"], "fim": p_["fim"], "ids": [i["id"] for i in p_["itens"]], "geradoEm": hoje_iso()}
     for chave, c in resp.get("sowhat", {}).items():
         item = pend["sowhat"][chave]
         noticias = {n["id"]: n for n in item["noticias"]}
@@ -326,6 +364,7 @@ def main():
     contagem["concorrencia"] = gravar_concorrencia(resp)
     contagem["sowhat"] = len(resp.get("sowhat", {}))
     contagem["concorrenciaSemana"] = 1 if resp.get("concorrenciaSemana") else 0
+    contagem["concorrenciaBriefing"] = 1 if resp.get("concorrenciaBriefing") else 0
     contagem["financas"] = len(resp.get("financas", {}))
     contagem["indicadores"] = len(resp.get("indicadores", {}))
     contagem["aprofundamento"] = len(resp.get("aprofundamento", {}))
