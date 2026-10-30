@@ -2897,7 +2897,75 @@ function renderConcorrencia(){
   '</div>';
   if(e.visao!=="feed") corpo = '<div class="card">' + filtros + corpo + '</div>';
 
-  return cabeca + avisos + leitura + kpis + abas + corpo;
+  const botaoBriefing = '<div style="margin:0 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">' +
+    '<button type="button" class="btn-sec" onclick="briefingConcorrentes(+document.getElementById(\'diasBriefConc\').value)" ' +
+    'style="border:1px solid var(--navy);background:var(--navy);color:#fff;border-radius:var(--r-sm);padding:7px 14px;font-weight:600;cursor:pointer">' +
+    'Gerar briefing de concorrentes (PDF)</button>' +
+    '<span class="flt-label">dos últimos</span><input id="diasBriefConc" type="number" min="1" max="30" value="15" ' +
+    'style="width:62px;border:1px solid var(--grey-strong);border-radius:var(--r-sm);padding:6px 8px;font-family:inherit"> <span class="flt-label">dias (até 30)</span>' +
+    '<span class="cardnote" style="margin:0">Uso interno.</span></div>';
+  return cabeca + botaoBriefing + avisos + leitura + kpis + abas + corpo;
+}
+
+// Briefing Quinzenal de Concorrentes: documento no formato do PDF de inteligência competitiva (capa, sumário, So What,
+// recomendações, M&A e concorrentes por categoria), dos movimentos dos últimos 15 dias. Abre numa janela e vai para a
+// impressão ("Salvar como PDF"). O sumário é a Leitura da semana da IA; as recomendações são os impactos das ameaças
+// e oportunidades. Pendente: uma síntese quinzenal própria na rotina de IA (Backend/ia/ROTINA.md).
+function briefingConcorrentes(dias){
+  const DIAS = Math.min(30, Math.max(1, Math.round(dias) || 15)), hoje = new Date();   // a pessoa escolhe de 1 a 30 dias
+  const nomeEd = DIAS===7 ? "Semanal" : DIAS===15 ? "Quinzenal" : DIAS===30 ? "Mensal" : "";
+  const ini = new Date(hoje.getTime() - DIAS*864e5);
+  const iso = d=>d.toISOString().slice(0,10), br = s=>formatarData(s);
+  const itens = DADOS.concorrencia.filter(i=>diasEntre(i.data) >= -DIAS).sort((a,b)=>b.data.localeCompare(a.data));
+  if(!itens.length){ alert("Não há movimentos de concorrentes nos últimos "+DIAS+" dias."); return; }
+  const e = s=>esc(s||"");
+  const fonte = i=>'<div class="fonte">Fonte: '+e(i.fonte)+(i.url ? ' — <a href="'+e(i.url)+'">'+e(i.url)+'</a>' : '')+'</div>';
+  const lw = DADOS.analises.concorrencia;
+  const sumario = lw && lw.pontos && lw.pontos.length ? lw.pontos
+    : itens.slice(0, 5).map(i=>i.nome+': '+(i.fato || i.manchete));
+  const relevantes = itens.filter(i=>(i.selo==="Ameaça" || i.selo==="Oportunidade") && i.impacto);
+  const ma = itens.filter(i=>/aquisi|fus|participa/i.test(i.tipo));
+  const ordemGrupos = [...new Set(DADOS.concorrentes.map(c=>c.grupo))];
+  const porGrupo = ordemGrupos.map(g=>[g, itens.filter(i=>i.grupo===g)]).filter(([, l])=>l.length);
+  const sigla = n=>String(n).replace(/[^A-Za-zÀ-ú ]/g,"").split(/\s+/).filter(Boolean).slice(0,2).map(p=>p[0]).join("").toUpperCase();
+  const blocoItem = i=>'<li><b>'+br(i.data)+'.</b> '+e(i.fato || i.manchete)+(i.sinal ? ' <span class="sinal">'+e(i.sinal)+'</span>' : '')+fonte(i)+'</li>';
+  const html = '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Briefing '+(nomeEd ? nomeEd+' ' : '')+'de Concorrentes '+iso(hoje)+'</title><style>' +
+    '@page{size:A4;margin:16mm 16mm 18mm}*{box-sizing:border-box}body{font-family:Arial,Helvetica,sans-serif;color:#0b1f3a;font-size:10.5pt;line-height:1.45;margin:0}' +
+    '.capa{background:#001233;color:#fff;height:265mm;position:relative;padding:40mm 14mm 0;border-top:12mm solid #e4ff00;border-bottom:12mm solid #e4ff00;page-break-after:always;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+    '.capa .logo{color:#e4ff00;font-size:34pt;font-weight:800;letter-spacing:.5px}.capa .sub{font-size:9pt;margin-top:2px}' +
+    '.capa h1{font-size:30pt;margin:95mm 0 6mm;line-height:1.2}.capa .barra{width:40mm;height:2mm;background:#e4ff00;margin-bottom:8mm}.capa .per{font-size:12pt;color:#dfe6f0}' +
+    '.capa .rod{position:absolute;bottom:8mm;left:14mm;font-size:8.5pt;color:#c8d2e0}' +
+    'h2{font-size:17pt;margin:18px 0 8px}h3{font-size:12pt;margin:16px 0 6px}h4{font-size:12pt;margin:14px 0 4px;display:flex;align-items:center;gap:8px}' +
+    '.ic{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#001233;color:#e4ff00;font-size:7pt;font-weight:700;border:1.5px solid #e4ff00;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+    'ul{padding-left:18px;margin:4px 0}li{margin:0 0 7px}.fonte{font-size:7.5pt;color:#7a8597;margin-top:2px;word-break:break-all}.fonte a{color:#7a8597}.sinal{color:#4a5462}' +
+    '.sowhat{background:#dce8f0;border-left:5px solid #001233;padding:10px 14px;margin:12px 0;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+    '.recs{background:#f2ff99;border-left:5px solid #001233;padding:10px 14px;margin:12px 0;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+    '.sowhat b.t,.recs b.t{display:block;font-size:11pt;margin-bottom:4px}.topo{display:flex;justify-content:space-between;background:#001233;color:#fff;padding:8px 12px;font-size:8.5pt;margin-bottom:6px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.topo b{color:#e4ff00;font-size:12pt}' +
+    '.nota{font-size:8.5pt;color:#7a8597}</style></head><body>' +
+    '<div class="capa"><div class="logo">PEERS</div><div class="sub">Consulting + Technology</div>' +
+      '<h1>Briefing '+(nomeEd ? nomeEd+'<br>' : '<br>')+'de Concorrentes</h1><div class="barra"></div>' +
+      '<div class="per">Período de referência: '+br(iso(ini))+' a '+br(iso(hoje))+'</div>' +
+      '<div class="rod">Inteligência competitiva | Edição de '+br(iso(hoje))+(USUARIO_EMAIL ? ' | Contato: '+e(USUARIO_EMAIL) : '')+'</div></div>' +
+    '<div class="topo"><b>PEERS</b><span>Briefing '+(nomeEd ? nomeEd+' ' : '')+'de Concorrentes | '+br(iso(hoje))+'</span></div>' +
+    '<h2>1. Sumário executivo</h2><ul>'+sumario.map(p=>'<li>'+e(p)+'</li>').join("")+'</ul>' +
+    '<h2>2. Conclusão e implicações para a Peers</h2>' +
+      '<p>No período, '+itens.length+' movimentos de '+new Set(itens.map(i=>i.concorrente)).size+' concorrentes: ' +
+        itens.filter(i=>i.selo==="Ameaça").length+' marcados como ameaça, '+itens.filter(i=>i.selo==="Oportunidade").length+' como oportunidade e ' +
+        ma.length+' de M&A (aquisição, fusão ou participação).</p>' +
+      (relevantes.length ? '<div class="sowhat"><b class="t">So What para a Peers</b>'+relevantes.slice(0, 2).map(i=>'<p style="margin:4px 0"><b>'+e(i.nome)+':</b> '+e(i.impacto)+'</p>').join("")+'</div>' +
+        '<div class="recs"><b class="t">Recomendações de Ação para a Peers</b><ul>'+relevantes.slice(0, 6).map(i=>'<li><b>'+e(i.offering || i.tipo)+':</b> '+e(i.impacto)+'</li>').join("")+'</ul></div>' : '') +
+    '<h2>3. M&A no setor de consultoria</h2>' +
+      (ma.length ? '<p class="nota">Movimentos do período, do mais recente ao mais antigo. Valores apenas quando divulgados.</p><ul style="list-style:none;padding:0">'+ma.map(i=>'<li><b>'+br(i.data)+'. '+e(i.nome)+'.</b> '+e(i.fato || i.manchete)+fonte(i)+'</li>').join("")+'</ul>'
+                 : '<p>Nenhum movimento de M&A no período.</p>') +
+    '<h2>4. Concorrentes por categoria</h2>' +
+      porGrupo.map(([g, l], k)=>'<h3>4.'+(k+1)+' '+e(g)+'</h3>' +
+        [...new Set(l.map(i=>i.concorrente))].map(c=>{ const doC = l.filter(i=>i.concorrente===c);
+          return '<h4><span class="ic">'+e(sigla(doC[0].nome))+'</span>'+e(doC[0].nome)+'</h4><ul>'+doC.map(blocoItem).join("")+'</ul>'; }).join("")).join("") +
+    '<p class="nota" style="margin-top:18px">Fonte: movimentos coletados pelo Portal de Inteligência Peers (Google Notícias, Brasil e exterior) e analisados por IA. Uso interno.</p>' +
+    '<script>window.onload=function(){setTimeout(function(){window.print()},400)}<\/script></body></html>';
+  const w = window.open("", "_blank");
+  if(!w){ alert("O navegador bloqueou a janela do briefing: permita pop-ups para este site."); return; }
+  w.document.open(); w.document.write(html); w.document.close();
 }
 
 function itemConcorrencia(i){
