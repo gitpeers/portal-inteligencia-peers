@@ -168,7 +168,10 @@ aparece. Para dar ou tirar acesso: Supabase > Table Editor > acesso_comercial (e
 `marketing` vê a visão geral e pode "ver como" qualquer executivo; o perfil `executivo` vê a visão geral e só a
 própria carteira (o executivo cujo nome bate com o e-mail). Na lista de empresas, a caixinha ao lado do nome marca a
 empresa para a planilha de relacionamentos: "Baixar planilha (Excel)" gera no navegador (ExcelJS) o mesmo formato da
-planilha feita para a BytePlus (visão geral com quem procurar primeiro, contatos com o LinkedIn e premissas). Vai para o portal
+planilha feita para a BytePlus (visão geral com quem procurar primeiro, contatos com o LinkedIn e premissas). A lista
+mostra as empresas-alvo e as de fora do alvo com porte relevante (coluna `porte_relevante` da base: receita a partir de
+R$ 300 mi ou 500 funcionários, pelo Valor 1000, pela CVM ou por estimativa, ver a aba `porte_empresas`); as menores e
+as sem dado de porte só aparecem na busca. Vai para o portal
 só executivo, lead (nome, cargo, senioridade, LinkedIn), empresa e indústria: sem e-mail, rede interna, classificações
 comerciais nem funil. Para publicar a base mais recente (base_conexoes_peers_v<N>.xlsx, na pasta Extração de Leads), na
 pasta Backend, com as duas variáveis definidas: `python publicar_conexoes.py "<pasta Extração de Leads>"`.

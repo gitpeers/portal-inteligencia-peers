@@ -1149,7 +1149,8 @@ function prepararConexoes(c, perfil){
     const n = " "+normConx(nome)+" ";
     return {nome, nivel, vertical, voce: partesEmail.length>1 && partesEmail.every(p=>n.includes(" "+p+" "))};
   });
-  const empresas = c.empresas.map(([nome, grupo, industria], i)=>({i, nome, grupo:grupo||"", industria, leads:[], bando:0, execs:new Set()}));
+  // rel: 1 = empresa-alvo ou de porte relevante (aparece na lista); 0 = menor ou sem dado (só aparece na busca)
+  const empresas = c.empresas.map(([nome, grupo, industria, rel], i)=>({i, nome, grupo:grupo||"", industria, rel:rel!==0, leads:[], bando:0, execs:new Set()}));
   c.leads.forEach(([nome, cargo, sen, url, ei, ex])=>{
     const e = empresas[ei];
     e.leads.push({nome, cargo, sen, url, ex});
@@ -1173,7 +1174,7 @@ function podeVerComo(v){
 // Empresas do Mapa citadas num texto (notícia) ou com o nome igual ao de um player (exato).
 function empresasNoTexto(texto, exato){
   const t = " "+normConx(texto)+" ", n = normConx(texto);
-  return CONEXOES.empresas.filter(e=>(exato && n===e.chaveExata) || e.chaves.some(k=>t.includes(" "+k+" ")));
+  return CONEXOES.empresas.filter(e=>e.rel && ((exato && n===e.chaveExata) || e.chaves.some(k=>t.includes(" "+k+" "))));
 }
 
 function execsMaisConectados(e, n){
@@ -1216,6 +1217,7 @@ function renderConexoes(){
   const como = estadoConx.comoExec==="" ? null : +estadoConx.comoExec;
   const minha = como!==null && como===c.proprio;
   const lista = c.empresas
+    .filter(e=>e.rel || b)              // as menores só aparecem quando alguém busca pelo nome
     .filter(e=>como===null || e.execs.has(como))
     .filter(e=>!estado.industrias.size || estado.industrias.has(e.industria))
     .filter(e=>estadoConx.industria==="todas" || e.industria===estadoConx.industria)
@@ -1223,6 +1225,7 @@ function renderConexoes(){
     .map(e=>({e, f:fatosDaEmpresa(e).length}))
     .sort((x,y)=>(y.f>0)-(x.f>0) || y.e.bando-x.e.bando || y.e.leads.length-x.e.leads.length || x.e.nome.localeCompare(y.e.nome));
   estadoConx.naLista = lista.map(x=>x.e.i);
+  const ocultas = c.empresas.filter(e=>!e.rel).length;
   const inds = [...new Set(c.empresas.map(e=>e.industria))].sort();
   const leads = lista.reduce((s,x)=>s+x.e.leads.length, 0), bando = lista.reduce((s,x)=>s+x.e.bando, 0);
   const execs = new Set(); lista.forEach(x=>x.e.execs.forEach(i=>execs.add(i)));
@@ -1253,7 +1256,8 @@ function renderConexoes(){
     '<input id="conxBusca" type="search" placeholder="Buscar empresa ou grupo" value="'+esc(estadoConx.busca)+'">' +
     '<span class="flt-label">Indústria</span><select class="flt" id="conxInd"><option value="todas">Todas</option>' +
       inds.map(i=>'<option value="'+esc(i)+'" '+(estadoConx.industria===i?'selected':'')+'>'+esc(i)+'</option>').join("") + '</select>' +
-    '<span class="cardnote" style="margin:0">Mapa de Conexões '+esc(c.versao)+' · '+esc(c.geradoEm)+'</span>' +
+    '<span class="cardnote" style="margin:0">Mapa de Conexões '+esc(c.versao)+' · '+esc(c.geradoEm) +
+      (ocultas && !b ? ' · '+ocultas.toLocaleString("pt-BR")+' empresas menores (abaixo de R$ 300 mi e 500 funcionários) ou sem dado de porte aparecem só na busca' : '')+'</span>' +
   '</div>' +
   '<div class="conx-sel" id="conxSel">'+barraSelecao()+'</div>' +
   (como!==null ? carteiraConx(lista, como, meus, soEle) :
