@@ -42,13 +42,25 @@ button,input,select,textarea{font-family:inherit}
 .header-acoes{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .peers-logo{display:block;line-height:0}
 .peers-logo img{display:block;height:22px;width:auto}
-.header-badge{background:var(--neon);color:var(--navy);font-weight:700;font-size:.68rem;letter-spacing:.12em;
-  padding:5px 14px;border-radius:var(--pill)}
-.header-hint{color:rgba(255,255,255,.6);font-size:.73rem}
-.header-user{color:rgba(255,255,255,.72);font-size:.73rem;display:flex;gap:10px;align-items:center}
-.header-user button{background:none;border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:var(--r-sm);
-  padding:4px 11px;font-size:.7rem;font-weight:600;cursor:pointer;transition:var(--dur) var(--ease)}
-.header-user button:hover{border-color:var(--neon);color:var(--neon)}
+/* data da edição discreta; o verde-limão fica só no botão de briefing */
+.header-badge{color:rgba(255,255,255,.7);font-size:.74rem;letter-spacing:.04em;white-space:nowrap}
+.header-badge b{color:#fff;font-weight:600}
+/* menus do topo: "Gerar briefing" e a conta (círculo com as iniciais) */
+.menu-topo{position:relative}
+.btn-brief{background:var(--neon);color:var(--navy);border:0;border-radius:var(--r-sm);padding:7px 14px;font-weight:700;
+  font-size:.76rem;cursor:pointer;white-space:nowrap;font-family:inherit;transition:var(--dur) var(--ease)}
+.btn-brief:hover{filter:brightness(.93)}
+.avatar-topo{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);
+  color:#fff;font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit;padding:0}
+.avatar-topo:hover{border-color:var(--neon)}
+.menu-topo-lista{display:none;position:absolute;right:0;top:calc(100% + 8px);background:#fff;border-radius:10px;
+  box-shadow:0 10px 30px rgba(1,19,52,.25);min-width:250px;padding:6px;z-index:200}
+.menu-topo.open .menu-topo-lista{display:block}
+.menu-topo-lista button{display:block;width:100%;text-align:left;background:none;border:0;border-radius:7px;padding:9px 12px;
+  font-size:.8rem;color:var(--navy);cursor:pointer;font-family:inherit}
+.menu-topo-lista button:hover,.menu-topo-lista button:focus-visible{background:#eef4f7}
+.menu-topo-lista small{display:block;color:#677185;font-size:.7rem;margin-top:2px}
+.menu-topo-email{padding:9px 12px 8px;font-size:.74rem;color:#677185;border-bottom:1px solid var(--grey-border);margin-bottom:4px;word-break:break-all}
 .header :focus-visible{box-shadow:var(--focus-lime)}
 
 /* ---- LOGIN (enquanto não há sessão, só a tela de login aparece) ---- */
@@ -309,8 +321,6 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 .barra-com .btn-sec{border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:var(--r-sm);padding:6px 13px;font-size:.74rem;font-weight:600;cursor:pointer;transition:var(--dur) var(--ease)}
 .barra-com .btn-sec:hover{background:var(--navy);color:#fff}
 .tag-cli{display:inline-block;background:var(--navy);color:var(--neon);font-size:.6rem;font-weight:700;letter-spacing:.06em;border-radius:var(--pill);padding:1px 8px;margin-left:6px;vertical-align:middle}
-#btnConta,#btnConc{background:transparent;border:1px solid var(--neon);color:var(--neon);border-radius:var(--r-sm);padding:6px 14px;font-size:.74rem;font-weight:600;cursor:pointer;transition:var(--dur) var(--ease)}
-#btnConta:hover,#btnConc:hover{background:var(--neon);color:var(--navy)}
 .box-com{background:var(--blue-soft);border:1px solid #cbdaee;padding:11px 14px;border-radius:var(--r-sm);
   font-size:.8rem;line-height:1.55;color:var(--text2);margin-bottom:11px}
 .rcard-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
@@ -555,13 +565,24 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 <div class="header">
   <div class="header-marca">
     <div class="peers-logo"><img src="data:image/png;base64,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" alt="Peers Consulting + Technology" width="200" height="22"></div><span class="sep"></span>
-    <div><h1>Portal de Inteligência Peers</h1><p id="headerSub"></p></div>
+    <div><h1>Portal de Inteligência Peers</h1></div>
   </div>
   <div class="header-acoes">
-    <div class="header-badge">EDIÇÃO DE 05/10/2026</div>
-    <button id="btnConc" onclick="irBriefingConcorrentes()" title="PDF com os movimentos dos concorrentes do período escolhido">Briefing de concorrentes</button>
-    <button id="btnConta" onclick="abrirConta()" title="Marque itens em qualquer seção e gere o briefing">Briefing de conta</button>
-    <div class="header-user"><span id="usuarioEmail"></span><button onclick="sair()">Sair</button></div>
+    <span class="header-badge">Edição <b>05/10/2026</b></span>
+    <div class="menu-topo">
+      <button type="button" id="btnBriefTopo" class="btn-brief" aria-haspopup="true" aria-expanded="false">Gerar briefing <span aria-hidden="true">▾</span></button>
+      <div class="menu-topo-lista" role="menu">
+        <button type="button" role="menuitem" onclick="fecharMenusTopo(); abrirConta()">Briefing de conta<small>Marque itens em qualquer seção e gere o briefing</small></button>
+        <button type="button" role="menuitem" onclick="fecharMenusTopo(); irBriefingConcorrentes()">Briefing de concorrentes<small>PDF com os movimentos do período escolhido</small></button>
+      </div>
+    </div>
+    <div class="menu-topo">
+      <button type="button" id="btnUsuario" class="avatar-topo" aria-haspopup="true" aria-expanded="false" title="Sua conta"></button>
+      <div class="menu-topo-lista" role="menu">
+        <div class="menu-topo-email" id="usuarioEmail"></div>
+        <button type="button" role="menuitem" onclick="sair()">Sair</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -736,6 +757,7 @@ function abrirPortal(sessao){
   portalAberto = true;
   USUARIO_EMAIL = sessao.user.email || "";
   document.getElementById("usuarioEmail").textContent = sessao.user.email;
+  ligarMenusTopo(sessao.user.email || "");
   document.body.classList.remove("bloqueado");
   carregarDados().then(init).catch(e=>{
     document.getElementById("conteudo").innerHTML =
@@ -820,7 +842,7 @@ async function carregarDados(){
     concorrentes
   };
   const dataBr = formatarData(HOJE);
-  document.querySelector(".header-badge").textContent = "EDIÇÃO DE " + dataBr;
+  document.querySelector(".header-badge").innerHTML = "Edição <b>" + esc(dataBr) + "</b>";
   // Visão comercial (Mapa de Conexões): só para a lista de acesso (Supabase/comercial.sql). Para os demais, a
   // consulta volta vazia e a aba e os quadros não aparecem.
   CONEXOES = await carregarConexoes();
@@ -1729,8 +1751,6 @@ document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !document.getEl
 function renderizar(){
   sincronizarFiltros();
   guardarLugar();
-  document.getElementById("headerSub").innerHTML =
-    'Recorte atual: <b style="color:var(--neon)">' + esc(rotuloRecorte()) + '</b>';
   document.getElementById("chipRestrito").innerHTML =
     estado.modoVisualizacao==="comercial"
       ? '<span class="chip-restrito">Área comercial restrita ativa</span>' : '';
@@ -2944,6 +2964,27 @@ function renderConcorrencia(){
 // Briefing de Concorrentes: PDF no formato do briefing de inteligência competitiva (capa, sumário, So What,
 // recomendações, M&A e concorrentes por categoria), dos movimentos dos últimos N dias (1 a 30). O sumário é a Leitura da semana da IA; as recomendações são os impactos das ameaças
 // e oportunidades. Pendente: uma síntese quinzenal própria na rotina de IA (Backend/ia/ROTINA.md).
+// Menus do topo ("Gerar briefing" e a conta): abrem no clique e fecham ao clicar fora ou com Esc.
+// O círculo da conta mostra as iniciais do e-mail (kayo.moreira → KM).
+function fecharMenusTopo(){
+  document.querySelectorAll(".menu-topo.open").forEach(m=>{ m.classList.remove("open"); m.querySelector("[aria-expanded]").setAttribute("aria-expanded","false"); });
+}
+function ligarMenusTopo(email){
+  const partes = String(email).split("@")[0].split(/[._-]+/).filter(Boolean);
+  document.getElementById("btnUsuario").textContent = ((partes[0]||"?")[0] + (partes.length>1 ? partes[partes.length-1][0] : "")).toUpperCase();
+  document.querySelectorAll(".menu-topo").forEach(m=>{
+    const botao = m.querySelector("[aria-expanded]");
+    botao.addEventListener("click", ev=>{
+      ev.stopPropagation();
+      const abrir = !m.classList.contains("open");
+      fecharMenusTopo();
+      if(abrir){ m.classList.add("open"); botao.setAttribute("aria-expanded","true"); }
+    });
+  });
+  document.addEventListener("click", ev=>{ if(!ev.target.closest(".menu-topo")) fecharMenusTopo(); });
+  document.addEventListener("keydown", ev=>{ if(ev.key==="Escape") fecharMenusTopo(); });
+}
+
 // Atalho do cabeçalho: abre a seção Concorrência com o campo de período do briefing em destaque
 function irBriefingConcorrentes(){
   estado.aba = "concorrencia"; montarAbas(); renderizar();
