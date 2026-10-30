@@ -321,6 +321,7 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 .barra-com .btn-sec{border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:var(--r-sm);padding:6px 13px;font-size:.74rem;font-weight:600;cursor:pointer;transition:var(--dur) var(--ease)}
 .barra-com .btn-sec:hover{background:var(--navy);color:#fff}
 .tag-cli{display:inline-block;background:var(--navy);color:var(--neon);font-size:.6rem;font-weight:700;letter-spacing:.06em;border-radius:var(--pill);padding:1px 8px;margin-left:6px;vertical-align:middle}
+.tag-cli.ex{background:var(--blue-soft);color:var(--navy);border:1px solid #cbdaee}
 .box-com{background:var(--blue-soft);border:1px solid #cbdaee;padding:11px 14px;border-radius:var(--r-sm);
   font-size:.8rem;line-height:1.55;color:var(--text2);margin-bottom:11px}
 .rcard-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
@@ -1147,7 +1148,7 @@ function montarAbas(){
    ========================================================= */
 let USUARIO_EMAIL = "";
 // comoExec: "ver como" um executivo; sel: empresas marcadas para a planilha (continuam marcadas ao mudar a busca)
-const estadoConx = {busca:"", industria:"todas", aberta:null, limite:60, comoExec:"", sel:new Set(), naLista:[]};
+const estadoConx = {busca:"", industria:"todas", cliente:"todas", aberta:null, limite:60, comoExec:"", sel:new Set(), naLista:[]};
 // nomes de empresa que também são palavras comuns: não são procurados no texto das notícias (só no nome exato do player)
 const PALAVRAS_COMUNS = new Set(["vivo","claro","azul","gol","via","elo","oi","tim","ultra","nova","sim","bem","rede",
   "natural","alpha","porto","sul","america","energia","saude","grupo","banco","digital","mercado","capital","global"]);
@@ -1163,6 +1164,9 @@ async function carregarConexoes(){
     const {data, error} = await sb.from("conexoes").select("conteudo").eq("nome", "mapa").maybeSingle();
     if(error || !data || !data.conteudo) return null;     // sem acesso, ou a tabela ainda não existe
     const {data: acesso} = await sb.from("acesso_comercial").select("perfil").maybeSingle();   // só a própria linha
+    // a base de clientes da Peers (Backend/publicar_clientes.py) fica na mesma tabela protegida
+    const {data: cli} = await sb.from("conexoes").select("conteudo").eq("nome", "clientes").maybeSingle();
+    if(cli && cli.conteudo) carregarClientesPeers(cli.conteudo);
     return prepararConexoes(data.conteudo, (acesso && acesso.perfil) || "marketing");
   }catch(e){ return null; }
 }
@@ -1189,6 +1193,13 @@ function prepararConexoes(c, perfil){
     e.chaves = [k, semGrupo].filter((x, j, a)=>a.indexOf(x)===j && x.length>=4 && !PALAVRAS_COMUNS.has(x));
   });
   const proprio = execs.findIndex(x=>x.voce);
+  // cliente da Peers: nome igual ao da base de clientes, ou começando por ele ("Itaú Unibanco" é o cliente "Itaú")
+  const porChave = new Map(CLIENTES.peers.map(x=>[x.chave, x]));
+  const longos = CLIENTES.peers.filter(x=>x.chave.length>=5 && !PALAVRAS_COMUNS.has(x.chave));
+  empresas.forEach(e=>{
+    const k = chaveNome(e.nome);
+    e.cli = porChave.get(k) || (e.grupo && porChave.get(chaveNome(e.grupo))) || longos.find(x=>k.startsWith(x.chave+" ")) || null;
+  });
   return {versao:c.versao, geradoEm:c.geradoEm, execs, empresas, fatos:null, perfil, proprio};
 }
 
@@ -1247,6 +1258,7 @@ function renderConexoes(){
     .filter(e=>como===null || e.execs.has(como))
     .filter(e=>!estado.industrias.size || estado.industrias.has(e.industria))
     .filter(e=>estadoConx.industria==="todas" || e.industria===estadoConx.industria)
+    .filter(e=>estadoConx.cliente==="todas" || (estadoConx.cliente==="ativos" ? e.cli && e.cli.ativo : estadoConx.cliente==="clientes" ? !!e.cli : !e.cli))
     .filter(e=>!b || normConx(e.nome+" "+e.grupo).includes(b) || normConx(e.nome+" "+e.grupo).replace(/ /g,"").includes(b.replace(/ /g,"")))   // "loreal" acha L'Oréal
     .map(e=>({e, f:fatosDaEmpresa(e).length}))
     .sort((x,y)=>(y.f>0)-(x.f>0) || y.e.bando-x.e.bando || y.e.leads.length-x.e.leads.length || x.e.nome.localeCompare(y.e.nome));
@@ -1282,6 +1294,9 @@ function renderConexoes(){
     '<input id="conxBusca" type="search" placeholder="Buscar empresa ou grupo" value="'+esc(estadoConx.busca)+'">' +
     '<span class="flt-label">Indústria</span><select class="flt" id="conxInd"><option value="todas">Todas</option>' +
       inds.map(i=>'<option value="'+esc(i)+'" '+(estadoConx.industria===i?'selected':'')+'>'+esc(i)+'</option>').join("") + '</select>' +
+    (CLIENTES.peers.length ? '<span class="flt-label">Cliente Peers</span><select class="flt" id="conxCli">' +
+      [["todas","Todas"],["ativos","Só clientes ativos"],["clientes","Clientes e ex-clientes"],["nao","Ainda não clientes"]]
+        .map(([v, t])=>'<option value="'+v+'" '+(estadoConx.cliente===v?'selected':'')+'>'+t+'</option>').join("") + '</select>' : '') +
     '<span class="cardnote" style="margin:0">Mapa de Conexões '+esc(c.versao)+' · '+esc(c.geradoEm) +
       (ocultas && !b ? ' · '+ocultas.toLocaleString("pt-BR")+' empresas menores (abaixo de R$ 300 mi e 500 funcionários) ou sem dado de porte aparecem só na busca' : '')+'</span>' +
   '</div>' +
@@ -1290,7 +1305,7 @@ function renderConexoes(){
   '<div class="conx-cab"><span>Empresa</span><span>Indústria</span><span>Leads</span><span>Em bando</span><span>No portal</span></div>' +
   (lista.length ? lista.slice(0, estadoConx.limite).map(x=>
     '<details class="conx-emp" data-conx="'+x.e.i+'"><summary>' +
-      '<span>'+caixaSel(x.e.i)+'<b>'+esc(x.e.nome)+'</b>'+(x.e.grupo && normConx(x.e.grupo)!==x.e.chaveExata ? '<span class="subnome">'+esc(x.e.grupo)+'</span>' : '')+'</span>' +
+      '<span>'+caixaSel(x.e.i)+'<b>'+esc(x.e.nome)+'</b>'+(x.e.cli ? tagDoCliente(x.e.cli) : '')+(x.e.grupo && normConx(x.e.grupo)!==x.e.chaveExata ? '<span class="subnome">'+esc(x.e.grupo)+'</span>' : '')+'</span>' +
       '<span>'+esc(x.e.industria)+'</span><span>'+x.e.leads.length+'</span>' +
       '<span>'+(x.e.bando ? '<span class="tag-bando">'+x.e.bando+'</span>' : '·')+'</span>' +
       '<span>'+(x.f ? x.f+(x.f===1?' fato':' fatos') : '·')+'</span>' +
@@ -1312,7 +1327,7 @@ function carteiraConx(lista, como, meus, soEle){
     ["d","Único elo da Peers",soEle, soEle ? esc(unicos.slice(0, 3).join(", "))+(unicos.length>3?' e outras':'') : "sempre há um colega junto"]];
   const cartao = x=>{
     const e = x.e, f = fatosDaEmpresa(e)[0], dele = e.leads.filter(l=>l.ex.includes(como)), colegas = colegasDe(e);
-    return '<div class="cart-emp"><h4>'+esc(e.nome)+'</h4>' +
+    return '<div class="cart-emp"><h4>'+esc(e.nome)+(e.cli ? tagDoCliente(e.cli) : '')+'</h4>' +
       '<div class="cart-fato">'+(f.tipo==="Radar" ? '📰 ' : '🤝 ') +
         (f.url ? '<a href="'+esc(f.url)+'" target="_blank" rel="noopener">'+esc(f.titulo)+'</a>' : esc(f.titulo)) +
         ' · '+formatarData(f.data).slice(0,5)+'</div>' +
@@ -1326,7 +1341,7 @@ function carteiraConx(lista, como, meus, soEle){
   const linha = x=>{
     const e = x.e, deles = e.leads.filter(l=>l.ex.includes(como)).length, colegas = colegasDe(e).size;
     return '<details class="conx-emp" data-conx="'+e.i+'"><summary>' +
-      '<span>'+caixaSel(e.i)+'<b>'+esc(e.nome)+'</b>'+(e.grupo && normConx(e.grupo)!==e.chaveExata ? '<span class="subnome">'+esc(e.grupo)+'</span>' : '')+'</span>' +
+      '<span>'+caixaSel(e.i)+'<b>'+esc(e.nome)+'</b>'+(e.cli ? tagDoCliente(e.cli) : '')+(e.grupo && normConx(e.grupo)!==e.chaveExata ? '<span class="subnome">'+esc(e.grupo)+'</span>' : '')+'</span>' +
       '<span>'+esc(e.industria)+'</span><span>'+deles+'</span>' +
       '<span>'+(colegas ? '<span class="tag-bando">'+colegas+'</span>' : 'só você')+'</span>' +
       '<span>'+(x.f ? x.f+(x.f===1?' fato':' fatos') : '·')+'</span>' +
@@ -1530,12 +1545,15 @@ async function baixarPlanilhaConx(botao){
 
     // Visão geral
     const comDec = rels.filter(x=>x.dec.length).length;
-    titulo(ov, 9, "Onde a Peers tem relacionamento nas empresas selecionadas",
+    const comCli = CLIENTES.peers.length > 0, nOv = comCli ? 11 : 9;   // com a base de clientes: mais 2 colunas no fim
+    titulo(ov, nOv, "Onde a Peers tem relacionamento nas empresas selecionadas",
       "Temos contato com decisores em "+comDec+" das "+rels.length+" empresas. Para cada uma: quem da Peers procurar primeiro e quem essa pessoa conhece lá. Clique no nome da empresa para ver todos os contatos.",
       interno("'Premissas'!A1", "Ver premissas e limites →"),
       {col:3, texto:"Mapa de Conexões "+CONEXOES.versao+" ("+CONEXOES.geradoEm+") · gerada no portal em "+hoje+"   ·   Forte = 10+ decisores e 3+ executivos · Médio = 3 a 9 decisores · Fraco = 1 ou 2 · Nenhum = não achamos decisor"});
     cabecalho(ov, ["Empresa","Indústria","Relacionamento","Decisores que conhecemos","Executivos da Peers com contato",
-      "Quem procurar primeiro","Contato mais sênior que ele tem lá","LinkedIn do contato","Segunda opção"], [28, 20, 16, 14, 15, 48, 70, 52, 48]);
+      "Quem procurar primeiro","Contato mais sênior que ele tem lá","LinkedIn do contato","Segunda opção"]
+        .concat(comCli ? ["Cliente Peers","Último projeto e responsáveis na Peers"] : []),
+      [28, 20, 16, 14, 15, 48, 70, 52, 48].concat(comCli ? [26, 70] : []));
     rels.forEach((x, k)=>{
       const lin = ov.getRow(6+k), ex = x.ordem[0], seg = x.ordem[1];
       const melhor = ex!==undefined ? x.dec.find(l=>l.ex.includes(ex)) : null;
@@ -1543,6 +1561,12 @@ async function baixarPlanilhaConx(botao){
         ex!==undefined ? nomePessoa(execs[ex].nome)+" ("+execs[ex].nivel+") · conhece "+x.cont.get(ex) : "—",
         melhor ? melhor.nome+" · "+melhor.cargo : "—", "",
         seg!==undefined ? nomePessoa(execs[seg].nome)+" ("+execs[seg].nivel+") · conhece "+x.cont.get(seg) : "—"];
+      if(comCli){
+        const c = x.e.cli;
+        lin.getCell(10).value = c ? c.rotulo.charAt(0).toUpperCase()+c.rotulo.slice(1)+" · "+c.projetos+(c.projetos===1?" projeto":" projetos") : "Ainda não é cliente";
+        lin.getCell(11).value = c ? [c.ultimo ? c.ultimo+(c.offering ? " ("+c.offering+(c.fim ? ", fim "+c.fim : "")+")" : "") : "",
+          ...[["Líder de conta", c.lider], ["MD", c.md]].filter(y=>y[1]).map(y=>y[0]+": "+nomePessoa(y[1]))].filter(Boolean).join(" · ") : "—";
+      }
       lin.eachCell({includeEmpty:true}, c=>{ c.border = fina; c.alignment = {vertical:"middle"}; });
       [4,5].forEach(j=>{ lin.getCell(j).alignment = {vertical:"middle", horizontal:"center"}; });
       lin.getCell(3).fill = {type:"pattern", pattern:"solid", fgColor:{argb:COR_FORCA[x.forca]}};
@@ -1553,9 +1577,13 @@ async function baixarPlanilhaConx(botao){
         lin.getCell(6).font = {bold:true};
       } else lin.eachCell({includeEmpty:true}, c=>{ c.font = {color:{argb:"FF8A93A3"}}; });
       if(melhor && melhor.url) link(lin.getCell(8), melhor.url);
+      if(comCli && x.e.cli){
+        lin.getCell(10).fill = {type:"pattern", pattern:"solid", fgColor:{argb: x.e.cli.ativo ? LIMA : "FFD8E8EE"}};
+        lin.getCell(10).font = {bold:true, color:{argb:NAVY}};
+      }
       lin.height = 20;
     });
-    ov.autoFilter = "A5:I"+(5+rels.length);
+    ov.autoFilter = "A5:"+(comCli ? "K" : "I")+(5+rels.length);
 
     // Premissas
     pr.getColumn(1).width = 34; pr.getColumn(2).width = 110;
@@ -1564,7 +1592,8 @@ async function baixarPlanilhaConx(botao){
     const blocos = [
       ["De onde vêm os dados", [
         ["Fonte", "Conexões de 1º grau no LinkedIn dos executivos da Peers, do Mapa de Conexões Peers ("+CONEXOES.versao+", "+CONEXOES.geradoEm+"), como aparece no Portal de Inteligência."],
-        ["Quem ficou de fora", "Conexões com colegas da própria Peers (rede interna) e cargos de nível iniciante (estágio, trainee, aprendiz e júnior)."]]],
+        ["Quem ficou de fora", "Conexões com colegas da própria Peers (rede interna) e cargos de nível iniciante (estágio, trainee, aprendiz e júnior)."]]
+        .concat(CLIENTES.peers.length ? [["Cliente Peers", "Base de clientes da Peers (carteira de projetos"+(CLIENTES.geradoEm ? ", atualizada em "+CLIENTES.geradoEm : "")+"): status do cliente pelo projeto mais recente, número de projetos, último projeto e os responsáveis dele. Propostas recusadas ou canceladas não contam. A empresa é ligada ao cliente pelo nome."]] : [])],
       ["Quem conta como decisor", [
         ["Decisor", "Contato com senioridade C-Level, VP, Superintendente, Diretor/Head, Gerente ou Coordenador. Analistas, especialistas e cargos não identificados não entram."],
         ["Senioridade", "Inferida pelo cargo escrito no LinkedIn. Dois ajustes: \"Business/People/HR/Finance Partner\" conta como Gerente (não como sócio) e \"Account/Sales Executive\" não conta como diretor."]]],
@@ -1589,7 +1618,7 @@ async function baixarPlanilhaConx(botao){
         ["Cobertura", "\"Nenhum\" quer dizer que não achamos decisor na base atual, não que ninguém da Peers conheça a empresa."],
         ["Cargos desatualizados", "O cargo é o do momento da extração e pode ter mudado."]]],
       ["Uso dos dados", [
-        ["Confidencialidade", "A aba \"Contatos Peers\" tem nomes e perfis de conexões pessoais dos executivos (dado pessoal, LGPD). Uso interno da Peers: não enviar essa aba para fora da empresa."]]],
+        ["Confidencialidade", "A aba \"Contatos Peers\" tem nomes e perfis de conexões pessoais dos executivos (dado pessoal, LGPD)"+(CLIENTES.peers.length ? ", e a visão geral tem os clientes e projetos da Peers" : "")+". Uso interno da Peers: não enviar a planilha para fora da empresa."]]],
     ];
     let p = 6;
     blocos.forEach(([tit, itens])=>{
@@ -1630,7 +1659,13 @@ function detalheConx(e){
     return '<span class="chip-ex'+(v?' voce':'')+'" title="'+esc(ex.vertical||"")+'">'+esc(nomeCurto(ex.nome))+' · '+esc(ex.nivel)+(v?' · você':'')+'</span>'; };
   const ordenar = l=>l.ex.slice().sort((a,b)=>ehVoce(b)-ehVoce(a) || (ORDEM_NIVEL[CONEXOES.execs[a].nivel]??9)-(ORDEM_NIVEL[CONEXOES.execs[b].nivel]??9));
   const leads = (como===null ? e.leads : e.leads.slice().sort((a,b)=>b.ex.includes(como)-a.ex.includes(como))).slice(0, 60);
-  return (fatos.length ? '<div class="card-title" style="margin-bottom:6px"><span class="dot"></span>No portal</div>' +
+  const c = e.cli;
+  const quadroCli = c ? '<div class="box-com" style="margin:0 0 12px"><span class="rot">Cliente Peers ('+esc(c.rotulo)+'):</span> ' +
+      c.projetos+(c.projetos===1?' projeto':' projetos')+(c.offerings.length ? ' em '+esc(c.offerings.join(", ")) : '') +
+      (c.ultimo ? ' · último: <b>'+esc(c.ultimo)+'</b>'+(c.offering ? ' ('+esc(c.offering)+(c.fim ? ', fim '+esc(c.fim) : '')+')' : '') : '') +
+      [["Líder de conta", c.lider], ["N1", c.n1], ["MD", c.md]].filter(x=>x[1]).map(x=>' · '+x[0]+': '+esc(nomePessoa(x[1]))).join("") +
+      (normConx(c.nome)!==e.chaveExata ? '<div class="sub" style="margin-top:3px">Na base de clientes como “'+esc(c.nome)+'”.</div>' : '') + '</div>' : '';
+  return quadroCli + (fatos.length ? '<div class="card-title" style="margin-bottom:6px"><span class="dot"></span>No portal</div>' +
       fatos.map(f=>'<div class="conx-fato"><b>'+esc(f.tipo)+' · '+formatarData(f.data)+'</b> · ' +
         (f.url ? '<a href="'+esc(f.url)+'" target="_blank" rel="noopener">'+esc(f.titulo)+'</a>' : esc(f.titulo)) +
         (f.nota ? '<div class="sub" style="color:var(--grey-dark)">'+esc(f.nota)+'</div>' : '')+'</div>').join("") : '') +
@@ -1665,6 +1700,8 @@ function ligarConexoes(){
   }
   const ind = document.getElementById("conxInd");
   if(ind) ind.addEventListener("change", ()=>{ estadoConx.industria = ind.value; estadoConx.limite = 60; renderizar(); });
+  const cliSel = document.getElementById("conxCli");
+  if(cliSel) cliSel.addEventListener("change", ()=>{ estadoConx.cliente = cliSel.value; estadoConx.limite = 60; renderizar(); });
   const comoSel = document.getElementById("conxComo");
   if(comoSel) comoSel.addEventListener("change", ()=>{ estadoConx.comoExec = comoSel.value; estadoConx.limite = 60; renderizar(); });
   document.querySelectorAll("[data-abrir]").forEach(bt=>bt.addEventListener("click", ()=>{ estadoConx.aberta = +bt.dataset.abrir; renderizar(); }));
@@ -3586,8 +3623,13 @@ function montarRoteiro(cfg){
     (alta ? ", " + alta + (alta===1 ? " de peso" : " delas de peso") : "") +
     (ind ? ", e o seu recorte está em " + ind : "") + ".");
 
-  if(comercial){
-    B.push("Um aviso: você está no modo do time comercial, mas nesta edição ainda não há oportunidades com nome de cliente, porque o agente comercial não está ligado.");
+  if(comercial && CLIENTES.nomes.length){
+    const citados = [...new Set(radar.flatMap(r=>clientesCitados(textoRadar(r)).map(c=>c.nome)))];
+    B.push(citados.length
+      ? "E para o comercial: " + (citados.length===1 ? "um cliente aparece" : citados.length + " clientes aparecem") + " no radar de hoje, " +
+        (citados.length>4 ? citados.slice(0, 4).join(", ") + " e mais " + (citados.length-4) : citados.slice(0, -1).join(", ") + (citados.length>1 ? " e " : "") + citados[citados.length-1]) +
+        ". Estão marcados no portal."
+      : "E para o comercial: nenhum cliente da lista aparece no radar de hoje.");
   }
 
   // ---- O fio do dia: leitura que só aparece olhando o conjunto, não item por item
@@ -3933,10 +3975,43 @@ function copiarRoteiro(){
 if(window.speechSynthesis) speechSynthesis.onvoiceschanged = preencherVozes;
 
 /* =========================================================
-   TIME COMERCIAL · lista de clientes carregada no navegador
-   A lista nunca sai do computador: é lida aqui, fica só na memória da página e some ao fechá-la.
+   TIME COMERCIAL · clientes citados no portal
+   Quem está na lista de acesso comercial recebe a base de clientes da Peers (tabela "conexoes", linha "clientes",
+   publicada por Backend/publicar_clientes.py). Qualquer pessoa pode somar a própria lista de clientes e prospects,
+   que nunca sai do computador: é lida aqui, fica só na memória da página e some ao fechá-la.
    ========================================================= */
-const CLIENTES = { nomes: [], arquivo: "", soCitados: false };
+// peers: a base oficial; proprios: a lista carregada no navegador; nomes: as duas juntas (a oficial vence no empate)
+const CLIENTES = { nomes: [], peers: [], proprios: [], arquivo: "", geradoEm: "", soCitados: false };
+const STATUS_CLI = {"Cliente ativo":"cliente ativo", "Finalizado até 6 meses":"ex-cliente, até 6 meses",
+  "Finalizado de 6 a 12 meses":"ex-cliente, de 6 a 12 meses", "Finalizado há mais de 12 meses":"ex-cliente, há mais de 12 meses"};
+// nome de uma palavra só pode ser palavra comum: só conta escrito com maiúscula na notícia. (Sem lista de nomes aqui:
+// o repositório é público e os clientes são confidenciais.)
+const palavraSo = chave => !chave.includes(" ");
+function carregarClientesPeers(c){
+  CLIENTES.geradoEm = c.geradoEm || "";
+  CLIENTES.peers = (c.clientes || []).map(([nome, status, projetos, ultimo, offering, fim, offerings, lider, n1, md])=>({
+    nome, chave: chaveNome(nome), tipo: "Cliente", peers: true, ativo: status==="Cliente ativo",
+    rotulo: STATUS_CLI[status] || "cliente", projetos, ultimo, offering, fim, offerings: offerings || [], lider, n1, md
+  })).filter(x=>x.chave);
+  juntarClientes();
+}
+function juntarClientes(){
+  const oficiais = new Set(CLIENTES.peers.map(c=>c.chave));
+  CLIENTES.nomes = CLIENTES.peers.concat(CLIENTES.proprios.filter(c=>!oficiais.has(c.chave)));
+}
+// "cliente ativo · último projeto: Supply Chain, 08/2026 · MD Fulano" (base oficial) ou "cliente"/"prospect" (lista própria)
+function detalheCliente(c){
+  if(!c.peers) return c.rotulo;
+  return c.rotulo + (c.offering ? " · último projeto: " + c.offering + (c.fim ? ", " + c.fim : "") : "") +
+    (c.md ? " · MD " + nomeCurto(c.md) : "");
+}
+function citaComMaiuscula(texto, chave){
+  const t = " " + String(texto||"").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^A-Za-z0-9]+/g," ") + " ";
+  const re = new RegExp(" " + chave + " ", "gi");   // a chave só tem letras, números e espaços
+  let m;
+  while((m = re.exec(t))){ if(/[A-Z]/.test(m[0].charAt(1))) return true; re.lastIndex--; }
+  return false;
+}
 const normTxt = s => (" " + String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g," ") + " ").replace(/\s+/g," ");
 const SUFIXOS = new Set(["sa","s","a","ltda","me","eireli","cia","companhia","holding"]);
 function chaveNome(nome){
@@ -3949,7 +4024,8 @@ function chaveNome(nome){
 function clientesCitados(texto){
   if(!CLIENTES.nomes.length) return [];
   const t = normTxt(texto);
-  return CLIENTES.nomes.filter(c=>t.includes(" "+c.chave+" "));
+  return CLIENTES.nomes.filter(c=>t.includes(" "+c.chave+" ") &&
+    (!palavraSo(c.chave) || citaComMaiuscula(texto, c.chave)));
 }
 const textoRadar = i => [i.manchete, i.resumo, i.porQueImporta, i.anguloPeers].join(" ");
 const textoMov = m => [m.player, m.tese, m.leitura].join(" ");
@@ -3959,25 +4035,40 @@ function passaClientes(textoDe){
 function caixaClientes(texto){
   if(estado.modoVisualizacao!=="comercial") return "";
   const c = clientesCitados(texto);
-  return c.length ? '<div class="box-com"><span class="rot">Clientes citados:</span> ' + c.map(x=>esc(x.nome)+' ('+x.tipo.toLowerCase()+')').join(" · ") + '</div>' : "";
+  return c.length ? '<div class="box-com"><span class="rot">Clientes citados:</span> ' + c.map(x=>'<b>'+esc(x.nome)+'</b> ('+esc(detalheCliente(x))+')').join(" · ") + '</div>' : "";
 }
 function tagCliente(nome){
   if(estado.modoVisualizacao!=="comercial" || !CLIENTES.nomes.length) return "";
   const k = chaveNome(nome);
   const c = CLIENTES.nomes.find(x=>x.chave===k);
-  return c ? '<span class="tag-cli">'+esc(c.tipo.toLowerCase())+'</span>' : "";
+  return c ? tagDoCliente(c) : "";
+}
+function tagDoCliente(c){
+  const ex = c.peers && !c.ativo;
+  return '<span class="tag-cli'+(ex?' ex':'')+'" title="'+esc(detalheCliente(c))+'">'+(c.peers ? (ex ? 'ex-cliente' : 'cliente ativo') : esc(c.rotulo))+'</span>';
 }
 function barraComercial(){
   const ajuda = 'A lista fica só no seu navegador: não é enviada a lugar nenhum e some ao fechar a página. Formato: uma empresa por linha (CSV ou Excel); segunda coluna opcional com “Cliente” ou “Prospect”.';
-  if(!CLIENTES.nomes.length) return '<div class="barra-com">' +
+  const carregar = rotulo => '<button class="btn-sec" onclick="document.getElementById(\'arqClientes\').click()">'+rotulo+'</button>' +
+    '<input type="file" id="arqClientes" accept=".csv,.txt,.xlsx,.xls" style="display:none" onchange="lerListaClientes(this.files[0])">';
+  const soCitados = '<label class="cbx"><input type="checkbox" id="chkSoCitados" '+(CLIENTES.soCitados?'checked':'')+'> mostrar só itens com clientes citados</label>';
+  const nProp = CLIENTES.proprios.length;
+  const propria = nProp ? ' Mais a sua lista ('+esc(CLIENTES.arquivo)+', '+nProp+(nProp===1?' empresa':' empresas')+'), só neste navegador.' : '';
+  if(CLIENTES.peers.length){
+    const ativos = CLIENTES.peers.filter(c=>c.ativo).length;
+    return '<div class="barra-com">' +
+      '<span><b>Base de clientes da Peers:</b> '+CLIENTES.peers.length+' clientes, '+ativos+' com projeto ativo' +
+        (CLIENTES.geradoEm ? ' · atualizada em '+esc(CLIENTES.geradoEm) : '') +
+        '. Eles aparecem marcados no Radar, em Movimentos, em Finanças e nas Conexões. Visível só para a lista de acesso comercial.' + propria + '</span>' +
+      soCitados + (nProp ? '<button class="btn-sec" onclick="limparListaClientes()">Tirar minha lista</button>' : carregar("Somar minha lista de prospects")) + '</div>';
+  }
+  if(!nProp) return '<div class="barra-com">' +
     '<span><b>Time comercial.</b> Carregue sua lista de clientes e prospects para ver onde eles aparecem no Radar, em Movimentos e em Finanças. ' + ajuda + '</span>' +
-    '<button class="btn-sec" onclick="document.getElementById(\'arqClientes\').click()">Carregar lista de clientes</button>' +
-    '<input type="file" id="arqClientes" accept=".csv,.txt,.xlsx,.xls" style="display:none" onchange="lerListaClientes(this.files[0])"></div>';
-  const nCli = CLIENTES.nomes.filter(c=>c.tipo==="Cliente").length;
+    carregar("Carregar lista de clientes") + '</div>';
+  const nCli = CLIENTES.proprios.filter(c=>c.tipo==="Cliente").length;
   return '<div class="barra-com">' +
-    '<span><b>Lista carregada:</b> '+esc(CLIENTES.arquivo)+' · '+nCli+' clientes e '+(CLIENTES.nomes.length-nCli)+' prospects. Só neste navegador.</span>' +
-    '<label class="cbx"><input type="checkbox" id="chkSoCitados" '+(CLIENTES.soCitados?'checked':'')+'> mostrar só itens com clientes citados</label>' +
-    '<button class="btn-sec" onclick="limparListaClientes()">Limpar lista</button></div>';
+    '<span><b>Lista carregada:</b> '+esc(CLIENTES.arquivo)+' · '+nCli+' clientes e '+(nProp-nCli)+' prospects. Só neste navegador.</span>' +
+    soCitados + '<button class="btn-sec" onclick="limparListaClientes()">Limpar lista</button></div>';
 }
 function carregarScript(url){
   return new Promise((ok, erro)=>{ const s = document.createElement("script"); s.src = url; s.onload = ok; s.onerror = erro; document.head.appendChild(s); });
@@ -4001,13 +4092,19 @@ async function lerListaClientes(arq){
     const chave = chaveNome(nome);
     if(!chave || vistos.has(chave)) return;
     vistos.add(chave);
-    nomes.push({nome, chave, tipo: /^prosp/.test(normTxt(l[1]).trim()) ? "Prospect" : "Cliente"});
+    const tipo = /^prosp/.test(normTxt(l[1]).trim()) ? "Prospect" : "Cliente";
+    nomes.push({nome, chave, tipo, rotulo: tipo.toLowerCase()});
   });
   if(!nomes.length){ alert("Nenhum nome encontrado no arquivo."); return; }
-  CLIENTES.nomes = nomes; CLIENTES.arquivo = arq.name;
+  CLIENTES.proprios = nomes; CLIENTES.arquivo = arq.name;
+  juntarClientes();
   renderizar();
 }
-function limparListaClientes(){ CLIENTES.nomes = []; CLIENTES.arquivo = ""; CLIENTES.soCitados = false; renderizar(); }
+function limparListaClientes(){
+  CLIENTES.proprios = []; CLIENTES.arquivo = ""; juntarClientes();
+  if(!CLIENTES.nomes.length) CLIENTES.soCitados = false;
+  renderizar();
+}
 
 /* =========================================================
    BRIEFING DE CONTA · tudo o que o portal tem sobre uma empresa
@@ -4037,7 +4134,13 @@ function montarConta(){
   const seg = tri ? tri.industria+" · "+tri.divisao : (v1000 ? v1000.segmentos[0].industria+" · "+v1000.segmentos[0].divisao : "");
   const L = [];
   L.push("BRIEFING DE CONTA · " + nome.toUpperCase());
-  L.push("Portal de Inteligência Peers · edição de " + formatarData(HOJE) + (seg ? " · " + seg : "") + (cli ? " · " + cli.tipo : ""));
+  L.push("Portal de Inteligência Peers · edição de " + formatarData(HOJE) + (seg ? " · " + seg : "") + (cli ? " · " + cli.rotulo : ""));
+  if(cli && cli.peers){
+    L.push("Na Peers: " + cli.projetos + (cli.projetos===1 ? " projeto" : " projetos") +
+      (cli.offerings.length ? " (" + cli.offerings.join(", ") + ")" : "") +
+      (cli.ultimo ? " · último: " + cli.ultimo + (cli.fim ? ", fim " + cli.fim : "") : "") +
+      [["líder de conta", cli.lider], ["N1", cli.n1], ["MD", cli.md]].filter(x=>x[1]).map(x=>" · " + x[0] + " " + x[1]).join(""));
+  }
   L.push("");
   L.push("--- FINANÇAS ---");
   if(tri){
@@ -4124,7 +4227,7 @@ function abrirBriefing(){
       if(i.anguloPeers) L.push("  Ângulo Peers: " + i.anguloPeers);
       if(estado.modoVisualizacao==="comercial" && i.oportunidade) L.push("  Oportunidade comercial: " + i.oportunidade);
       const cli = clientesCitados(textoRadar(i));
-      if(cli.length) L.push("  Clientes citados: " + cli.map(c=>c.nome+" ("+c.tipo.toLowerCase()+")").join(", "));
+      if(cli.length) L.push("  Clientes citados: " + cli.map(c=>c.nome+" ("+detalheCliente(c)+")").join(", "));
       L.push("  Fonte: " + i.fonte + (i.url ? " · " + i.url : ""));
       L.push("");
     });
