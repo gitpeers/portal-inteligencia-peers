@@ -31,6 +31,7 @@ Backend/
   supabase_api.py       acesso à tabela secoes do Supabase (usado pelos dois acima)
   publicar_trimestral.py  envia o dashboard de resultados trimestrais para a aba Análises trimestrais
   publicar_conexoes.py  envia o Mapa de Conexões para a aba Conexões por empresa (só a lista de acesso comercial)
+  publicar_clientes.py  envia a base de clientes da Peers para o Time comercial e as Conexões (só a lista de acesso)
   validar_fontes.py     testa se cada fonte de notícias tem feed ativo (rodar uma vez por mês)
   ia/                   rotina de IA: instruções (ROTINA.md) e scripts que preparam e aplicam as análises
   comum.py              funções compartilhadas
@@ -175,3 +176,12 @@ as sem dado de porte só aparecem na busca. Vai para o portal
 só executivo, lead (nome, cargo, senioridade, LinkedIn), empresa e indústria: sem e-mail, rede interna, classificações
 comerciais nem funil. Para publicar a base mais recente (base_conexoes_peers_v<N>.xlsx, na pasta Extração de Leads), na
 pasta Backend, com as duas variáveis definidas: `python publicar_conexoes.py "<pasta Extração de Leads>"`.
+
+**Base de clientes da Peers.** A carteira de projetos ("base clientes.xlsx", fora desta pasta, em 00. Apoio > Base de
+clientes) vai para a mesma tabela `conexoes`, na linha `clientes`, e chega só a quem está em `acesso_comercial`. Com
+ela, o modo Time comercial marca sozinho os clientes citados no Radar, em Movimentos e em Finanças (sem precisar
+carregar lista; quem quiser ainda soma a própria lista de prospects, que fica só no navegador), e a aba Conexões mostra
+em cada empresa se é cliente ativo ou ex-cliente, o último projeto e os responsáveis, com um filtro "Cliente Peers" e
+duas colunas a mais na planilha baixada. Vai, por cliente: status, número de projetos, último projeto, offerings e
+líder de conta, N1 e MD do último projeto. Para publicar uma versão nova da planilha, na pasta Backend, com as duas
+variáveis definidas: `python publicar_clientes.py "<pasta Base de clientes>"`.

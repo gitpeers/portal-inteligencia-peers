@@ -6,7 +6,8 @@
 -- entrega dados a quem está em "acesso_comercial". Quem não está na lista não recebe nada, e a aba nem aparece.
 --   1. acesso_comercial: os e-mails liberados. Cada pessoa só consegue ver a própria linha (para o portal saber se
 --      mostra a aba); quem inclui ou tira alguém é o painel do Supabase (Table Editor), nunca o site.
---   2. conexoes: o Mapa de Conexões (linha "mapa"), gravado por Backend/publicar_conexoes.py com a chave secreta.
+--   2. conexoes: o Mapa de Conexões (linha "mapa"), gravado por Backend/publicar_conexoes.py, e a base de clientes da
+--      Peers (linha "clientes"), gravada por Backend/publicar_clientes.py, ambos com a chave secreta.
 
 -- 1. Lista de acesso ---------------------------------------------------------------------------------
 create table if not exists public.acesso_comercial (
