@@ -113,16 +113,13 @@ body.bloqueado #login{display:flex;min-height:100vh;align-items:center;justify-c
 @media(max-width:560px){.nav-tab{padding:12px 10px 10px;font-size:.78rem}.nav-atual{display:none}
   .nav-tabs{position:relative}.nav-grupo{position:static}.nav-menu{left:8px;right:8px;min-width:0}}
 
-/* ---- ANÁLISES TRIMESTRAIS: o dashboard de resultados em tela cheia, dentro do portal ---- */
-#trimestral{position:fixed;inset:0;z-index:850;background:var(--bg);display:flex;flex-direction:column}
+/* ---- ANÁLISES TRIMESTRAIS: o dashboard de resultados como uma aba, abaixo do menu, ocupando o resto da tela ---- */
+#trimestral{display:flex;flex-direction:column;background:#fff}
 #trimestral[hidden]{display:none}
-.tri-barra{background:var(--navy);color:#fff;display:flex;align-items:center;gap:14px;padding:9px 16px;flex:none}
-.tri-barra button{background:none;border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:var(--r-sm);
-  padding:6px 13px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:inherit}
-.tri-barra button:hover{border-color:var(--neon);color:var(--neon)}
-.tri-barra span{font-size:.82rem;color:rgba(255,255,255,.75)}
-#trimestral iframe{flex:1;width:100%;border:0;background:#fff}
-.tri-msg{margin:auto;color:var(--grey-dark);font-size:.88rem;text-align:center;padding:24px}
+#trimestral iframe{width:100%;border:0;background:#fff;display:block}
+.tri-msg{margin:auto;color:var(--grey-dark);font-size:.88rem;text-align:center;padding:48px 24px}
+/* na aba trimestral, o recorte do portal não vale (o dashboard tem filtros próprios) */
+body.aba-tri .filters-bar,body.aba-tri .filters-chips,body.aba-tri #btnBriefing{display:none !important}
 
 /* ---- CONEXÕES (visão comercial: só a lista de acesso) ---- */
 .box-conx{background:#fff;border:1.5px solid var(--navy);border-radius:var(--r-sm);padding:9px 12px;margin:8px 0;font-size:.78rem;line-height:1.5}
@@ -619,10 +616,6 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
   </div>
 </div>
 
-<div id="trimestral" hidden>
-  <div class="tri-barra"><button type="button" onclick="fecharTrimestral()">← Voltar ao portal</button><span>Análises trimestrais <span id="triData"></span></span></div>
-  <div class="tri-msg" id="triMsg">Carregando…</div>
-</div>
 
 <div class="topbar">
   <div class="nav-tabs" id="navTabs"></div>
@@ -647,6 +640,8 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 </div>
 
 <div class="content" id="conteudo"></div>
+<!-- Análises trimestrais: fica fora do #conteudo para o dashboard não ser recarregado a cada troca de aba -->
+<div id="trimestral" hidden><div class="tri-msg" id="triMsg">Carregando…</div></div>
 
 <button id="btnBriefing" onclick="abrirBriefing()">Gerar briefing <span class="cnt" id="cntBriefing">0</span></button>
 
@@ -913,7 +908,7 @@ const GRUPOS = [
     {id:"concorrencia", desc:"o que as consultorias concorrentes estão fazendo"}]},
   {id:"conexoes"},      // só aparece para a lista de acesso comercial
   {id:"oportunidades"}, // só aparece para quem recebe a base de clientes (ve_clientes)
-  {id:"trimestral"}     // abre o dashboard de resultados em tela cheia, sem trocar a aba atual
+  {id:"trimestral"}     // o dashboard de resultados, abaixo do menu (baixado só na primeira vez que a aba abre)
 ];
 const ABAS = [
   {id:"home", label:"Edição do dia"},
@@ -1104,7 +1099,7 @@ function voltarAoLugar(){
   try{
     const l = JSON.parse(localStorage.getItem(LEMBRAR) || "null");
     if(!l) return;
-    if(ABAS.some(a=>a.id===l.aba) && l.aba!=="trimestral" && (l.aba!=="conexoes" || CONEXOES) && (l.aba!=="oportunidades" || temOportunidades())) estado.aba = l.aba;
+    if(ABAS.some(a=>a.id===l.aba) && (l.aba!=="conexoes" || CONEXOES) && (l.aba!=="oportunidades" || temOportunidades())) estado.aba = l.aba;
     if(l.aba==="conexoes" && CONEXOES && l.conx){
       if(podeVerComo(l.conx.comoExec)) estadoConx.comoExec = l.conx.comoExec;
       estadoConx.busca = l.conx.busca || ""; estadoConx.industria = l.conx.industria || "todas";
@@ -1151,7 +1146,6 @@ function montarAbas(){
   nav.querySelectorAll("[data-s]").forEach(t=>{
     t.addEventListener("click", ()=>{
       pararFala();            // trocar de aba interrompe o resumo falado
-      if(t.dataset.s==="trimestral"){ fechar(); abrirTrimestral(); return; }
       estado.aba = t.dataset.s;
       montarAbas();
       renderizar();
@@ -1917,11 +1911,29 @@ function ligarConexoes(){
    computador da R&I, com Backend/publicar_trimestral.py (ver README).
    ========================================================= */
 const TRIMESTRAL = {html:null, geradoEm:""};
+// dentro do portal, o cabeçalho do dashboard perde a logo e o título (o portal já mostra os dois): fica a barra de
+// indústrias numa linha, com a data de atualização no canto. Fora do portal, o dashboard não muda.
+const CSS_TRI_NO_PORTAL = '.header{padding:10px 40px!important;gap:16px!important;flex-wrap:nowrap!important}' +
+  '.header .brand,.header h1{display:none!important}' +
+  '.inds{flex:1 1 auto!important;flex-basis:auto!important;order:1}' +
+  '.header .htxt{order:2;flex:none!important;min-width:0!important;text-align:right}' +
+  '@media(max-width:900px){.header{flex-wrap:wrap!important;padding:10px 16px!important}.inds{flex-basis:100%!important}.header .htxt{text-align:left}}';
+
+// o painel ocupa a tela abaixo do menu; quem rola é o próprio dashboard, não a página
+function ajustarTrimestral(){
+  const tela = document.getElementById("trimestral");
+  if(tela.hidden) return;
+  const alt = Math.max(420, window.innerHeight - tela.getBoundingClientRect().top) + "px";
+  tela.style.height = alt;
+  const f = tela.querySelector("iframe");
+  if(f) f.style.height = alt;
+}
+window.addEventListener("resize", ajustarTrimestral);
 
 async function abrirTrimestral(){
   const tela = document.getElementById("trimestral");
-  tela.hidden = false;
-  document.body.style.overflow = "hidden";
+  window.scrollTo(0, 0);
+  ajustarTrimestral();
   if(tela.querySelector("iframe")) return;
   const msg = document.getElementById("triMsg");
   msg.hidden = false; msg.textContent = "Carregando as análises trimestrais…";
@@ -1932,7 +1944,6 @@ async function abrirTrimestral(){
       if(!data || !data.conteudo || !data.conteudo.html) throw new Error("not found");
       TRIMESTRAL.html = data.conteudo.html;
       TRIMESTRAL.geradoEm = data.conteudo.geradoEm || "";
-      document.getElementById("triData").textContent = TRIMESTRAL.geradoEm ? "· versão de " + TRIMESTRAL.geradoEm : "";
     }
     const f = document.createElement("iframe");
     f.title = "Análises trimestrais";
@@ -1940,9 +1951,11 @@ async function abrirTrimestral(){
     // nosso: só a chave secreta publica no bucket, e ele só carrega o ECharts, do mesmo CDN do login do portal
     f.setAttribute("sandbox", "allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-downloads allow-modals");
     f.setAttribute("allow", "clipboard-write");
-    f.srcdoc = TRIMESTRAL.html;
+    const estilo = '<style>' + CSS_TRI_NO_PORTAL + '</style>';
+    f.srcdoc = TRIMESTRAL.html.includes("</head>") ? TRIMESTRAL.html.replace("</head>", estilo + "</head>") : estilo + TRIMESTRAL.html;
     msg.hidden = true;
     tela.appendChild(f);
+    ajustarTrimestral();
   }catch(e){
     const naoAchou = /not found|404|object not found/i.test(String((e && (e.message || e.statusCode)) || e));
     msg.textContent = naoAchou ? "As análises trimestrais ainda não foram publicadas no portal."
@@ -1950,11 +1963,6 @@ async function abrirTrimestral(){
   }
 }
 
-function fecharTrimestral(){
-  document.getElementById("trimestral").hidden = true;
-  document.body.style.overflow = "";
-}
-document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !document.getElementById("trimestral").hidden) fecharTrimestral(); });
 
 /* =========================================================
    RENDER GERAL
@@ -1980,7 +1988,14 @@ function renderizar(){
   else if(estado.aba==="agenda") c.innerHTML = renderAgenda();
   else if(estado.aba==="conexoes") c.innerHTML = CONEXOES ? renderConexoes() : '';
   else if(estado.aba==="oportunidades") c.innerHTML = temOportunidades() ? renderOportunidades() : '';
-  if(estado.modoVisualizacao==="comercial") c.insertAdjacentHTML("afterbegin", barraComercial());
+  else if(estado.aba==="trimestral") c.innerHTML = '';
+  // a aba trimestral mostra o dashboard, que fica fora do #conteudo e não é refeito a cada troca de aba
+  const tri = estado.aba==="trimestral";
+  c.hidden = tri;
+  document.body.classList.toggle("aba-tri", tri);
+  document.getElementById("trimestral").hidden = !tri;
+  if(tri) abrirTrimestral();
+  if(estado.modoVisualizacao==="comercial" && !tri) c.insertAdjacentHTML("afterbegin", barraComercial());
   atualizarContador();
   if(estado.aba==="home") ajustarManchetes();
   ligarEventos();
