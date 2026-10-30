@@ -1,6 +1,6 @@
 {
  "trimestre": "3T26",
- "atualizadoEm": "2026-10-23",
+ "atualizadoEm": "2026-10-30",
  "releases": [
   {
    "id": "itau",
@@ -20,8 +20,9 @@
    "id": "bradesco",
    "nome": "Bradesco",
    "cnpj": "60.746.948/0001-12",
-   "data": null,
-   "link": null
+   "data": "2026-10-22",
+   "assunto": "Press Release",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1579511&numSequencia=1104217&numVersao=1"
   },
   {
    "id": "banco-do-brasil",
