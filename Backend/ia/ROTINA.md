@@ -52,6 +52,8 @@ Escreva as respostas em `Backend/ia/trabalho/respostas.json`. Com muitos itens, 
   "concorrencia":          { "<id>": { "fato": "...", "sinal": "...", "impacto": "...", "selo": "...", "offering": "..." } },
   "descartarConcorrencia": { "<id>": "motivo" },
   "concorrenciaSemana":    [ "...", "...", "..." ],
+  "concorrenciaBriefing":  { "sumario": ["...", "..."], "conclusao": ["...", "..."], "soWhat": "...",
+                             "recomendacoes": [ { "tema": "...", "texto": "..." } ] },
   "sowhat":      { "<segmento>|<indicador>": { "oQue": "...", "porQue": "...", "fontes": ["<id>"], "impacto": "...", "oportunidade": "..." } }
 }
 ```
@@ -134,6 +136,31 @@ vários concorrentes indo na mesma direção, uma corrida (IA generativa, aquisi
 uma fragilidade que se repete. Cada ponto cita os concorrentes envolvidos e termina no que importa para a Peers.
 Use os itens de `concorrenciaSemana.itens` com as análises que você escreveu hoje para os itens pendentes. Semana
 sem movimento relevante: 3 pontos curtos dizendo isso e o que vale observar.
+
+### Síntese do Briefing de Concorrentes (quando vier `concorrenciaBriefing` nas pendências)
+
+O site gera o "Briefing de Concorrentes" em PDF, para os últimos 1 a 30 dias. Esta síntese cobre os últimos 30 dias
+(`concorrenciaBriefing.itens`, com as análises que você escreveu hoje para os itens pendentes) e vira o sumário, a
+conclusão, o So What e as recomendações do documento. Ela vem nas pendências quando entra movimento novo, ou a cada 7
+dias. O modelo é o briefing quinzenal de inteligência competitiva da Peers: uma leitura de padrões, não uma lista de
+notícias.
+
+- **sumario** (de 3 a 6 pontos, até 320 caracteres cada): os fatos mais importantes do período. Cada ponto começa com
+  um título curto terminado em ponto, que o PDF põe em negrito, seguido do fato com números e datas. Ex.:
+  `Accenture acelera aquisições, inclusive no Brasil. Em 26/10/2026 anunciou a compra da Verum Partners (Belo
+  Horizonte, 180 pessoas), e a Ryan comprou a Comtax (São Paulo).`
+- **conclusao** (1 ou 2 parágrafos, até 650 caracteres cada): os padrões que se repetem entre concorrentes e
+  categorias (por exemplo, consolidação por compra de boutiques, migração para IA e serviços gerenciados), com os nomes
+  envolvidos. O segundo parágrafo diz o que isso significa no Brasil.
+- **soWhat** (até 750): a implicação mais importante para a Peers, como empresa: que escolha ela precisa fazer agora e
+  o risco de não fazer. Um parágrafo direto.
+- **recomendacoes** (de 3 a 5): `tema`, curto (até 60 caracteres, ex.: `Serviços gerenciados`), e `texto` (até 380),
+  com o fato que sustenta a recomendação e a ação concreta. Ex.: `a Deloitte busca triplicar sua divisão de
+  outsourcing até 2030; avaliar uma oferta recorrente da Peers em dados e tecnologia, para reduzir a dependência de
+  projetos pontuais.` Não repita o mesmo texto em mais de uma recomendação nem copie o impacto de um item.
+
+As mesmas regras da Concorrência valem aqui: só fatos públicos das fontes dos itens, sem nomes de clientes nem de
+pessoas da Peers, sem propostas em andamento. Os números e as datas precisam estar nos itens.
 
 ### Visão por player dos Indicadores (cada chave, quando vier `aprofundamento` nas pendências)
 

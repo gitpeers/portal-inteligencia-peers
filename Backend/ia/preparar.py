@@ -26,6 +26,8 @@ MAX_RADAR = 150          # por execução; o que passar disso fica para o dia se
 MAX_MOVIMENTOS = 80
 MAX_CONCORRENCIA = 100   # a carga inicial (6 meses) é dividida em alguns dias
 DIAS_LEITURA_SEMANA = 7  # a Leitura da semana da Concorrência é reescrita uma vez por semana
+DIAS_BRIEFING = 30       # a síntese do Briefing de Concorrentes cobre 30 dias (o site deixa escolher de 1 a 30)
+REFAZER_BRIEFING = 7     # sem movimento novo, a síntese só é refeita depois de 7 dias
 DIAS_ESPERA_RELEASES = 50  # depois disso, processa os releases que já saíram mesmo sem a fila completa
 MAX_SOWHAT = 60          # so what dos indicadores: a primeira carga (225) é dividida em alguns dias
 DIAS_NOTICIAS = 60       # notícias do Radar que podem explicar o "por que" do indicador
@@ -190,7 +192,7 @@ def concorrencia():
     """Movimentos dos concorrentes sem análise e, uma vez por semana, o material da Leitura da semana."""
     caminho_lista, caminho_itens = DADOS / "concorrentes.json", DADOS / "concorrencia.json"
     if not (caminho_lista.exists() and caminho_itens.exists()):
-        return None, None, 0
+        return None, None, None, 0
     perfil = {c["id"]: {k: c.get(k) for k in ("nome", "grupo", "concorreEm")}
               for c in ler_json(caminho_lista)["concorrentes"]}
     itens = ler_json(caminho_itens)["itens"]
@@ -208,7 +210,18 @@ def concorrencia():
         semana = {"inicio": inicio, "fim": hoje_iso(),
                   "itens": [{k: i.get(k) for k in ("id", "nome", "grupo", "tipo", "manchete", "data", "escopo",
                                                     "parceiros", "fato", "sinal", "impacto", "selo")} for i in da_semana]}
-    return {"perfis": perfil, "itens": pend}, semana, max(0, len(sem_ia) - MAX_CONCORRENCIA)
+    # síntese do Briefing de Concorrentes: todo dia em que entra movimento novo nos últimos 30 dias (ou a cada 7 dias)
+    briefing = None
+    anterior = analises.get("concorrenciaBriefing") or {}
+    inicio_b = (hoje - timedelta(days=DIAS_BRIEFING)).isoformat()
+    do_mes = [i for i in itens if i["data"] >= inicio_b and not i.get("oculto")]
+    novos = {i["id"] for i in do_mes} - set(anterior.get("ids", []))
+    velha = not anterior.get("geradoEm") or (hoje - date.fromisoformat(anterior["geradoEm"])).days >= REFAZER_BRIEFING
+    if do_mes and (novos or velha):
+        briefing = {"inicio": inicio_b, "fim": hoje_iso(), "novos": sorted(novos),
+                    "itens": [{k: i.get(k) for k in ("id", "nome", "grupo", "tipo", "manchete", "data", "escopo", "parceiros",
+                                                      "fato", "sinal", "impacto", "selo", "offering", "fonte")} for i in do_mes]}
+    return {"perfis": perfil, "itens": pend}, semana, briefing, max(0, len(sem_ia) - MAX_CONCORRENCIA)
 
 
 def main():
@@ -248,12 +261,14 @@ def main():
         if aprof:
             pend["aprofundamento"] = aprof
             pend["atualizadoEm"]["aprofundamento"] = base_aprof
-    conc, semana, conc_fora = concorrencia()
+    conc, semana, briefing, conc_fora = concorrencia()
     if conc:
         pend["referencia"]["concorrentes"] = conc["perfis"]
         pend["concorrencia"] = conc["itens"]
     if semana:
         pend["concorrenciaSemana"] = semana
+    if briefing:
+        pend["concorrenciaBriefing"] = briefing
     sw, sw_fora = sowhat()
     if sw:
         pend["sowhat"] = sw
@@ -267,6 +282,7 @@ def main():
               "releases": len(rel["prontos"]) if rel else 0,
               "aprofundamento": len(pend.get("aprofundamento", {})),
               "concorrencia": len(pend.get("concorrencia", [])), "concorrenciaSemana": 1 if semana else 0,
+              "concorrenciaBriefing": 1 if briefing else 0,
               "sowhat": len(sw)}
     log(f"Pendências: {resumo} (ficaram para outro dia: {max(0, len(radar) - MAX_RADAR)} do Radar, "
         f"{max(0, len(movs) - MAX_MOVIMENTOS)} de Movimentos, {conc_fora} da Concorrência, {sw_fora} do so what)")
