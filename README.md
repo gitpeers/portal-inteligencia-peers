@@ -30,7 +30,7 @@ Backend/
   enviar_dados.py       devolve os arquivos de Frontend/dados ao Supabase, depois dos scripts
   supabase_api.py       acesso à tabela secoes do Supabase (usado pelos dois acima)
   publicar_trimestral.py  envia o dashboard de resultados trimestrais para a aba Análises trimestrais
-  publicar_conexoes.py  envia o Mapa de Conexões para a aba Conexões por empresa (só a lista de acesso comercial)
+  publicar_conexoes.py  envia o Mapa de Conexões para a aba Relacionamentos (só a lista de acesso comercial)
   publicar_clientes.py  envia a base de clientes da Peers para o Time comercial e as Conexões (só a lista de acesso)
   validar_fontes.py     testa se cada fonte de notícias tem feed ativo (rodar uma vez por mês)
   ia/                   rotina de IA: instruções (ROTINA.md) e scripts que preparam e aplicam as análises
@@ -161,7 +161,7 @@ uma tarefa agendada no computador do Kayo ("Portal Peers - Sincronizar GitHub", 
 - O GitHub pausa agendamentos de repositórios sem atividade por 60 dias. Os envios automáticos de dados contam
   como atividade; se a pausa acontecer, reative em Actions.
 
-**Aba Conexões por empresa (visão comercial).** Mostra, por empresa, quem da Peers conhece alguém lá (Mapa de Conexões,
+**Aba Relacionamentos (visão comercial; antes "Conexões por empresa").** Mostra, por empresa, quem da Peers conhece alguém lá (Mapa de Conexões,
 conexões de 1º grau no LinkedIn), com o link do perfil, os leads em bando e as notícias e movimentos da empresa no
 portal; também põe o quadro "Quem da Peers chega a..." no Radar, em Movimentos e na ficha da empresa. Os dados ficam na
 tabela `conexoes`, que só entrega a quem está em `acesso_comercial` (Supabase/comercial.sql); para os demais a aba não
@@ -187,3 +187,12 @@ em cada empresa se é cliente ativo ou ex-cliente, o último projeto e os respon
 duas colunas a mais na planilha baixada. Vai, por cliente: status, número de projetos, último projeto, offerings e
 líder de conta, N1 e MD do último projeto. Para publicar uma versão nova da planilha, na pasta Backend, com as duas
 variáveis definidas: `python publicar_clientes.py "<pasta Base de clientes>"`.
+
+**Aba Oportunidades** (só para quem tem `ve_clientes`). Cruza a base de clientes com as notícias dos últimos 30 dias
+(Radar e Movimentos) e o Mapa de Conexões, em duas sub-abas. *Reativar contas*: ex-clientes com notícia nova e decisor
+conhecido, com prioridade de 1 a 3 (projeto terminado há até 6 meses, mais de uma notícia, 10 ou mais decisores),
+"quem chama" pela regra da planilha de relacionamentos e o contato mais sênior dessa pessoa. *Expandir contas*: a
+notícia aponta para uma offering que a Peers ainda não fez no cliente; a comparação usa a tradução das offerings da
+carteira para as do portal, em `OFFERING_PORTAL` (publicar_clientes.py). O nome do cliente só conta escrito com
+maiúscula na notícia. Por enquanto, o texto do cartão é o Ângulo Peers da notícia; a leitura comercial escrita pela
+rotina de IA é o próximo passo.

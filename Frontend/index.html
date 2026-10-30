@@ -322,6 +322,38 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 .barra-com .btn-sec:hover{background:var(--navy);color:#fff}
 .tag-cli{display:inline-block;background:var(--navy);color:var(--neon);font-size:.6rem;font-weight:700;letter-spacing:.06em;border-radius:var(--pill);padding:1px 8px;margin-left:6px;vertical-align:middle}
 .tag-cli.ex{background:var(--blue-soft);color:var(--navy);border:1px solid #cbdaee}
+/* Oportunidades (Reativar contas e Expandir contas) */
+.op-subs{display:flex;border-bottom:2px solid #e3e8ef;margin:4px 0 10px}
+.op-subs button{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:10px 18px;font:inherit;font-size:.86rem;font-weight:600;color:var(--grey);cursor:pointer}
+.op-subs button.on{color:var(--navy);border-bottom-color:var(--neon)}
+.op-subs b{background:#eef1f5;color:var(--navy);border-radius:var(--pill);padding:0 7px;margin-left:7px;font-size:.72rem}
+.op-subs button.on b{background:var(--neon)}
+.op-regra{font-size:.74rem;color:var(--grey);margin:0 0 12px}
+.op-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.op-card{background:#fff;border:1px solid #e3e8ef;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:9px;font-size:.8rem;box-shadow:0 1px 2px rgba(1,19,52,.04)}
+.op-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.op-top h4{margin:0;font-size:.98rem;color:var(--navy)}
+.op-calor{color:#e05a2b;letter-spacing:2px;font-size:.8rem;flex:none}
+.op-meta{font-size:.73rem;color:var(--grey);line-height:1.45}
+.op-bloco{border-top:1px solid #eef1f5;padding-top:8px;line-height:1.45}
+.op-bloco a{color:var(--navy);font-weight:600;text-decoration:none}
+.op-bloco a:hover{text-decoration:underline}
+.op-rot{display:block;font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8a93a3;margin-bottom:3px}
+.op-porque,.op-sub{color:#4a5468}
+.op-mais{font-size:.68rem;color:var(--grey);background:#eef1f5;border-radius:var(--pill);padding:0 7px}
+.op-pe{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;border-top:1px solid #eef1f5;padding-top:9px;margin-top:auto;font-size:.7rem;color:var(--grey);line-height:1.4}
+.op-bts{display:flex;gap:6px;flex:none}
+.op-bts button{border-radius:6px;padding:6px 10px;font-size:.7rem;font-weight:700;cursor:pointer;border:1px solid var(--navy)}
+.op-bts .pri{background:var(--navy);color:#fff}.op-bts .sec{background:#fff;color:var(--navy)}
+.op-of{display:flex;flex-wrap:wrap;align-items:center;gap:5px}
+.op-rot2{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8a93a3;margin-right:2px}
+.op-chip{font-size:.68rem;border-radius:var(--pill);padding:2px 9px;font-weight:600}
+.op-chip.feita{background:#eef1f5;color:#4a5468}
+.op-chip.abre{background:var(--neon);color:var(--navy)}
+.op-seta{color:#8a93a3;margin:0 3px}
+.op-ia{background:var(--blue-soft);border:1px solid #cbdaee;border-radius:8px;padding:9px 11px;line-height:1.5}
+@media(max-width:1100px){.op-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.op-grid{grid-template-columns:1fr}.op-pe{flex-direction:column;align-items:flex-start}}
 .box-com{background:var(--blue-soft);border:1px solid #cbdaee;padding:11px 14px;border-radius:var(--r-sm);
   font-size:.8rem;line-height:1.55;color:var(--text2);margin-bottom:11px}
 .rcard-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
@@ -880,6 +912,7 @@ const GRUPOS = [
     {id:"movimentos", desc:"aquisições, parcerias e trocas de comando"},
     {id:"concorrencia", desc:"o que as consultorias concorrentes estão fazendo"}]},
   {id:"conexoes"},      // só aparece para a lista de acesso comercial
+  {id:"oportunidades"}, // só aparece para quem recebe a base de clientes (ve_clientes)
   {id:"trimestral"}     // abre o dashboard de resultados em tela cheia, sem trocar a aba atual
 ];
 const ABAS = [
@@ -890,7 +923,8 @@ const ABAS = [
   {id:"movimentos", label:"Movimentos estratégicos"},
   {id:"concorrencia", label:"Concorrência"},
   {id:"agenda", label:"Agenda setorial"},
-  {id:"conexoes", label:"Conexões por empresa"},
+  {id:"conexoes", label:"Relacionamentos"},
+  {id:"oportunidades", label:"Oportunidades"},
   {id:"trimestral", label:"Análises trimestrais"}
 ];
 
@@ -1070,7 +1104,7 @@ function voltarAoLugar(){
   try{
     const l = JSON.parse(localStorage.getItem(LEMBRAR) || "null");
     if(!l) return;
-    if(ABAS.some(a=>a.id===l.aba) && l.aba!=="trimestral" && (l.aba!=="conexoes" || CONEXOES)) estado.aba = l.aba;
+    if(ABAS.some(a=>a.id===l.aba) && l.aba!=="trimestral" && (l.aba!=="conexoes" || CONEXOES) && (l.aba!=="oportunidades" || temOportunidades())) estado.aba = l.aba;
     if(l.aba==="conexoes" && CONEXOES && l.conx){
       if(podeVerComo(l.conx.comoExec)) estadoConx.comoExec = l.conx.comoExec;
       estadoConx.busca = l.conx.busca || ""; estadoConx.industria = l.conx.industria || "todas";
@@ -1102,7 +1136,7 @@ function init(){
 function montarAbas(){
   const nav = document.getElementById("navTabs");
   const rot = id => ABAS.find(a=>a.id===id).label;
-  nav.innerHTML = GRUPOS.filter(g=>g.id!=="conexoes" || CONEXOES).map(g=>{
+  nav.innerHTML = GRUPOS.filter(g=>(g.id!=="conexoes" || CONEXOES) && (g.id!=="oportunidades" || temOportunidades())).map(g=>{
     if(!g.abas) return '<button type="button" class="nav-tab '+(g.id===estado.aba?'active':'')+'" data-s="'+g.id+'">'+rot(g.id)+'</button>';
     const ativo = g.abas.some(a=>a.id===estado.aba);
     return '<div class="nav-grupo" data-g="'+g.id+'">' +
@@ -1277,7 +1311,7 @@ function renderConexoes(){
        ["c","Com fato novo",lista.filter(x=>x.f).length,"notícia ou movimento no portal"],["d","Único elo da Peers",soEle,"só esta pessoa conhece alguém"]];
   const opcoesComo = c.execs.map((x, i)=>({x, i})).filter(o=>podeVerComo(String(o.i))).sort((a,b)=>(ORDEM_NIVEL[a.x.nivel]??9)-(ORDEM_NIVEL[b.x.nivel]??9) || a.x.nome.localeCompare(b.x.nome));
   return '' +
-  '<div class="sec-head"><h2>'+(minha ? 'Minha carteira' : exComo ? 'Minha carteira · exemplo: '+esc(nomeCurto(exComo.nome))+' ('+esc(exComo.nivel)+')' : 'Conexões por empresa')+'</h2>' +
+  '<div class="sec-head"><h2>'+(minha ? 'Minha carteira' : exComo ? 'Minha carteira · exemplo: '+esc(nomeCurto(exComo.nome))+' ('+esc(exComo.nivel)+')' : 'Relacionamentos')+'</h2>' +
   (minha
     ? '<p>As empresas onde você tem conexão, com as suas conexões destacadas, quantos colegas também chegam lá e as empresas com fato novo no portal primeiro.</p></div>'
   : exComo
@@ -1680,6 +1714,146 @@ function detalheConx(e){
     '<p class="cardnote" style="margin:10px 0 0">Fonte: Mapa de Conexões '+esc(CONEXOES.versao)+'. O nome abre o perfil no LinkedIn.</p>';
 }
 
+/* =========================================================
+   OPORTUNIDADES · Reativar contas e Expandir contas
+   Cruza a base de clientes da Peers com as notícias dos últimos 30 dias (Radar e Movimentos) e o Mapa de Conexões.
+   Só aparece para quem recebe a base de clientes (ve_clientes em acesso_comercial, Supabase/comercial.sql).
+   ========================================================= */
+const estadoOport = {visao:"reativar", lista:[]};
+const DIAS_OPORT = 30;
+function temOportunidades(){ return !!(CONEXOES && CLIENTES.peers.length); }
+// meses desde o fim do último projeto ("08/2026"); null se a data não vier no formato
+function mesesDesde(fim){
+  const m = /^(\d{2})\/(\d{4})$/.exec(fim||"");
+  if(!m) return null;
+  const [a, mm] = HOJE.split("-").map(Number);
+  return (a - +m[2])*12 + (mm - +m[1]);
+}
+// a offering do item: o campo offering ou o começo do Ângulo Peers ("Finance: ..."), se for uma offering do portal
+function offeringDoItem(it){
+  if(it.offering && DADOS.offerings.includes(it.offering)) return it.offering;
+  const p = String(it.angulo||"").split(":")[0].trim();
+  return DADOS.offerings.includes(p) ? p : "";
+}
+function oportunidades(){
+  if(oportunidades.cache) return oportunidades.cache;
+  const recentes = DADOS.radar.map(r=>({data:r.data, titulo:r.manchete, texto:textoRadar(r), leitura:r.porQueImporta||"",
+      angulo:r.anguloPeers||"", offering:r.offering, url:r.url}))
+    .concat(DADOS.movimentos.map(m=>({data:m.data, titulo:m.player+": "+m.tese, texto:textoMov(m), leitura:m.leitura||"",
+      angulo:m.leitura||"", offering:m.offering, url:m.url, player:m.player})))
+    .filter(it=>diasEntre(it.data) <= 0 && diasEntre(it.data) >= -DIAS_OPORT)
+    .map(it=>({...it, off:offeringDoItem(it)}));
+  const porCli = new Map();
+  recentes.forEach(it=>{
+    const cs = new Set(clientesCitados(it.texto).filter(c=>c.peers));
+    if(it.player){ const k = chaveNome(it.player); CLIENTES.peers.forEach(c=>{ if(c.chave===k) cs.add(c); }); }
+    cs.forEach(c=>{ if(!porCli.has(c)) porCli.set(c, []); porCli.get(c).push(it); });
+  });
+  const casos = [...porCli].map(([c, nts])=>{
+    // primeiro as notícias com o cliente no título (ou como player do movimento), depois as mais recentes
+    const noTitulo = it=>(citaComMaiuscula(it.titulo, c.chave) || (!!it.player && chaveNome(it.player)===c.chave)) ? 1 : 0;
+    nts.sort((a,b)=>noTitulo(b)-noTitulo(a) || b.data.localeCompare(a.data));
+    const emps = CONEXOES.empresas.filter(e=>e.cli===c);
+    const rel = relacaoEmpresa({leads: emps.flatMap(e=>e.leads)});   // a regra da planilha BytePlus, somando as empresas do cliente
+    const quem = rel.ordem[0], meses = mesesDesde(c.fim);
+    const abre = [...new Set(nts.map(n=>n.off).filter(o=>o && !c.offPortal.includes(o)))];
+    return {c, nts, rel, quem, meses, abre,
+      contato: quem!==undefined ? rel.dec.find(l=>l.ex.includes(quem)) : null,
+      principal: emps.slice().sort((a,b)=>b.leads.length-a.leads.length)[0] || null,
+      // prioridade de 1 a 3: projeto recente (até 6 meses), mais de uma notícia e 10 ou mais decisores conhecidos
+      calor: Math.max(1, (meses!==null && meses<=6 ? 1 : 0) + (nts.length>=2 ? 1 : 0) + (rel.dec.length>=10 ? 1 : 0))};
+  });
+  const reativar = casos.filter(x=>!x.c.ativo && x.rel.dec.length)
+    .sort((a,b)=>b.calor-a.calor || (a.meses??99)-(b.meses??99) || b.rel.dec.length-a.rel.dec.length);
+  const expandir = casos.filter(x=>x.abre.length)
+    .sort((a,b)=>b.c.ativo-a.c.ativo || b.rel.dec.length-a.rel.dec.length);
+  const unicos = new Set(reativar.concat(expandir));
+  return oportunidades.cache = {reativar, expandir, citados:porCli.size,
+    decisores:[...unicos].reduce((s,x)=>s+x.rel.dec.length, 0)};
+}
+function tempoFim(x){
+  if(x.meses===null) return x.c.rotulo;
+  return "terminou " + (x.meses<=0 ? "este mês" : x.meses===1 ? "há 1 mês" : "há "+x.meses+" meses");
+}
+function quemChama(x){
+  if(x.quem===undefined) return '<span class="op-sub">Ninguém da Peers com decisor conhecido lá.</span>';
+  const ex = CONEXOES.execs[x.quem];
+  return '<b>'+esc(nomeCurto(ex.nome))+'</b> ('+esc(ex.nivel)+') conhece '+x.rel.cont.get(x.quem)+(x.rel.cont.get(x.quem)===1?' decisor':' decisores')+' lá' +
+    (x.contato ? '<br><span class="op-sub">Contato mais sênior: ' + (x.contato.url ? '<a href="'+esc(x.contato.url)+'" target="_blank" rel="noopener">'+esc(x.contato.nome)+'</a>' : esc(x.contato.nome)) +
+      ', '+esc(x.contato.cargo)+'</span>' : '');
+}
+function noticiaOport(n, extra){
+  return (n.url ? '<a href="'+esc(n.url)+'" target="_blank" rel="noopener">📰 '+esc(n.titulo)+'</a>' : '<b>📰 '+esc(n.titulo)+'</b>') +
+    ' · '+formatarData(n.data).slice(0,5) + (extra ? ' <span class="op-mais">+'+extra+(extra===1?' notícia':' notícias')+'</span>' : '');
+}
+function botoesOport(k, x){
+  return '<span class="op-bts"><button type="button" class="pri" data-opcopiar="'+k+'">Copiar mensagem</button>' +
+    (x.principal ? '<button type="button" class="sec" data-opconx="'+x.principal.i+'">Ver conexões</button>' : '') + '</span>';
+}
+function cartaoReativar(x, k){
+  const c = x.c, n = x.nts[0];
+  return '<div class="op-card">' +
+    '<div class="op-top"><h4>'+esc(c.nome)+tagDoCliente(c)+'</h4><span class="op-calor" title="Prioridade: projeto recente, mais de uma notícia e 10 ou mais decisores conhecidos">' +
+      '●'.repeat(x.calor)+'<span style="opacity:.25">'+'●'.repeat(3-x.calor)+'</span></span></div>' +
+    '<div class="op-meta">'+esc(tempoFim(x))+'<br>'+c.projetos+(c.projetos===1?' projeto':' projetos') +
+      (c.ultimo ? ' · último: '+esc(c.ultimo)+(c.offering ? ' ('+esc(c.offering)+(c.fim ? ', fim '+esc(c.fim) : '')+')' : '') : '')+'</div>' +
+    '<div class="op-bloco"><span class="op-rot">Por que agora</span>'+noticiaOport(n, x.nts.length-1) +
+      (n.leitura ? '<div class="op-porque">'+esc(n.leitura)+'</div>' : '')+'</div>' +
+    '<div class="op-bloco"><span class="op-rot">Quem chama</span>'+quemChama(x)+'</div>' +
+    '<div class="op-pe"><span>'+([["Líder", c.lider], ["MD", c.md]].filter(y=>y[1]).length ? 'Na época: '+[["Líder", c.lider], ["MD", c.md]].filter(y=>y[1]).map(y=>y[0]+' '+esc(nomeCurto(y[1]))).join(" · ")+'<br>' : '') +
+      x.rel.dec.length+' decisores · '+x.rel.cont.size+(x.rel.cont.size===1?' executivo':' executivos')+' da Peers</span>'+botoesOport(k, x)+'</div></div>';
+}
+function cartaoExpandir(x, k){
+  const c = x.c, n = x.nts.find(t=>x.abre.includes(t.off)) || x.nts[0];
+  const chips = (l, cls)=>l.map(o=>'<span class="op-chip '+cls+'">'+esc(o)+'</span>').join("");
+  return '<div class="op-card">' +
+    '<div class="op-top"><h4>'+esc(c.nome)+tagDoCliente(c)+'</h4></div>' +
+    '<div class="op-of"><span class="op-rot2">Já fez</span>'+(c.offPortal.length ? chips(c.offPortal, "feita") : '<span class="op-sub">—</span>') +
+      '<span class="op-seta">→</span><span class="op-rot2">Abre</span>'+chips(x.abre, "abre")+'</div>' +
+    '<div class="op-bloco">'+noticiaOport(n, 0)+'</div>' +
+    (n.angulo ? '<div class="op-ia"><span class="op-rot">Ângulo Peers da notícia</span>'+esc(n.angulo)+'</div>' : '') +
+    '<div class="op-bloco"><span class="op-rot">Quem chama</span>'+quemChama(x)+'</div>' +
+    '<div class="op-pe"><span>'+(c.md ? 'MD da conta: '+esc(nomeCurto(c.md)) : '')+'</span>'+botoesOport(k, x)+'</div></div>';
+}
+function renderOportunidades(){
+  const o = oportunidades(), v = estadoOport.visao;
+  const lista = v==="reativar" ? o.reativar : o.expandir;
+  estadoOport.lista = lista;
+  const kpi = (cls, rot, val, sub)=>'<div class="kpi '+cls+'"><div class="kpi-label">'+rot+'</div><div class="kpi-value">'+val+'</div><div class="kpi-sub">'+sub+'</div></div>';
+  return '<div class="sec-head"><h2>Oportunidades</h2><p>Quem ligar esta semana e por quê: clientes e ex-clientes da Peers com notícia nova no portal ' +
+      '(últimos '+DIAS_OPORT+' dias) e alguém da Peers que conhece decisores lá. Base de clientes de '+esc(CLIENTES.geradoEm)+'. Visível só para quem tem acesso à base de clientes.</p></div>' +
+    '<div class="kpi-strip">' + kpi("a", "Reativar contas", o.reativar.length, "ex-clientes com notícia e conexão") +
+      kpi("b", "Expandir contas", o.expandir.length, "notícia abre offering nova") +
+      kpi("c", "Clientes no noticiário", o.citados, "de "+CLIENTES.peers.length+", nos últimos "+DIAS_OPORT+" dias") +
+      kpi("d", "Decisores conhecidos", o.decisores, "nesses clientes") + '</div>' +
+    '<div class="op-subs">' + [["reativar","Reativar contas",o.reativar.length],["expandir","Expandir contas",o.expandir.length]]
+      .map(([id, t, q])=>'<button type="button" data-opv="'+id+'" class="'+(v===id?'on':'')+'">'+t+'<b>'+q+'</b></button>').join("") + '</div>' +
+    '<p class="op-regra">' + (v==="reativar"
+      ? 'Ex-clientes: o último projeto já terminou, saiu notícia nos últimos '+DIAS_OPORT+' dias e alguém da Peers conhece decisores lá. Prioridade (●●●): projeto terminado há até 6 meses, mais de uma notícia e 10 ou mais decisores conhecidos. "Quem chama" segue a regra da planilha de relacionamentos.'
+      : 'Clientes e ex-clientes: a notícia aponta para uma offering que a Peers ainda não fez ali, pela carteira de projetos. Clientes ativos primeiro.') + '</p>' +
+    (lista.length ? '<div class="op-grid">' + lista.map((x, k)=>v==="reativar" ? cartaoReativar(x, k) : cartaoExpandir(x, k)).join("") + '</div>'
+      : '<div class="card"><div class="vazio">Nenhuma oportunidade nos últimos '+DIAS_OPORT+' dias.</div></div>');
+}
+// Rascunho de mensagem para quem chama: a notícia, o histórico da Peers no cliente e o contato que essa pessoa tem lá
+function copiarOport(k, botao){
+  const x = estadoOport.lista[k], c = x.c;
+  const n = estadoOport.visao==="expandir" ? (x.nts.find(t=>x.abre.includes(t.off)) || x.nts[0]) : x.nts[0];
+  const ex = x.quem!==undefined ? CONEXOES.execs[x.quem] : null;
+  const txt = (ex ? 'Oi, '+nomeCurto(ex.nome).split(" ")[0]+'! ' : '') + 'Vi no portal de R&I: '+n.titulo+'. ' +
+    (estadoOport.visao==="expandir"
+      ? 'A Peers já fez '+(c.offPortal.join(", ") || "projetos")+' na '+c.nome+', e isso abre conversa de '+x.abre.join(" e ")+'. '
+      : 'A '+c.nome+' foi cliente da Peers'+(c.ultimo ? ' (último projeto: '+c.ultimo+(c.fim ? ', até '+c.fim : '')+')' : '')+'. ') +
+    (x.contato ? 'Você conhece '+x.contato.nome+' ('+x.contato.cargo+') lá. ' : '') + 'Topa puxarmos uma conversa?';
+  try{ navigator.clipboard.writeText(txt); botao.textContent = "Mensagem copiada"; }
+  catch(e2){ prompt("Copie a mensagem:", txt); }
+}
+function ligarOportunidades(){
+  if(estado.aba!=="oportunidades") return;
+  document.querySelectorAll("[data-opv]").forEach(b=>b.addEventListener("click", ()=>{ estadoOport.visao = b.dataset.opv; renderizar(); }));
+  document.querySelectorAll("[data-opcopiar]").forEach(b=>b.addEventListener("click", ()=>copiarOport(+b.dataset.opcopiar, b)));
+  document.querySelectorAll("[data-opconx]").forEach(b=>b.addEventListener("click", ()=>irConexoes(+b.dataset.opconx)));
+}
+
 function irConexoes(i){
   if(typeof fecharModal === "function"){ try{ fecharModal("Ficha"); }catch(e){} }
   estadoConx.busca = ""; estadoConx.industria = "todas"; estadoConx.aberta = i;
@@ -1805,6 +1979,7 @@ function renderizar(){
   else if(estado.aba==="concorrencia") c.innerHTML = renderConcorrencia();
   else if(estado.aba==="agenda") c.innerHTML = renderAgenda();
   else if(estado.aba==="conexoes") c.innerHTML = CONEXOES ? renderConexoes() : '';
+  else if(estado.aba==="oportunidades") c.innerHTML = temOportunidades() ? renderOportunidades() : '';
   if(estado.modoVisualizacao==="comercial") c.insertAdjacentHTML("afterbegin", barraComercial());
   atualizarContador();
   if(estado.aba==="home") ajustarManchetes();
@@ -3386,6 +3561,7 @@ function renderAgenda(){
    ========================================================= */
 function ligarEventos(){
   ligarConexoes();
+  ligarOportunidades();
   document.querySelectorAll(".chk").forEach(chk=>{
     chk.addEventListener("change", ()=>{
       const key = chk.dataset.tipo+":"+chk.dataset.id;
@@ -3984,14 +4160,14 @@ if(window.speechSynthesis) speechSynthesis.onvoiceschanged = preencherVozes;
 const CLIENTES = { nomes: [], peers: [], proprios: [], arquivo: "", geradoEm: "", soCitados: false };
 const STATUS_CLI = {"Cliente ativo":"cliente ativo", "Finalizado até 6 meses":"ex-cliente, até 6 meses",
   "Finalizado de 6 a 12 meses":"ex-cliente, de 6 a 12 meses", "Finalizado há mais de 12 meses":"ex-cliente, há mais de 12 meses"};
-// nome de uma palavra só pode ser palavra comum: só conta escrito com maiúscula na notícia. (Sem lista de nomes aqui:
-// o repositório é público e os clientes são confidenciais.)
-const palavraSo = chave => !chave.includes(" ");
+// o nome do cliente só conta escrito com maiúscula na notícia ("Mercado Livre" sim, "mercado livre de energia" não).
+// Sem lista de nomes aqui: o repositório é público e os clientes são confidenciais.
 function carregarClientesPeers(c){
   CLIENTES.geradoEm = c.geradoEm || "";
-  CLIENTES.peers = (c.clientes || []).map(([nome, status, projetos, ultimo, offering, fim, offerings, lider, n1, md])=>({
+  CLIENTES.peers = (c.clientes || []).map(([nome, status, projetos, ultimo, offering, fim, offerings, lider, n1, md, offPortal])=>({
     nome, chave: chaveNome(nome), tipo: "Cliente", peers: true, ativo: status==="Cliente ativo",
-    rotulo: STATUS_CLI[status] || "cliente", projetos, ultimo, offering, fim, offerings: offerings || [], lider, n1, md
+    rotulo: STATUS_CLI[status] || "cliente", projetos, ultimo, offering, fim, offerings: offerings || [], lider, n1, md,
+    offPortal: offPortal || []      // as offerings já feitas, com os nomes do portal (para a aba Oportunidades)
   })).filter(x=>x.chave);
   juntarClientes();
 }
@@ -4009,7 +4185,7 @@ function citaComMaiuscula(texto, chave){
   const t = " " + String(texto||"").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^A-Za-z0-9]+/g," ") + " ";
   const re = new RegExp(" " + chave + " ", "gi");   // a chave só tem letras, números e espaços
   let m;
-  while((m = re.exec(t))){ if(/[A-Z]/.test(m[0].charAt(1))) return true; re.lastIndex--; }
+  while((m = re.exec(t))){ if(m[0].trim().split(" ").every(p=>/^[A-Z0-9]/.test(p))) return true; re.lastIndex--; }
   return false;
 }
 const normTxt = s => (" " + String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g," ") + " ").replace(/\s+/g," ");
@@ -4024,8 +4200,7 @@ function chaveNome(nome){
 function clientesCitados(texto){
   if(!CLIENTES.nomes.length) return [];
   const t = normTxt(texto);
-  return CLIENTES.nomes.filter(c=>t.includes(" "+c.chave+" ") &&
-    (!palavraSo(c.chave) || citaComMaiuscula(texto, c.chave)));
+  return CLIENTES.nomes.filter(c=>t.includes(" "+c.chave+" ") && citaComMaiuscula(texto, c.chave));
 }
 const textoRadar = i => [i.manchete, i.resumo, i.porQueImporta, i.anguloPeers].join(" ");
 const textoMov = m => [m.player, m.tese, m.leitura].join(" ");
