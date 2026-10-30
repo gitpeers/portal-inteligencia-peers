@@ -812,6 +812,7 @@ async function carregarDados(){
     // itens que a rotina de IA descartou (sem relação com negócios) ficam guardados nos dados, mas não aparecem
     radar: radar.filter(i=>!i.oculto), movimentos: movimentos.filter(m=>!m.oculto), agenda,
     analises: {financas: analises.financas || {}, indicadores: analises.indicadores || {}, concorrencia: analises.concorrencia || null,
+               concorrenciaBriefing: analises.concorrenciaBriefing || null,     // síntese da IA para o Briefing de Concorrentes
                aprofundamento: analises.aprofundamento || {}, sowhat: analises.sowhat || {}},
     // visão por player dos Indicadores, por "segmento|indicador"; sem ela, os indicadores não ficam clicáveis
     aprofundamento: Object.fromEntries(((porNome.aprofundamento || {}).pontes || []).map(p=>[p.segmento+"|"+p.indicador, p])),
@@ -1418,7 +1419,7 @@ async function baixarPlanilhaConx(botao){
   botao.disabled = true; botao.textContent = "Gerando…";
   try{
     await carregarExcelJS();
-    const execs = CONEXOES.execs, NAVY = "FF0B1F3A";
+    const execs = CONEXOES.execs, NAVY = "FF011334";   // Peers Neue Blue (Peers Design System)
     const ordF = ["Forte","Médio","Fraco","Nenhum"];
     const rels = [...estadoConx.sel].map(i=>relacaoEmpresa(CONEXOES.empresas[i]))
       .sort((a,b)=>ordF.indexOf(a.forca)-ordF.indexOf(b.forca) || b.dec.length-a.dec.length || a.e.nome.localeCompare(b.e.nome));
@@ -1428,7 +1429,7 @@ async function baixarPlanilhaConx(botao){
     const pr = wb.addWorksheet("Premissas", {views:[{showGridLines:false}]});
     const fina = {bottom:{style:"thin", color:{argb:"FFDDE3EA"}}};
     const link = (cel, url, texto)=>{ cel.value = {text:texto||url, hyperlink:url}; cel.font = {color:{argb:"FF2F63B0"}, underline:true}; };
-    const LIMA = "FFE4FF00";
+    const LIMA = "FFE1FF00";   // Peers Neue Lime
     // link para outra aba: fórmula HYPERLINK, que o Excel sempre abre (o hyperlink interno do ExcelJS sai como externo)
     const interno = (alvo, texto)=>({formula:'HYPERLINK("#'+alvo+'","'+String(texto).replace(/"/g,'""')+'")', result:texto});
     const cabecalho = (ws, titulos, larguras)=>{
@@ -1440,14 +1441,32 @@ async function baixarPlanilhaConx(botao){
       larguras.forEach((w, j)=>{ ws.getColumn(j+1).width = w; });
     };
     // Faixa da Peers no topo de cada aba: logo e título sobre o azul-marinho e uma linha verde-limão com o link de navegação
-    const logoEl = document.querySelector(".peers-logo img");
-    const logo = logoEl && /^data:image\/png/.test(logoEl.src) ? wb.addImage({base64:logoEl.src, extension:"png"}) : null;
+    // a logo do site é um PNG de paleta que o Excel mostra escuro: redesenhada em branco, com fundo transparente
+    const logoBranca = await new Promise(ok=>{
+      const el = document.querySelector(".peers-logo img");
+      if(!el) return ok(null);
+      const img = new Image();
+      img.onload = ()=>{
+        try{
+          const cv = document.createElement("canvas"); cv.width = img.naturalWidth; cv.height = img.naturalHeight;
+          const cx = cv.getContext("2d"); cx.drawImage(img, 0, 0);
+          const px = cx.getImageData(0, 0, cv.width, cv.height);
+          for(let k=0; k<px.data.length; k+=4){ px.data[k] = px.data[k+1] = px.data[k+2] = 255; }
+          cx.putImageData(px, 0, 0);
+          ok({url:cv.toDataURL("image/png"), prop:img.naturalWidth/img.naturalHeight});
+        }catch(e){ ok(null); }
+      };
+      img.onerror = ()=>ok(null);
+      img.src = el.src;
+    });
+    const logo = logoBranca ? wb.addImage({base64:logoBranca.url, extension:"png"}) : null;
+    const logoAlt = 30, logoLarg = logoBranca ? Math.round(logoAlt*logoBranca.prop) : 0;   // sem distorcer
     const titulo = (ws, ncols, a1, a2, link4, extra4)=>{
       ws.properties.tabColor = {argb:NAVY};
       const pinta = (linha, cor)=>{ for(let j=1; j<=ncols; j++) ws.getCell(linha, j).fill = {type:"pattern", pattern:"solid", fgColor:{argb:cor}}; };
       [1,2,3].forEach(l=>pinta(l, NAVY)); pinta(4, LIMA);
-      ws.getRow(1).height = 30; ws.getRow(2).height = 24; ws.getRow(3).height = 20; ws.getRow(4).height = 20;
-      if(logo !== null) ws.addImage(logo, {tl:{col:0.12, row:0.3}, ext:{width:182, height:20}});
+      ws.getRow(1).height = 32; ws.getRow(2).height = 24; ws.getRow(3).height = 20; ws.getRow(4).height = 20;
+      if(logo !== null) ws.addImage(logo, {tl:{col:0.06, row:0.12}, ext:{width:logoLarg, height:logoAlt}});
       else { ws.getCell("A1").value = "PEERS"; ws.getCell("A1").font = {size:16, bold:true, color:{argb:LIMA}}; }
       ws.getCell("A2").value = a1; ws.getCell("A2").font = {size:16, bold:true, color:{argb:"FFFFFFFF"}};
       ws.getCell("A3").value = a2; ws.getCell("A3").font = {size:9.5, color:{argb:"FFC8D2E0"}};
@@ -1469,7 +1488,7 @@ async function baixarPlanilhaConx(botao){
       r++; faixa[x.e.i] = r;
       const fx = ct.getRow(r);
       fx.values = [x.e.nome, x.e.nome.toUpperCase()+"  ·  "+x.dec.length+" decisores  ·  "+x.cont.size+" executivos da Peers"];
-      for(let j=1; j<=8; j++){ const c = fx.getCell(j); c.fill = {type:"pattern", pattern:"solid", fgColor:{argb:"FFE1E8F0"}}; c.font = {bold:true, color:{argb:NAVY}}; }
+      for(let j=1; j<=8; j++){ const c = fx.getCell(j); c.fill = {type:"pattern", pattern:"solid", fgColor:{argb:"FFD8E8EE"}}; c.font = {bold:true, color:{argb:NAVY}}; }
       fx.height = 22;
       x.ordem.forEach(ex=>x.dec.filter(l=>l.ex.includes(ex)).forEach(l=>{
         r++;
@@ -2943,8 +2962,9 @@ function carregarJsPDF(){
   });
 }
 
-// Logo do concorrente: o ícone do site dele (campo "site" da lista de concorrentes ou, sem ele, nome-sem-espaços.com).
-// Se não carregar em 3 segundos, o PDF usa o círculo com a sigla.
+// Logo do concorrente: a imagem guardada no campo "logo" da lista de concorrentes (baixada pelo computador, porque os
+// serviços de ícone não deixam o navegador usar a imagem num PDF); sem ela, tenta o ícone do site. Vira PNG num canvas
+// (o campo pode ter .ico). Se não carregar em 3 segundos, o PDF usa o círculo com a sigla.
 function logoConcorrente(c){
   const dominio = (c.site || (String(c.nome||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/&/g,"and").replace(/[^a-z0-9]/g,"")+".com"))
     .replace(/^https?:\/\//,"").replace(/\/.*$/,"");
@@ -2954,14 +2974,27 @@ function logoConcorrente(c){
     img.onload = ()=>{
       clearTimeout(fim);
       try{
-        if(img.naturalWidth < 32) return ok(null);           // ícone genérico de "sem site": usa a sigla
+        if(img.naturalWidth < (c.logo ? 8 : 32)) return ok(null);    // ícone genérico de "sem site": usa a sigla
         const cv = document.createElement("canvas"); cv.width = cv.height = 64;
         cv.getContext("2d").drawImage(img, 0, 0, 64, 64);
         ok(cv.toDataURL("image/png"));
       }catch(e){ ok(null); }
     };
     img.onerror = ()=>{ clearTimeout(fim); ok(null); };
-    img.src = "https://www.google.com/s2/favicons?sz=64&domain="+encodeURIComponent(dominio);
+    img.src = c.logo || ("https://www.google.com/s2/favicons?sz=64&domain="+encodeURIComponent(dominio));
+  });
+}
+
+// Logo da Peers que está na página (o PNG embutido no HTML), redesenhada num canvas como PNG comum, com a proporção
+function logoDoSite(seletor){
+  return new Promise(ok=>{
+    const el = document.querySelector(seletor);
+    if(!el) return ok(null);
+    const img = new Image();
+    img.onload = ()=>{ try{ const cv = document.createElement("canvas"); cv.width = img.naturalWidth; cv.height = img.naturalHeight;
+      cv.getContext("2d").drawImage(img, 0, 0); ok({url:cv.toDataURL("image/png"), prop:img.naturalWidth/img.naturalHeight}); }catch(e){ ok(null); } };
+    img.onerror = ()=>ok(null);
+    img.src = el.src;
   });
 }
 
@@ -2982,6 +3015,7 @@ async function briefingConcorrentes(dias){
     const ids = [...new Set(itens.map(i=>i.concorrente))];
     const logos = {};
     await Promise.all(ids.map(async id=>{ logos[id] = await logoConcorrente(concorrenteDe(id)); }));
+    const logoCapa = await logoDoSite(".header .peers-logo img");
 
     const B = DADOS.analises.concorrenciaBriefing;
     const ma = itens.filter(i=>/aquisi|fus|participa/i.test(i.tipo));
@@ -2999,7 +3033,7 @@ async function briefingConcorrentes(dias){
 
     const doc = new window.jspdf.jsPDF({unit:"mm", format:"a4"});
     const W = 210, H = 297, M = 18, LARG = W - 2*M;
-    const NAVY = [0,18,51], LIMA = [228,255,0], TINTA = [11,31,58], CINZA = [122,133,151], AZUL = [47,99,176];
+    const NAVY = [1,19,52], LIMA = [225,255,0], TINTA = [1,19,52], CINZA = [103,113,133], AZUL = [47,99,176];   // cores do Peers Design System
     // a fonte padrão do PDF só tem o alfabeto latino: troca o que ela não desenha
     const t = s=>String(s||"").replace(/[‐-―−]/g,"-").replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/…/g,"...")
       .replace(/→/g,"->").replace(/[^\x20-\x7E\xA0-\xFF\n•–—€]/g,"");
@@ -3008,9 +3042,10 @@ async function briefingConcorrentes(dias){
     // capa
     doc.setFillColor(...NAVY); doc.rect(0, 0, W, H, "F");
     doc.setFillColor(...LIMA); doc.rect(0, 0, W, 12, "F"); doc.rect(0, H-12, W, 12, "F");
-    doc.setFont("helvetica","bold"); doc.setFontSize(34); doc.setTextColor(...LIMA); doc.text("PEERS", M, 52);
-    doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(255,255,255); doc.text("Consulting + Technology", M, 59);
-    doc.setFont("helvetica","bold"); doc.setFontSize(30);
+    if(logoCapa) doc.addImage(logoCapa.url, "PNG", M, 40, 70, 70/logoCapa.prop);
+    else { doc.setFont("helvetica","bold"); doc.setFontSize(34); doc.setTextColor(...LIMA); doc.text("PEERS", M, 52);
+      doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(255,255,255); doc.text("Consulting + Technology", M, 59); }
+    doc.setFont("helvetica","bold"); doc.setFontSize(30); doc.setTextColor(255,255,255);
     doc.text(nomeEd ? ["Briefing "+nomeEd, "de Concorrentes"] : ["Briefing", "de Concorrentes"], M, 150, {lineHeightFactor:1.25});
     doc.setFillColor(...LIMA); doc.rect(M, 176, 40, 2, "F");
     doc.setFont("helvetica","normal"); doc.setFontSize(12); doc.setTextColor(223,230,240);
@@ -3022,7 +3057,8 @@ async function briefingConcorrentes(dias){
     const novaPagina = ()=>{
       doc.addPage();
       doc.setFillColor(...NAVY); doc.rect(0, 0, W, 14, "F");
-      doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.setTextColor(...LIMA); doc.text("PEERS", M, 9.5);
+      if(logoCapa) doc.addImage(logoCapa.url, "PNG", M, 4.2, 30, 30/logoCapa.prop);
+      else { doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.setTextColor(...LIMA); doc.text("PEERS", M, 9.5); }
       doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(255,255,255);
       doc.text(t(titulo+" | "+br(iso(hoje))), W-M, 9.5, {align:"right"});
       y = 26;
@@ -3090,8 +3126,8 @@ async function briefingConcorrentes(dias){
     titulo2("2. Conclusão e implicações para a Peers");
     conclusao.forEach(p=>{ rico([[p, false]]); y += 2.5; });
     y += 2;
-    if(soWhat) caixa([220,232,240], "So What para a Peers", [{partes:[[soWhat, false]]}]);
-    if(recs.length) caixa([242,255,153], "Recomendações de Ação para a Peers",
+    if(soWhat) caixa([216,232,238], "So What para a Peers", [{partes:[[soWhat, false]]}]);
+    if(recs.length) caixa([243,255,153], "Recomendações de Ação para a Peers",
       recs.map(r=>({partes:[[r.tema+":", true], [r.texto, false]], marcador:true})));
     titulo2("3. M&A no setor de consultoria");
     if(ma.length){
@@ -3116,6 +3152,9 @@ async function briefingConcorrentes(dias){
         fonte(12, true); doc.text(t(doC[0].nome), M+10, y); y += 6.5;
         doC.forEach(i=>{
           rico([[br(i.data)+".", true], [(i.fato || i.manchete)+(i.sinal ? " "+i.sinal : ""), false]], {recuo:5, marcador:true});
+          if(i.impacto && (i.selo==="Ameaça" || i.selo==="Oportunidade")){   // o que muda para a Peers, só onde há efeito
+            y += 0.6; rico([["Para a Peers ("+i.selo.toLowerCase()+"):", true], [i.impacto, false]], {recuo:5, tam:9, cor:[47,99,176]});
+          }
           y += 0.8; fonteDe(i);
         });
       });
