@@ -32,10 +32,14 @@ button,input,select,textarea{font-family:inherit}
 
 
 /* ---- HEADER ---- */
-.header{background:linear-gradient(160deg,var(--navy) 0%,var(--navy-deep) 100%);padding:28px 40px 26px;display:flex;
-  align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
-.header h1{color:#fff;font-size:1.75rem;font-weight:300;letter-spacing:-.015em;line-height:1.12;margin-top:14px}
-.header p{color:rgba(255,255,255,.72);font-size:.82rem;margin-top:6px}
+/* cabeçalho compacto: logo e título numa linha, ações numa linha à direita */
+.header{background:linear-gradient(160deg,var(--navy) 0%,var(--navy-deep) 100%);padding:12px 40px;display:flex;
+  align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px 16px}
+.header-marca{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.header-marca .sep{width:1px;height:26px;background:rgba(255,255,255,.22)}
+.header h1{color:#fff;font-size:1.15rem;font-weight:400;letter-spacing:-.01em;line-height:1.15}
+.header p{color:rgba(255,255,255,.65);font-size:.72rem;margin-top:2px}
+.header-acoes{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .peers-logo{display:block;line-height:0}
 .peers-logo img{display:block;height:22px;width:auto}
 .header-badge{background:var(--neon);color:var(--navy);font-weight:700;font-size:.68rem;letter-spacing:.12em;
@@ -519,7 +523,7 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 ::-webkit-scrollbar-thumb{background:var(--grey-strong);border-radius:4px}
 @media(max-width:1100px){.kpi-strip{grid-template-columns:repeat(2,1fr)}.grid-2{grid-template-columns:1fr!important}
   .content,.header,.nav-tabs,.filters-bar,.filters-chips{padding-left:16px;padding-right:16px}}
-@media(max-width:560px){.kpi-strip{grid-template-columns:1fr}.header h1{font-size:1.4rem}.sec-head h2{font-size:1.35rem}}
+@media(max-width:560px){.kpi-strip{grid-template-columns:1fr}.header h1{font-size:1.05rem}.header{padding:10px 16px}.header-marca .sep{display:none}.sec-head h2{font-size:1.35rem}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
@@ -549,18 +553,14 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 </div>
 
 <div class="header">
-  <div>
-    <div class="peers-logo"><img src="data:image/png;base64,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" alt="Peers Consulting + Technology" width="200" height="22"></div>
-    <h1>Portal de Inteligência Peers</h1>
-    <p id="headerSub"></p>
+  <div class="header-marca">
+    <div class="peers-logo"><img src="data:image/png;base64,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" alt="Peers Consulting + Technology" width="200" height="22"></div><span class="sep"></span>
+    <div><h1>Portal de Inteligência Peers</h1><p id="headerSub"></p></div>
   </div>
-  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px">
+  <div class="header-acoes">
     <div class="header-badge">EDIÇÃO DE 05/10/2026</div>
-    <div class="header-hint">Marque itens em qualquer seção e gere o briefing</div>
-    <div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end">
-      <button id="btnConc" onclick="irBriefingConcorrentes()">Briefing de concorrentes</button>
-      <button id="btnConta" onclick="abrirConta()">Briefing de conta</button>
-    </div>
+    <button id="btnConc" onclick="irBriefingConcorrentes()" title="PDF com os movimentos dos concorrentes do período escolhido">Briefing de concorrentes</button>
+    <button id="btnConta" onclick="abrirConta()" title="Marque itens em qualquer seção e gere o briefing">Briefing de conta</button>
     <div class="header-user"><span id="usuarioEmail"></span><button onclick="sair()">Sair</button></div>
   </div>
 </div>
@@ -1428,24 +1428,39 @@ async function baixarPlanilhaConx(botao){
     const pr = wb.addWorksheet("Premissas", {views:[{showGridLines:false}]});
     const fina = {bottom:{style:"thin", color:{argb:"FFDDE3EA"}}};
     const link = (cel, url, texto)=>{ cel.value = {text:texto||url, hyperlink:url}; cel.font = {color:{argb:"FF2F63B0"}, underline:true}; };
+    const LIMA = "FFE4FF00";
+    // link para outra aba: fórmula HYPERLINK, que o Excel sempre abre (o hyperlink interno do ExcelJS sai como externo)
+    const interno = (alvo, texto)=>({formula:'HYPERLINK("#'+alvo+'","'+String(texto).replace(/"/g,'""')+'")', result:texto});
     const cabecalho = (ws, titulos, larguras)=>{
       const r = ws.getRow(5);
       titulos.forEach((t, j)=>{ const c = r.getCell(j+1); c.value = t; c.font = {bold:true, color:{argb:"FFFFFFFF"}};
-        c.fill = {type:"pattern", pattern:"solid", fgColor:{argb:NAVY}}; c.alignment = {vertical:"middle", wrapText:true}; });
+        c.fill = {type:"pattern", pattern:"solid", fgColor:{argb:NAVY}}; c.alignment = {vertical:"middle", wrapText:true};
+        c.border = {bottom:{style:"medium", color:{argb:LIMA}}}; });
       r.height = 40;
       larguras.forEach((w, j)=>{ ws.getColumn(j+1).width = w; });
     };
-    const titulo = (ws, a1, a2)=>{
-      ws.getCell("A1").value = a1; ws.getCell("A1").font = {size:16, bold:true, color:{argb:NAVY}};
-      ws.getCell("A2").value = a2; ws.getCell("A2").font = {size:10, color:{argb:"FF4A5462"}};
+    // Faixa da Peers no topo de cada aba: logo e título sobre o azul-marinho e uma linha verde-limão com o link de navegação
+    const logoEl = document.querySelector(".peers-logo img");
+    const logo = logoEl && /^data:image\/png/.test(logoEl.src) ? wb.addImage({base64:logoEl.src, extension:"png"}) : null;
+    const titulo = (ws, ncols, a1, a2, link4, extra4)=>{
+      ws.properties.tabColor = {argb:NAVY};
+      const pinta = (linha, cor)=>{ for(let j=1; j<=ncols; j++) ws.getCell(linha, j).fill = {type:"pattern", pattern:"solid", fgColor:{argb:cor}}; };
+      [1,2,3].forEach(l=>pinta(l, NAVY)); pinta(4, LIMA);
+      ws.getRow(1).height = 30; ws.getRow(2).height = 24; ws.getRow(3).height = 20; ws.getRow(4).height = 20;
+      if(logo !== null) ws.addImage(logo, {tl:{col:0.12, row:0.3}, ext:{width:182, height:20}});
+      else { ws.getCell("A1").value = "PEERS"; ws.getCell("A1").font = {size:16, bold:true, color:{argb:LIMA}}; }
+      ws.getCell("A2").value = a1; ws.getCell("A2").font = {size:16, bold:true, color:{argb:"FFFFFFFF"}};
+      ws.getCell("A3").value = a2; ws.getCell("A3").font = {size:9.5, color:{argb:"FFC8D2E0"}};
+      if(link4){ ws.getCell("A4").value = link4; ws.getCell("A4").font = {size:10, bold:true, color:{argb:NAVY}, underline:true}; }
+      if(extra4){ ws.getCell(4, extra4.col).value = extra4.texto; ws.getCell(4, extra4.col).font = {size:9, italic:true, color:{argb:NAVY}}; }
+      [1,2,3,4].forEach(l=>{ for(let j=1; j<=ncols; j++) ws.getCell(l, j).alignment = {vertical:"middle"}; });
     };
     const hoje = new Date().toLocaleDateString("pt-BR");
 
     // Contatos (antes, para os links da visão geral apontarem para a faixa de cada empresa)
-    titulo(ct, "Quem da Peers conhece quem em cada empresa",
-      "Cada linha é um executivo da Peers e um decisor que ele tem no LinkedIn, na ordem de \"Quem procurar primeiro\". Use os botões 1 e 2 à esquerda para recolher ou abrir as empresas. Em amarelo: outro executivo também conhece o contato.");
-    ct.getCell("A3").value = {text:"← Voltar para a visão geral", hyperlink:"#'Relacionamentos Peers'!A1"};
-    ct.getCell("A3").font = {color:{argb:"FF2F63B0"}, underline:true};
+    titulo(ct, 8, "Quem da Peers conhece quem em cada empresa",
+      "Cada linha é um executivo da Peers e um decisor que ele tem no LinkedIn, na ordem de \"Quem procurar primeiro\". Use os botões 1 e 2 à esquerda para recolher ou abrir as empresas. Em amarelo: outro executivo também conhece o contato.",
+      interno("'Relacionamentos Peers'!A1", "← Voltar para a visão geral"));
     cabecalho(ct, ["Empresa","Executivo Peers","Nível","Contato","Cargo do contato","Senioridade","Também conhece esse contato","LinkedIn do contato"],
       [22, 34, 7, 28, 52, 15, 50, 52]);
     let r = 5;
@@ -1474,12 +1489,10 @@ async function baixarPlanilhaConx(botao){
 
     // Visão geral
     const comDec = rels.filter(x=>x.dec.length).length;
-    titulo(ov, "Onde a Peers tem relacionamento nas empresas selecionadas",
-      "Temos contato com decisores em "+comDec+" das "+rels.length+" empresas. Para cada uma: quem da Peers procurar primeiro e quem essa pessoa conhece lá. Clique no nome da empresa para ver todos os contatos.");
-    ov.getCell("A3").value = "Mapa de Conexões "+CONEXOES.versao+" ("+CONEXOES.geradoEm+") · planilha gerada no portal em "+hoje+".   Forte = 10+ decisores e 3+ executivos · Médio = 3 a 9 decisores · Fraco = 1 ou 2 · Nenhum = não achamos decisor.";
-    ov.getCell("A3").font = {size:9, italic:true, color:{argb:"FF677185"}};
-    ov.getCell("A4").value = {text:"Ver premissas e limites →", hyperlink:"#'Premissas'!A1"};
-    ov.getCell("A4").font = {size:10, color:{argb:"FF2F63B0"}, underline:true};
+    titulo(ov, 9, "Onde a Peers tem relacionamento nas empresas selecionadas",
+      "Temos contato com decisores em "+comDec+" das "+rels.length+" empresas. Para cada uma: quem da Peers procurar primeiro e quem essa pessoa conhece lá. Clique no nome da empresa para ver todos os contatos.",
+      interno("'Premissas'!A1", "Ver premissas e limites →"),
+      {col:3, texto:"Mapa de Conexões "+CONEXOES.versao+" ("+CONEXOES.geradoEm+") · gerada no portal em "+hoje+"   ·   Forte = 10+ decisores e 3+ executivos · Médio = 3 a 9 decisores · Fraco = 1 ou 2 · Nenhum = não achamos decisor"});
     cabecalho(ov, ["Empresa","Indústria","Relacionamento","Decisores que conhecemos","Executivos da Peers com contato",
       "Quem procurar primeiro","Contato mais sênior que ele tem lá","LinkedIn do contato","Segunda opção"], [28, 20, 16, 14, 15, 48, 70, 52, 48]);
     rels.forEach((x, k)=>{
@@ -1494,7 +1507,7 @@ async function baixarPlanilhaConx(botao){
       lin.getCell(3).fill = {type:"pattern", pattern:"solid", fgColor:{argb:COR_FORCA[x.forca]}};
       lin.getCell(3).font = {bold:true}; lin.getCell(3).alignment = {vertical:"middle", horizontal:"center"};
       if(faixa[x.e.i]){
-        lin.getCell(1).value = {text:x.e.nome, hyperlink:"#'Contatos Peers'!A"+faixa[x.e.i]};
+        lin.getCell(1).value = interno("'Contatos Peers'!A"+faixa[x.e.i], x.e.nome);
         lin.getCell(1).font = {bold:true, color:{argb:"FF2F63B0"}, underline:true};
         lin.getCell(6).font = {bold:true};
       } else lin.eachCell({includeEmpty:true}, c=>{ c.font = {color:{argb:"FF8A93A3"}}; });
@@ -1505,9 +1518,8 @@ async function baixarPlanilhaConx(botao){
 
     // Premissas
     pr.getColumn(1).width = 34; pr.getColumn(2).width = 110;
-    titulo(pr, "Premissas das abas de relacionamento", "Como foram montadas as abas \"Relacionamentos Peers\" e \"Contatos Peers\".");
-    pr.getCell("A3").value = {text:"← Voltar para a visão geral", hyperlink:"#'Relacionamentos Peers'!A1"};
-    pr.getCell("A3").font = {size:10, color:{argb:"FF2F63B0"}, underline:true};
+    titulo(pr, 2, "Premissas das abas de relacionamento", "Como foram montadas as abas \"Relacionamentos Peers\" e \"Contatos Peers\".",
+      interno("'Relacionamentos Peers'!A1", "← Voltar para a visão geral"));
     const blocos = [
       ["De onde vêm os dados", [
         ["Fonte", "Conexões de 1º grau no LinkedIn dos executivos da Peers, do Mapa de Conexões Peers ("+CONEXOES.versao+", "+CONEXOES.geradoEm+"), como aparece no Portal de Inteligência."],
@@ -1538,7 +1550,7 @@ async function baixarPlanilhaConx(botao){
       ["Uso dos dados", [
         ["Confidencialidade", "A aba \"Contatos Peers\" tem nomes e perfis de conexões pessoais dos executivos (dado pessoal, LGPD). Uso interno da Peers: não enviar essa aba para fora da empresa."]]],
     ];
-    let p = 4;
+    let p = 6;
     blocos.forEach(([tit, itens])=>{
       const t = pr.getRow(p);
       t.values = [tit]; t.height = 22;
