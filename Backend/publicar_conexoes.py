@@ -1,4 +1,4 @@
-"""Publica o Mapa de Conexões na visão comercial do portal (aba Conexões por empresa).
+"""Publica o Mapa de Conexões na visão comercial do portal (aba Relacionamentos).
 
 Lê a versão mais recente de base_conexoes_peers_v<N>.xlsx na pasta Extração de Leads e grava na tabela "conexoes"
 do Supabase (ver Supabase/comercial.sql), que só entrega os dados a quem está na lista de acesso comercial. Nunca vai
