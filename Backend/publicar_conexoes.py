@@ -32,7 +32,7 @@ INDUSTRIA = {
     "Educação": ["educa", "education"],
     "Financial Services": ["financial", "meios de pagamento", "banking", "bancário", "bancario", "seguro", "insurance",
                            "investment", "venture capital"],
-    "Health": ["saúde", "saude", "hospital", "medical", "pharma", "biotech", "wellness"],
+    "Health": ["health", "saúde", "saude", "hospital", "medical", "pharma", "biotech", "wellness"],
     "A&B + Agro": ["alimentos", "food", "agro", "farming"],
     "Manufacturing & Natural Resources": ["manufactur", "indústria", "industria", "aviation", "mineração", "mining", "metais"],
     "Power & Utilities": ["energia", "energy", "power", "utilities", "petróleo", "petroleo", "petroleum", "environmental"],
@@ -60,9 +60,10 @@ def montar(arquivo):
     ws = openpyxl.load_workbook(arquivo, read_only=True, data_only=True)["base_conexoes"]
     linhas = ws.iter_rows(values_only=True)
     ix = {c: i for i, c in enumerate(next(linhas)) if c}
-    g = lambda r, c: (str(r[ix[c]]).strip() if r[ix[c]] is not None else "")
+    g = lambda r, c: (str(r[ix[c]]).strip() if c in ix and r[ix[c]] is not None else "")
     execs, empresas, leads = {}, {}, {}
     ind_empresa = {}
+    relevante = {}    # empresa -> 1 (alvo ou porte relevante: aparece na lista) ou 0 (só aparece quando alguém busca)
     for r in linhas:
         if not r or not g(r, "executivo_peers") or r[ix["eh_rede_interna"]] is True:
             continue      # a rede interna (colegas e ex-colegas da Peers) fica fora, como no Mapa
@@ -73,6 +74,9 @@ def montar(arquivo):
             continue
         empresas.setdefault(emp, [emp, g(r, "grupo_holding")])
         ind_empresa.setdefault(emp, Counter())[industria_portal(g(r, "industria_alvo"))] += 1
+        # até a v22 não há porte_relevante: tudo aparece; depois, só alvo e porte relevante (R$ 300 mi ou 500 funcionários)
+        rel = 1 if g(r, "empresa_alvo") != "Não" or g(r, "porte_relevante") in ("", "Sim") else 0
+        relevante[emp] = max(relevante.get(emp, 0), rel)
         chave = g(r, "lead_linkedin_url") or f'{g(r, "lead_nome")}|{emp}'
         lead = leads.setdefault(chave, {"nome": g(r, "lead_nome"), "cargo": g(r, "lead_cargo"),
                                         "senioridade": g(r, "senioridade"), "url": g(r, "lead_linkedin_url"),
@@ -89,7 +93,7 @@ def montar(arquivo):
         key=lambda l: (l[4], -len(l[5]), ordem.get(l[2], 99), l[0]))
     return {
         "execs": [execs[e] for e in lista_execs],                      # [nome, nível, vertical]
-        "empresas": [empresas[e] + [ind_empresa[e].most_common(1)[0][0]] for e in lista_emp],  # [nome, grupo, indústria]
+        "empresas": [empresas[e] + [ind_empresa[e].most_common(1)[0][0], relevante[e]] for e in lista_emp],  # [nome, grupo, indústria, relevante]
         "leads": saida_leads,                                           # [nome, cargo, senioridade, url, empresa, [execs]]
     }
 
