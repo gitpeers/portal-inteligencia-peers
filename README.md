@@ -178,7 +178,9 @@ comerciais nem funil. Para publicar a base mais recente (base_conexoes_peers_v<N
 pasta Backend, com as duas variáveis definidas: `python publicar_conexoes.py "<pasta Extração de Leads>"`.
 
 **Base de clientes da Peers.** A carteira de projetos ("base clientes.xlsx", fora desta pasta, em 00. Apoio > Base de
-clientes) vai para a mesma tabela `conexoes`, na linha `clientes`, e chega só a quem está em `acesso_comercial`. Com
+clientes) vai para a mesma tabela `conexoes`, na linha `clientes`, e chega só a quem tem `ve_clientes` marcado em
+`acesso_comercial` (no começo, quem tem o perfil marketing; ver Supabase/comercial.sql). Quem não tem continua vendo o
+Mapa normalmente, e o Time comercial volta ao modo de carregar a própria lista. Com
 ela, o modo Time comercial marca sozinho os clientes citados no Radar, em Movimentos e em Finanças (sem precisar
 carregar lista; quem quiser ainda soma a própria lista de prospects, que fica só no navegador), e a aba Conexões mostra
 em cada empresa se é cliente ativo ou ex-cliente, o último projeto e os responsáveis, com um filtro "Cliente Peers" e
