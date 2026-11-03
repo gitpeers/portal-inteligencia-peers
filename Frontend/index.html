@@ -366,6 +366,34 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 .op-ia{background:var(--blue-soft);border:1px solid #cbdaee;border-radius:8px;padding:9px 11px;line-height:1.5}
 @media(max-width:1100px){.op-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){.op-grid{grid-template-columns:1fr}.op-pe{flex-direction:column;align-items:flex-start}}
+/* Roda gigante (sub-aba de Oportunidades) */
+.roda-chips{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 16px}
+.roda-chip{background:#fff;border:1px solid var(--grey-border);color:var(--navy);border-radius:var(--pill);padding:6px 13px;font:inherit;font-size:.78rem;font-weight:600;cursor:pointer}
+.roda-chip b{background:var(--grey-light);border-radius:var(--pill);padding:0 7px;margin-left:7px;font-size:.68rem}
+.roda-chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.roda-chip.on b{background:var(--neon);color:var(--navy)}
+.roda-chip.zero{opacity:.55}
+.roda-top{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.roda-col{min-width:0}
+.roda-col .card{margin-bottom:0}
+.roda-scroll{height:430px;overflow-y:auto;margin:0 -8px;padding:0 8px}
+.roda-item{padding:11px 0;border-top:1px solid var(--grey-light);font-size:.8rem;line-height:1.5}
+.roda-item:first-child{border-top:0;padding-top:0}
+.roda-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.68rem;color:var(--grey);margin-bottom:3px}
+.roda-pl{background:var(--navy);color:#fff;border-radius:var(--pill);padding:1px 8px;font-weight:700;font-size:.66rem}
+.roda-item a{color:var(--navy);font-weight:600;text-decoration:none}
+.roda-item a:hover{text-decoration:underline}
+.roda-ang{color:#4a5468;margin-top:3px}
+.roda-ang span{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8a93a3;margin-right:5px}
+.roda-sw{margin-top:12px;background:var(--serene-soft);border:1px solid var(--serene-mid);border-radius:var(--r-sm);padding:11px 14px;font-size:.78rem;line-height:1.55;color:var(--text2)}
+.roda-sw .sw-t{display:block;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);margin-bottom:3px}
+.roda-sw .sw-n{display:block;font-size:.66rem;color:var(--grey);margin-top:5px}
+.roda-vazio{color:var(--grey);font-size:.8rem;padding:16px 0}
+.roda-aviso{background:var(--warn-soft);border:1px solid #f1dca6;border-radius:var(--r-sm);padding:9px 13px;font-size:.78rem;margin:0 0 14px;color:#6b5200}
+.roda-tab td,.roda-tab th{vertical-align:top}
+.roda-chips2{display:flex;flex-wrap:wrap;gap:5px}
+.roda-linha{cursor:pointer}
+@media(max-width:1000px){.roda-top{grid-template-columns:1fr}.roda-scroll{height:340px}}
 .box-com{background:var(--blue-soft);border:1px solid #cbdaee;padding:11px 14px;border-radius:var(--r-sm);
   font-size:.8rem;line-height:1.55;color:var(--text2);margin-bottom:11px}
 .rcard-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
@@ -1210,6 +1238,9 @@ async function carregarConexoes(){
     // a base de clientes da Peers (Backend/publicar_clientes.py) fica na mesma tabela protegida
     const {data: cli} = await sb.from("conexoes").select("conteudo").eq("nome", "clientes").maybeSingle();
     if(cli && cli.conteudo) carregarClientesPeers(cli.conteudo);
+    // a lista de empresas da Roda gigante (Backend/publicar_roda.py), na mesma tabela protegida
+    const {data: rd} = await sb.from("conexoes").select("conteudo").eq("nome", "roda").maybeSingle();
+    RODA = rd && rd.conteudo ? rd.conteudo : null;
     return prepararConexoes(data.conteudo, (acesso && acesso.perfil) || "marketing");
   }catch(e){ return null; }
 }
@@ -1844,17 +1875,23 @@ function cartaoExpandir(x, k){
 }
 function renderOportunidades(){
   const o = oportunidades(), v = estadoOport.visao;
-  const lista = v==="reativar" ? o.reativar : o.expandir;
+  const lista = v==="expandir" ? o.expandir : o.reativar;
   estadoOport.lista = lista;
   const kpi = (cls, rot, val, sub)=>'<div class="kpi '+cls+'"><div class="kpi-label">'+rot+'</div><div class="kpi-value">'+val+'</div><div class="kpi-sub">'+sub+'</div></div>';
+  const subsHtml = '<div class="op-subs">' + [["reativar","Reativar contas",o.reativar.length],["expandir","Expandir contas",o.expandir.length]]
+      .concat(temRoda() ? [["roda","Roda gigante",RODA.players.length]] : [])
+      .map(([id, t, q])=>'<button type="button" data-opv="'+id+'" class="'+(v===id?'on':'')+'">'+t+'<b>'+q+'</b></button>').join("") + '</div>';
+  if(v==="roda" && temRoda()){
+    return '<div class="sec-head"><h2>Oportunidades</h2><p>Roda gigante: as empresas da roda, com o que saiu no portal nos últimos '+DIAS_OPORT+' dias, onde a Peers pode entrar e como cada uma anda frente ao setor. Visível só para quem tem acesso à base de clientes.</p></div>' +
+      subsHtml + renderRoda();
+  }
   return '<div class="sec-head"><h2>Oportunidades</h2><p>Quem ligar esta semana e por quê: clientes e ex-clientes da Peers com notícia nova no portal ' +
       '(últimos '+DIAS_OPORT+' dias) e alguém da Peers que conhece decisores lá. Base de clientes de '+esc(CLIENTES.geradoEm)+'. Visível só para quem tem acesso à base de clientes.</p></div>' +
     '<div class="kpi-strip">' + kpi("a", "Reativar contas", o.reativar.length, "ex-clientes com notícia e conexão") +
       kpi("b", "Expandir contas", o.expandir.length, "notícia abre offering nova") +
       kpi("c", "Clientes no noticiário", o.citados, "de "+CLIENTES.peers.length+", nos últimos "+DIAS_OPORT+" dias") +
       kpi("d", "Decisores conhecidos", o.decisores, "nesses clientes") + '</div>' +
-    '<div class="op-subs">' + [["reativar","Reativar contas",o.reativar.length],["expandir","Expandir contas",o.expandir.length]]
-      .map(([id, t, q])=>'<button type="button" data-opv="'+id+'" class="'+(v===id?'on':'')+'">'+t+'<b>'+q+'</b></button>').join("") + '</div>' +
+    subsHtml +
     '<p class="op-regra">' + (v==="reativar"
       ? 'Ex-clientes: o último projeto já terminou, saiu notícia nos últimos '+DIAS_OPORT+' dias e alguém da Peers conhece decisores lá. Prioridade (●●●): projeto terminado há até 6 meses, mais de uma notícia e 10 ou mais decisores conhecidos. "Quem chama" segue a regra da planilha de relacionamentos.'
       : 'Clientes e ex-clientes: a notícia aponta para uma offering que a Peers ainda não fez ali, pela carteira de projetos. Clientes ativos primeiro.') + '</p>' +
@@ -1878,8 +1915,147 @@ function copiarOport(k, botao){
 function ligarOportunidades(){
   if(estado.aba!=="oportunidades") return;
   document.querySelectorAll("[data-opv]").forEach(b=>b.addEventListener("click", ()=>{ estadoOport.visao = b.dataset.opv; renderizar(); }));
+  document.querySelectorAll("[data-roda]").forEach(b=>b.addEventListener("click", ()=>{ estadoRoda.player = b.dataset.roda; renderizar(); }));
   document.querySelectorAll("[data-opcopiar]").forEach(b=>b.addEventListener("click", ()=>copiarOport(+b.dataset.opcopiar, b)));
   document.querySelectorAll("[data-opconx]").forEach(b=>b.addEventListener("click", ()=>irConexoes(+b.dataset.opconx)));
+}
+
+/* =========================================================
+   RODA GIGANTE · terceira sub-aba de Oportunidades
+   Ritual quinzenal da Peers: cada rodada discute um player da lista fixa. A lista fica na tabela protegida "conexoes"
+   (linha "roda", Backend/publicar_roda.py), nunca neste arquivo: o repositório é público e as empresas são confidenciais.
+   Tudo é calculado com os dados que o portal já tem, na janela de DIAS_OPORT dias.
+   ========================================================= */
+let RODA = null;     // {geradoEm, players:[{nome, nomes:[grafias]}]}
+const estadoRoda = {player:"todos"};
+function temRoda(){ return !!(RODA && RODA.players && RODA.players.length); }
+
+function citaAlgum(texto, chaves){
+  const t = normTxt(texto);
+  return chaves.some(k=>t.includes(" "+k+" ") && citaComMaiuscula(texto, k));
+}
+function rodaDados(){
+  if(rodaDados.cache) return rodaDados.cache;
+  const naJanela = it=>{ const d = diasEntre(it.data); return d<=0 && d>=-DIAS_OPORT; };
+  const radar = DADOS.radar.filter(naJanela), movs = DADOS.movimentos.filter(naJanela), conc = DADOS.concorrencia.filter(naJanela);
+  const ligado = Object.entries(DADOS.aprofundamento).filter(([, p])=>p.metrica!=="capag");
+  rodaDados.cache = RODA.players.map(pl=>{
+    const chaves = [...new Set(pl.nomes.concat(pl.nome).map(chaveNome).filter(Boolean))];
+    const casa = k=>chaves.includes(k) || chaves.some(c=>k.startsWith(c+" "));
+    const noTit = it=>chaves.some(k=>citaComMaiuscula(it.titulo, k)) ? 1 : 0;
+    const norm = it=>({data:it.data, url:it.url, fonte:it.fonte, offering:offeringDoItem(it), player:pl.nome});
+    const noticias = radar.filter(r=>citaAlgum(textoRadar(r), chaves)).map(r=>({...norm(r), titulo:r.manchete, angulo:r.anguloPeers||"", alta:r.relevancia==="alta"}));
+    const movimentos = movs.filter(m=>casa(chaveNome(m.player)) || citaAlgum(textoMov(m), chaves)).map(m=>({...norm(m), titulo:m.tese, tipo:m.tipo||"", valor:m.valor||"", angulo:m.leitura||""}));
+    [noticias, movimentos].forEach(l=>{ l.forEach(x=>{ x.tit = noTit(x); }); if(l===noticias) l.forEach(x=>{ x.cita = !x.tit; }); l.sort((a,b)=>b.tit-a.tit || b.data.localeCompare(a.data)); });
+    return {
+      nome:pl.nome, chaves, noticias, movimentos,
+      conc: conc.filter(c=>citaAlgum(c.fato+" "+(c.manchete||""), chaves)),
+      agenda: DADOS.agenda.filter(a=>diasEntre(a.data)>=0 && citaAlgum(a.titulo, chaves)).sort((a,b)=>a.data.localeCompare(b.data)),
+      cliente: CLIENTES.peers.find(c=>casa(c.chave)) || null,
+      pontes: ligado.filter(([, p])=>(p.players||[]).some(x=>casa(chaveNome(x.nome)))).map(([chave, p])=>({chave, p, x:p.players.find(x=>casa(chaveNome(x.nome)))}))
+    };
+  });
+  return rodaDados.cache;
+}
+const totalRoda = d=>d.noticias.length + d.movimentos.length;
+
+// síntese por regra (sem IA): concentração, offerings que abrem e o destaque. A rotina de IA pode assumir depois.
+function soWhatRoda(itens, singular, plural){
+  if(!itens.length) return '<span class="sw-t">So what geral</span>Nada nos últimos '+DIAS_OPORT+' dias para o recorte escolhido.';
+  const cont = f=>{ const m = new Map(); itens.forEach(x=>{ const k = f(x); if(k) m.set(k, (m.get(k)||0)+1); }); return [...m].sort((a,b)=>b[1]-a[1]); };
+  const pls = cont(x=>x.player), offs = cont(x=>x.offering);
+  const destaque = itens.find(x=>x.angulo) || itens[0];
+  const n = itens.length;
+  return '<span class="sw-t">So what geral</span>' +
+    n+' '+(n===1?singular:plural)+(pls.length>1 ? ', mais em '+pls.slice(0,2).map(p=>esc(p[0])+' ('+p[1]+')').join(' e ') : ' de '+esc(pls[0][0]))+'. ' +
+    (offs.length ? 'Abre conversa de '+offs.slice(0,3).map(o=>esc(o[0])+' ('+o[1]+')').join(', ')+'. ' : 'Nenhum item aponta para uma offering da Peers. ') +
+    (destaque.angulo ? 'Destaque: '+esc(destaque.angulo) : '') +
+    '<span class="sw-n">Síntese automática dos itens acima, sem IA. Confira na fonte antes de usar com cliente.</span>';
+}
+function itemRoda(x, mostrarPlayer, extra){
+  return '<div class="roda-item"><div class="roda-meta">' + (mostrarPlayer ? '<span class="roda-pl">'+esc(x.player)+'</span>' : '') +
+    (x.alta ? '<span class="badge b3">relevância alta</span>' : '') + (x.cita ? '<span class="badge bg-n" title="O nome aparece só no resumo, não na manchete: confira se a notícia é mesmo sobre o player">citação no texto</span>' : '') + extra +
+    '<span>'+esc(x.fonte||'')+' · '+formatarData(x.data).slice(0,5)+'</span></div>' +
+    (x.url ? '<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.titulo)+'</a>' : '<b>'+esc(x.titulo)+'</b>') +
+    (x.offering ? ' <span class="badge bg-n">'+esc(x.offering)+'</span>' : '') +
+    (x.angulo ? '<div class="roda-ang"><span>Ângulo Peers</span>'+esc(x.angulo)+'</div>' : '') + '</div>';
+}
+function blocoOfferingsRoda(sel){
+  const por = new Map();
+  sel.forEach(d=>[...d.noticias, ...d.movimentos].forEach(x=>{
+    if(!x.offering) return;
+    if(!por.has(x.offering)) por.set(x.offering, new Map());
+    const m = por.get(x.offering); if(!m.has(d.nome)) m.set(d.nome, []); m.get(d.nome).push(x);
+  }));
+  const linhas = [...por].map(([off, m])=>({off, m, q:[...m.values()].reduce((s,l)=>s+l.length,0)})).sort((a,b)=>b.q-a.q || a.off.localeCompare(b.off));
+  if(!linhas.length) return '<div class="roda-vazio">Nenhuma notícia ou movimento do recorte aponta para uma offering da Peers nos últimos '+DIAS_OPORT+' dias.</div>';
+  return '<div class="table-wrap"><table class="data-table roda-tab"><thead><tr><th>Offering</th><th>Players</th><th>O que abre</th></tr></thead><tbody>' +
+    linhas.map(l=>{
+      const topo = [...l.m.values()].flat().sort((a,b)=>(b.alta?1:0)-(a.alta?1:0) || b.data.localeCompare(a.data))[0];
+      const chips = [...l.m].map(([nome, its])=>{
+        const d = sel.find(s=>s.nome===nome), fez = d.cliente && d.cliente.offPortal.includes(l.off);
+        return '<span class="op-chip '+(fez?'feita':'abre')+'" title="'+(fez?'A Peers já fez esta offering ali':'A Peers ainda não fez esta offering ali')+'">'+esc(nome)+(fez?' · já fez':'')+' ('+its.length+')</span>';
+      }).join("");
+      return '<tr><td><b>'+esc(l.off)+'</b><div class="cardnote" style="margin:2px 0 0">'+l.q+(l.q===1?' sinal':' sinais')+'</div></td><td><div class="roda-chips2">'+chips+'</div></td>' +
+        '<td>'+(topo.url?'<a href="'+esc(topo.url)+'" target="_blank" rel="noopener">'+esc(topo.titulo)+'</a>':esc(topo.titulo))+(topo.angulo?'<div class="roda-ang">'+esc(topo.angulo)+'</div>':'')+'</td></tr>';
+    }).join("") + '</tbody></table></div>' +
+    '<p class="cardnote" style="margin:10px 0 0">Destaque em neon: a Peers ainda não fez a offering no player (pela carteira de projetos). Cinza: já fez.</p>';
+}
+function blocoEntramosRoda(sel){
+  return '<div class="table-wrap"><table class="data-table roda-tab"><thead><tr><th>Player</th><th>Relação com a Peers</th><th>Offerings já feitas</th><th>Último projeto e responsáveis</th></tr></thead><tbody>' +
+    sel.map(d=>{
+      const c = d.cliente;
+      if(!c) return '<tr><td><b>'+esc(d.nome)+'</b></td><td><span class="badge bg-n">sem projeto na base</span></td><td>—</td><td>—</td></tr>';
+      return '<tr><td><b>'+esc(d.nome)+'</b></td><td>'+tagDoCliente(c)+'<div class="cardnote" style="margin:3px 0 0">'+c.projetos+(c.projetos===1?' projeto':' projetos')+'</div></td>' +
+        '<td><div class="roda-chips2">'+(c.offPortal.length ? c.offPortal.map(o=>'<span class="op-chip feita">'+esc(o)+'</span>').join("") : '<span class="op-sub">—</span>')+'</div></td>' +
+        '<td>'+(c.ultimo ? esc(c.ultimo)+(c.fim?' · fim '+esc(c.fim):'') : '—')+'<div class="cardnote" style="margin:3px 0 0">'+
+          [["Líder",c.lider],["MD",c.md]].filter(y=>y[1]).map(y=>y[0]+' '+esc(nomeCurto(y[1]))).join(" · ")+'</div></td></tr>';
+    }).join("") + '</tbody></table></div>';
+}
+function blocoSetorRoda(sel){
+  const corPos = {"acima":"b2", "abaixo":"b3", "em linha":"bg-n"};
+  const linhas = sel.flatMap(d=>d.pontes.map(o=>({d, ...o})));
+  const sem = sel.filter(d=>!d.pontes.length).map(d=>esc(d.nome));
+  return (linhas.length ? '<div class="table-wrap"><table class="data-table roda-tab"><thead><tr><th>Player</th><th>Indicador do setor</th><th>Player</th><th>Setor</th><th>Posição</th><th>Período e fonte</th></tr></thead><tbody>' +
+    linhas.map(l=>{
+      const p = l.p, s = p.setor||{}, ref = s.referencia, x = l.x;
+      const setor = ref===null || ref===undefined ? '—' : (p.comparar==="var" ? fmtMetrica(ref,'%') : fmtMetrica(ref,p.unidadeMetrica));
+      return '<tr class="roda-linha" data-aprof="'+esc(l.chave)+'" title="Abrir a visão por player deste indicador"><td><b>'+esc(l.d.nome)+'</b></td>' +
+        '<td>'+esc(p.indicador)+'<div class="cardnote" style="margin:2px 0 0">'+esc((DADOS.indicadores.find(i=>i.id===p.segmento)||{}).segmento||'')+'</div></td>' +
+        '<td class="num">'+fmtMetrica(x.valor,p.unidadeMetrica)+'<div class="cardnote" style="margin:2px 0 0">'+esc(p.rotuloMetrica||'')+'</div></td><td class="num">'+setor+'</td>' +
+        '<td>'+(x.posicao ? '<span class="badge '+corPos[x.posicao]+'">'+esc(x.posicao)+(x.posicao!=="em linha" ? ' · '+fmtDif(x.diferenca) : '')+'</span>' : '<span class="badge bg-n">sem comparação direta</span>')+'</td>' +
+        '<td class="aprof-det">'+esc(x.periodo)+' · '+esc(x.fonte)+'</td></tr>';
+    }).join("") + '</tbody></table></div><p class="cardnote" style="margin:10px 0 0">Clique numa linha para abrir a visão por player completa do indicador.</p>' : '') +
+    (sem.length ? '<div class="roda-vazio">Sem comparação com indicador do setor no portal para: '+sem.join(", ")+'. Para incluir, ligue o player a um indicador em <b>indicadores_players.json</b>.</div>' : '');
+}
+function renderRoda(){
+  const dados = rodaDados();
+  if(!dados.some(d=>d.nome===estadoRoda.player)) estadoRoda.player = "todos";
+  const sel = estadoRoda.player==="todos" ? dados : dados.filter(d=>d.nome===estadoRoda.player);
+  const unico = sel.length===1;
+  const noticias = sel.flatMap(d=>d.noticias).sort((a,b)=>b.data.localeCompare(a.data));
+  const movs = sel.flatMap(d=>d.movimentos).sort((a,b)=>b.data.localeCompare(a.data));
+  const sem = dados.filter(d=>!totalRoda(d) && !d.agenda.length).map(d=>esc(d.nome));
+  const conc = sel.flatMap(d=>d.conc.map(c=>({...c, player:d.nome})));
+  const agenda = sel.flatMap(d=>d.agenda.map(a=>({...a, player:d.nome}))).sort((a,b)=>a.data.localeCompare(b.data)).slice(0,4);
+  const caixa = (titulo, itens, html, sw)=>'<div class="roda-col"><div class="card"><div class="card-title"><span class="dot"></span>'+titulo+'<span class="hint">'+itens.length+' nos últimos '+DIAS_OPORT+' dias</span></div>' +
+    '<div class="roda-scroll">'+(itens.length ? html : '<div class="roda-vazio">Nada nos últimos '+DIAS_OPORT+' dias.</div>')+'</div>' +
+    '<div class="roda-sw">'+sw+'</div></div></div>';
+  return '<div class="roda-chips">' +
+      '<button type="button" class="roda-chip '+(!unico?'on':'')+'" data-roda="todos">Todos<b>'+dados.reduce((s,d)=>s+totalRoda(d),0)+'</b></button>' +
+      dados.map(d=>'<button type="button" class="roda-chip '+(unico&&sel[0]===d?'on':'')+(totalRoda(d)?'':' zero')+'" data-roda="'+esc(d.nome)+'">'+esc(d.nome)+'<b>'+totalRoda(d)+'</b></button>').join("") + '</div>' +
+    (sem.length && !unico ? '<div class="roda-aviso"><b>Sem nada no portal nos últimos '+DIAS_OPORT+' dias:</b> '+sem.join(", ")+'. Pode ser silêncio real ou falta de fonte no Radar para essas empresas.</div>' : '') +
+    (agenda.length ? '<p class="op-regra"><b>Próximas datas:</b> '+agenda.map(a=>esc(a.titulo)+' ('+formatarData(a.data).slice(0,5)+')').join(' · ')+'</p>' : '') +
+    '<div class="roda-top">' +
+      caixa('Notícias do Radar', noticias, noticias.map(x=>itemRoda(x, !unico, '')).join(""), soWhatRoda(noticias, 'notícia', 'notícias')) +
+      caixa('Movimentos estratégicos', movs, movs.map(x=>itemRoda(x, !unico, (x.tipo?'<span class="badge bg-n">'+esc(x.tipo)+'</span>':'')+(x.valor && x.valor!=="Não divulgado"?'<span class="badge bg-n">'+esc(x.valor)+'</span>':''))).join(""), soWhatRoda(movs, 'movimento', 'movimentos')) +
+    '</div>' +
+    (conc.length ? '<div class="card"><div class="card-title"><span class="dot"></span>Concorrência nos players<span class="hint">uso interno</span></div>' +
+      conc.map(c=>'<div class="roda-item"><div class="roda-meta"><span class="roda-pl">'+esc(c.player)+'</span><span class="badge bg-n">'+esc(c.nome||'')+'</span><span>'+formatarData(c.data).slice(0,5)+'</span></div>' +
+        (c.url?'<a href="'+esc(c.url)+'" target="_blank" rel="noopener">'+esc(c.fato)+'</a>':esc(c.fato))+(c.impacto?'<div class="roda-ang"><span>Impacto</span>'+esc(c.impacto)+'</div>':'')+'</div>').join("")+'</div>' : '') +
+    '<div class="card"><div class="card-title"><span class="dot"></span>Oportunidades por offering<span class="hint">a partir das notícias e movimentos acima</span></div>'+blocoOfferingsRoda(sel)+'</div>' +
+    '<div class="card"><div class="card-title"><span class="dot"></span>Onde a Peers já entrou</div>'+blocoEntramosRoda(sel)+'</div>' +
+    '<div class="card"><div class="card-title"><span class="dot"></span>Resultado dos players frente ao setor</div>'+blocoSetorRoda(sel)+'</div>';
 }
 
 function irConexoes(i){
