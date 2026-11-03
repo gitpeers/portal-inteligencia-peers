@@ -32,6 +32,7 @@ Backend/
   publicar_trimestral.py  envia o dashboard de resultados trimestrais para a aba Análises trimestrais
   publicar_conexoes.py  envia o Mapa de Conexões para a aba Relacionamentos (só a lista de acesso comercial)
   publicar_clientes.py  envia a base de clientes da Peers para o Time comercial e as Conexões (só a lista de acesso)
+  publicar_roda.py      envia a lista de empresas da Roda gigante para a sub-aba de Oportunidades (só a lista de acesso)
   validar_fontes.py     testa se cada fonte de notícias tem feed ativo (rodar uma vez por mês)
   ia/                   rotina de IA: instruções (ROTINA.md) e scripts que preparam e aplicam as análises
   comum.py              funções compartilhadas
@@ -196,3 +197,32 @@ notícia aponta para uma offering que a Peers ainda não fez no cliente; a compa
 carteira para as do portal, em `OFFERING_PORTAL` (publicar_clientes.py). O nome do cliente só conta escrito com
 maiúscula na notícia. Por enquanto, o texto do cartão é o Ângulo Peers da notícia; a leitura comercial escrita pela
 rotina de IA é o próximo passo.
+
+**Roda gigante** (sub-aba de Oportunidades, mesma regra de acesso: `ve_clientes`). A Roda gigante é um ritual quinzenal da
+Peers: a cada rodada se discute uma empresa de uma lista fixa. A sub-aba reúne, para essas empresas, o que o portal já
+tem, na janela de 30 dias (`DIAS_OPORT`), sem rotina nova e sem digitar nada. O case apresentado no ritual não entra no
+portal. A lista de empresas fica na tabela protegida `conexoes`, linha `roda`, e **nunca neste repositório**, porque as
+empresas são confidenciais. Sem essa linha, a sub-aba não aparece.
+
+- **Chips no topo** filtram uma empresa ou mostram todas, com a contagem de notícias e movimentos de cada uma.
+- **Notícias do Radar e Movimentos estratégicos**, lado a lado, em caixas de altura fixa com rolagem. Embaixo de cada uma,
+  um "So what geral" montado por regra (concentração por empresa, offerings que abrem, destaque), sem IA e avisado como
+  tal na tela. A empresa só conta se o nome aparece com maiúscula; quando aparece só no resumo e não na manchete, o item
+  leva a marca "citação no texto" (evita nome de pessoa ou palavra comum).
+- **Oportunidades por offering**, a partir das notícias e movimentos: cada offering com as empresas que ela abre. Em neon,
+  a Peers ainda não fez a offering na empresa; em cinza, já fez (usa `offPortal` da base de clientes, como em Expandir contas).
+- **Onde a Peers já entrou**: relação com a empresa, offerings já feitas, último projeto, líder e MD (base de clientes).
+- **Resultado frente ao setor**: as linhas da visão por player dos Indicadores (`aprofundamento.json`) em que a empresa
+  aparece, com a posição contra o setor. Clicar abre a ficha do indicador. Empresa sem indicador ligado mostra um aviso;
+  para incluir, ligue-a em `indicadores_players.json`.
+- **Concorrência** aparece só se uma consultoria concorrente foi citada junto com a empresa (uso interno, como na aba
+  Concorrência), e **Próximas datas** vem da Agenda.
+
+Para publicar ou trocar a lista, na pasta Backend, com `SUPABASE_URL` e `SUPABASE_SERVICE_KEY` definidas:
+`python publicar_roda.py "<roda.json>"`, com o arquivo guardado **fora** da pasta sincronizada com o repositório. Cada
+empresa leva o nome mostrado e as grafias que contam como citação (`{"nome": "...", "nomes": ["...", "..."]}`).
+
+Limites conhecidos: o casamento é por nome, então empresa sem cobertura nas fontes do Radar aparece zerada (a tela avisa);
+o mesmo fato noticiado por várias fontes aparece repetido; o texto do "So what geral" ainda não vem da rotina de IA (a
+rotina hoje evita citar clientes, então passar para IA exige mudar essa regra). A janela só foi testada com os dados
+locais; a conferência com login e a base de clientes reais é feita no portal.

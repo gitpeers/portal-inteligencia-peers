@@ -44,8 +44,9 @@ revoke all on public.conexoes from anon, authenticated;
 grant select on public.conexoes to authenticated;
 grant all on public.conexoes to service_role;
 
--- 3. Base de clientes ----------------------------------------------------------------------------------
--- A linha "clientes" tem acesso mais restrito que o Mapa: só quem está com ve_clientes = true. Começa com quem tem o
+-- 3. Base de clientes e Roda gigante -------------------------------------------------------------------
+-- As linhas "clientes" e "roda" (lista da Roda gigante, Backend/publicar_roda.py) têm acesso mais restrito que o Mapa:
+-- só quem está com ve_clientes = true. Começa com quem tem o
 -- perfil marketing (30/10/2026: Kayo, Andreas e Lara); para liberar mais alguém, marque ve_clientes no Table Editor.
 alter table public.acesso_comercial add column if not exists ve_clientes boolean not null default false;
 update public.acesso_comercial set ve_clientes = true where perfil = 'marketing';
@@ -55,4 +56,4 @@ create policy "Só a lista de acesso comercial" on public.conexoes
   for select
   to authenticated
   using (exists (select 1 from public.acesso_comercial a where a.email = lower(auth.jwt() ->> 'email')
-                 and (conexoes.nome <> 'clientes' or a.ve_clientes)));
+                 and (conexoes.nome not in ('clientes', 'roda') or a.ve_clientes)));
