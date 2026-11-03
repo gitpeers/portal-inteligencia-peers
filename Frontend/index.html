@@ -1223,10 +1223,14 @@ function prepararConexoes(c, perfil){
   const proprio = execs.findIndex(x=>x.voce);
   // cliente da Peers: nome igual ao da base de clientes, ou começando por ele ("Itaú Unibanco" é o cliente "Itaú")
   const porChave = new Map(CLIENTES.peers.map(x=>[x.chave, x]));
-  const longos = CLIENTES.peers.filter(x=>x.chave.length>=5 && !PALAVRAS_COMUNS.has(x.chave));
+  // a partir de 4 letras ("Itaú Unibanco", "Vivo (Telefônica Brasil)"); escritório de advocacia com o mesmo sobrenome não conta.
+  // Sem o filtro de PALAVRAS_COMUNS: aqui o nome é de empresa, não texto de notícia
+  const longos = CLIENTES.peers.filter(x=>x.chave.length>=4);
+  const ADVOCACIA = /\b(advogados|advocacia|law)\b/;
   empresas.forEach(e=>{
     const k = chaveNome(e.nome);
-    e.cli = porChave.get(k) || (e.grupo && porChave.get(chaveNome(e.grupo))) || longos.find(x=>k.startsWith(x.chave+" ")) || null;
+    e.cli = porChave.get(k) || (e.grupo && porChave.get(chaveNome(e.grupo))) ||
+      (!ADVOCACIA.test(k) && longos.find(x=>k.startsWith(x.chave+" "))) || null;
   });
   return {versao:c.versao, geradoEm:c.geradoEm, execs, empresas, fatos:null, perfil, proprio};
 }
