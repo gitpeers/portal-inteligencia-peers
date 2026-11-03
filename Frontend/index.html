@@ -319,6 +319,21 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 .barra-com .btn-sec:hover{background:var(--navy);color:#fff}
 .tag-cli{display:inline-block;background:var(--navy);color:var(--neon);font-size:.6rem;font-weight:700;letter-spacing:.06em;border-radius:var(--pill);padding:1px 8px;margin-left:6px;vertical-align:middle}
 .tag-cli.ex{background:var(--blue-soft);color:var(--navy);border:1px solid #cbdaee}
+.tag-cli.grp{background:#fff;color:var(--navy);border:1px dashed var(--navy)}
+.grupo-cli{margin-top:10px;padding-top:10px;border-top:1px solid #dfe6ef}
+.grupo-cli .g-rot{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82;margin-bottom:6px}
+.grupo-cli .g-lista{display:flex;flex-wrap:wrap;gap:8px}
+.g-item{display:flex;flex-direction:column;gap:2px;min-width:180px;flex:1 1 200px;max-width:320px;background:#fff;border:1px solid #dfe6ef;border-left:3px solid #cbdaee;border-radius:8px;padding:8px 10px;font-size:.78rem;line-height:1.35}
+.g-item.at{border-left-color:var(--neon);background:linear-gradient(90deg,rgba(225,255,0,.12),#fff 60%)}
+.g-item.voce{border-left-color:var(--navy)}
+.g-item b{color:var(--navy);font-size:.82rem}
+.g-item .g-st{font-size:.7rem;color:#5b6b82}
+.g-item.at .g-st{color:var(--navy);font-weight:700}
+.g-emps{margin-top:8px;font-size:.74rem;color:#5b6b82;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.g-emps button{background:#fff;border:1px solid #dfe6ef;border-radius:var(--pill);padding:2px 10px;font:inherit;font-size:.72rem;color:var(--navy);cursor:pointer}
+.g-emps button:hover{border-color:var(--navy)}
+.op-grupo{margin:8px 0 0;padding:7px 10px;border-radius:8px;background:rgba(225,255,0,.16);border:1px solid rgba(1,19,52,.12);font-size:.76rem;color:var(--navy);line-height:1.4}
+.op-grupo b{font-weight:700}
 /* Oportunidades (Reativar contas e Expandir contas) */
 .op-subs{display:flex;border-bottom:2px solid #e3e8ef;margin:4px 0 10px}
 .op-subs button{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:10px 18px;font:inherit;font-size:.86rem;font-weight:600;color:var(--grey);cursor:pointer}
@@ -1221,9 +1236,9 @@ function prepararConexoes(c, perfil){
     e.chaves = [k, semGrupo].filter((x, j, a)=>a.indexOf(x)===j && x.length>=4 && !PALAVRAS_COMUNS.has(x));
   });
   const proprio = execs.findIndex(x=>x.voce);
-  // cliente da Peers: nome igual ao da base de clientes, ou começando por ele ("Itaú Unibanco" é o cliente "Itaú")
+  // cliente da Peers: nome igual ao da base de clientes, ou começando por ele ("Banco X Holding" é o cliente "Banco X")
   const porChave = new Map(CLIENTES.peers.map(x=>[x.chave, x]));
-  // a partir de 4 letras ("Itaú Unibanco", "Vivo (Telefônica Brasil)"); escritório de advocacia com o mesmo sobrenome não conta.
+  // a partir de 4 letras ("Xyzw Holding", "Xyzw (Nome Antigo)"); escritório de advocacia com o mesmo sobrenome não conta.
   // Sem o filtro de PALAVRAS_COMUNS: aqui o nome é de empresa, não texto de notícia
   const longos = CLIENTES.peers.filter(x=>x.chave.length>=4);
   const ADVOCACIA = /\b(advogados|advocacia|law)\b/;
@@ -1595,7 +1610,8 @@ async function baixarPlanilhaConx(botao){
         seg!==undefined ? nomePessoa(execs[seg].nome)+" ("+execs[seg].nivel+") · conhece "+x.cont.get(seg) : "—"];
       if(comCli){
         const c = x.e.cli;
-        lin.getCell(10).value = c ? c.rotulo.charAt(0).toUpperCase()+c.rotulo.slice(1)+" · "+c.projetos+(c.projetos===1?" projeto":" projetos") : "Ainda não é cliente";
+        lin.getCell(10).value = c ? c.rotulo.charAt(0).toUpperCase()+c.rotulo.slice(1)+" · "+c.projetos+(c.projetos===1?" projeto":" projetos") +
+          c.grupo.map(g=>" · grupo: "+g.nome+" ("+g.rotulo+")").join("") : "Ainda não é cliente";
         lin.getCell(11).value = c ? [c.ultimo ? c.ultimo+(c.offering ? " ("+c.offering+(c.fim ? ", fim "+c.fim : "")+")" : "") : "",
           ...[["Líder de conta", c.lider], ["MD", c.md]].filter(y=>y[1]).map(y=>y[0]+": "+nomePessoa(y[1]))].filter(Boolean).join(" · ") : "—";
       }
@@ -1692,11 +1708,18 @@ function detalheConx(e){
   const ordenar = l=>l.ex.slice().sort((a,b)=>ehVoce(b)-ehVoce(a) || (ORDEM_NIVEL[CONEXOES.execs[a].nivel]??9)-(ORDEM_NIVEL[CONEXOES.execs[b].nivel]??9));
   const leads = (como===null ? e.leads : e.leads.slice().sort((a,b)=>b.ex.includes(como)-a.ex.includes(como))).slice(0, 60);
   const c = e.cli;
+  const irmas = c ? CONEXOES.empresas.filter(o=>o!==e && o.cli && (o.cli===c || c.grupo.includes(o.cli)))
+    .sort((a,b)=>b.leads.length-a.leads.length).slice(0, 8) : [];
   const quadroCli = c ? '<div class="box-com" style="margin:0 0 12px"><span class="rot">Cliente Peers ('+esc(c.rotulo)+'):</span> ' +
       c.projetos+(c.projetos===1?' projeto':' projetos')+(c.offerings.length ? ' em '+esc(c.offerings.join(", ")) : '') +
       (c.ultimo ? ' · último: <b>'+esc(c.ultimo)+'</b>'+(c.offering ? ' ('+esc(c.offering)+(c.fim ? ', fim '+esc(c.fim) : '')+')' : '') : '') +
       [["Líder de conta", c.lider], ["N1", c.n1], ["MD", c.md]].filter(x=>x[1]).map(x=>' · '+x[0]+': '+esc(nomePessoa(x[1]))).join("") +
-      (normConx(c.nome)!==e.chaveExata ? '<div class="sub" style="margin-top:3px">Na base de clientes como “'+esc(c.nome)+'”.</div>' : '') + '</div>' : '';
+      (normConx(c.nome)!==e.chaveExata ? '<div class="sub" style="margin-top:3px">Na base de clientes como “'+esc(c.nome)+'”.</div>' : '') +
+      (c.grupo.length || irmas.length ? '<div class="grupo-cli">' +
+        (c.grupo.length ? '<div class="g-rot">Grupo na base de clientes da Peers</div>'+cartoesGrupo(c) : '') +
+        (irmas.length ? '<div class="g-emps"><span>Outras empresas do grupo no Mapa:</span>' +
+          irmas.map(o=>'<button type="button" data-abrir="'+o.i+'">'+esc(o.nome)+' · '+o.leads.length+'</button>').join("")+'</div>' : '') + '</div>' : '') +
+      '</div>' : '';
   return quadroCli + (fatos.length ? '<div class="card-title" style="margin-bottom:6px"><span class="dot"></span>No portal</div>' +
       fatos.map(f=>'<div class="conx-fato"><b>'+esc(f.tipo)+' · '+formatarData(f.data)+'</b> · ' +
         (f.url ? '<a href="'+esc(f.url)+'" target="_blank" rel="noopener">'+esc(f.titulo)+'</a>' : esc(f.titulo)) +
@@ -1788,13 +1811,19 @@ function botoesOport(k, x){
   return '<span class="op-bts"><button type="button" class="pri" data-opcopiar="'+k+'">Copiar mensagem</button>' +
     (x.principal ? '<button type="button" class="sec" data-opconx="'+x.principal.i+'">Ver conexões</button>' : '') + '</span>';
 }
+// faixa do cartão: outra empresa do grupo é cliente ativo
+function faixaGrupo(c){
+  const at = (c.grupo||[]).filter(g=>g.ativo);
+  return at.length && !c.ativo ? '<div class="op-grupo">A Peers segue no grupo: <b>'+at.map(g=>esc(g.nome)).join(", ")+'</b> é cliente ativo' +
+    (at[0].fim ? (mesesDesde(at[0].fim)>0 ? ' na base (último projeto terminou em '+esc(at[0].fim)+')' : ' (projeto até '+esc(at[0].fim)+')') : '')+(at[0].md ? ', MD '+esc(nomeCurto(at[0].md)) : '')+'. Bom ponto de referência na conversa.</div>' : '';
+}
 function cartaoReativar(x, k){
   const c = x.c, n = x.nts[0];
   return '<div class="op-card">' +
     '<div class="op-top"><h4>'+esc(c.nome)+tagDoCliente(c)+'</h4><span class="op-calor" title="Prioridade: projeto recente, mais de uma notícia e 10 ou mais decisores conhecidos">' +
       '●'.repeat(x.calor)+'<span style="opacity:.25">'+'●'.repeat(3-x.calor)+'</span></span></div>' +
     '<div class="op-meta">'+esc(tempoFim(x))+'<br>'+c.projetos+(c.projetos===1?' projeto':' projetos') +
-      (c.ultimo ? ' · último: '+esc(c.ultimo)+(c.offering ? ' ('+esc(c.offering)+(c.fim ? ', fim '+esc(c.fim) : '')+')' : '') : '')+'</div>' +
+      (c.ultimo ? ' · último: '+esc(c.ultimo)+(c.offering ? ' ('+esc(c.offering)+(c.fim ? ', fim '+esc(c.fim) : '')+')' : '') : '')+faixaGrupo(c)+'</div>' +
     '<div class="op-bloco"><span class="op-rot">Por que agora</span>'+noticiaOport(n, x.nts.length-1) +
       (n.leitura ? '<div class="op-porque">'+esc(n.leitura)+'</div>' : '')+'</div>' +
     '<div class="op-bloco"><span class="op-rot">Quem chama</span>'+quemChama(x)+'</div>' +
@@ -1805,7 +1834,7 @@ function cartaoExpandir(x, k){
   const c = x.c, n = x.nts.find(t=>x.abre.includes(t.off)) || x.nts[0];
   const chips = (l, cls)=>l.map(o=>'<span class="op-chip '+cls+'">'+esc(o)+'</span>').join("");
   return '<div class="op-card">' +
-    '<div class="op-top"><h4>'+esc(c.nome)+tagDoCliente(c)+'</h4></div>' +
+    '<div class="op-top"><h4>'+esc(c.nome)+tagDoCliente(c)+'</h4></div>' + faixaGrupo(c) +
     '<div class="op-of"><span class="op-rot2">Já fez</span>'+(c.offPortal.length ? chips(c.offPortal, "feita") : '<span class="op-sub">—</span>') +
       '<span class="op-seta">→</span><span class="op-rot2">Abre</span>'+chips(x.abre, "abre")+'</div>' +
     '<div class="op-bloco">'+noticiaOport(n, 0)+'</div>' +
@@ -1840,7 +1869,8 @@ function copiarOport(k, botao){
   const txt = (ex ? 'Oi, '+nomeCurto(ex.nome).split(" ")[0]+'! ' : '') + 'Vi no portal de R&I: '+n.titulo+'. ' +
     (estadoOport.visao==="expandir"
       ? 'A Peers já fez '+(c.offPortal.join(", ") || "projetos")+' na '+c.nome+', e isso abre conversa de '+x.abre.join(" e ")+'. '
-      : 'A '+c.nome+' foi cliente da Peers'+(c.ultimo ? ' (último projeto: '+c.ultimo+(c.fim ? ', até '+c.fim : '')+')' : '')+'. ') +
+      : 'A '+c.nome+' foi cliente da Peers'+(c.ultimo ? ' (último projeto: '+c.ultimo+(c.fim ? ', até '+c.fim : '')+')' : '') +
+        ((c.grupo||[]).some(g=>g.ativo) ? ', e seguimos no grupo com a '+c.grupo.filter(g=>g.ativo).map(g=>g.nome).join(" e ") : '')+'. ') +
     (x.contato ? 'Você conhece '+x.contato.nome+' ('+x.contato.cargo+') lá. ' : '') + 'Topa puxarmos uma conversa?';
   try{ navigator.clipboard.writeText(txt); botao.textContent = "Mensagem copiada"; }
   catch(e2){ prompt("Copie a mensagem:", txt); }
@@ -1895,7 +1925,10 @@ function ligarConexoes(){
   document.querySelectorAll("details.conx-emp").forEach(d=>{
     d.addEventListener("toggle", ()=>{
       const det = d.querySelector(".conx-det");
-      if(d.open && !det.innerHTML) det.innerHTML = detalheConx(CONEXOES.empresas[+d.dataset.conx]);
+      if(d.open && !det.innerHTML){
+        det.innerHTML = detalheConx(CONEXOES.empresas[+d.dataset.conx]);
+        det.querySelectorAll("[data-abrir]").forEach(bt=>bt.addEventListener("click", ()=>{ estadoConx.aberta = +bt.dataset.abrir; renderizar(); }));
+      }
     });
   });
   if(estadoConx.aberta !== null){
@@ -4188,6 +4221,10 @@ function carregarClientesPeers(c){
     rotulo: STATUS_CLI[status] || "cliente", projetos, ultimo, offering, fim, offerings: offerings || [], lider, n1, md,
     offPortal: offPortal || []      // as offerings já feitas, com os nomes do portal (para a aba Oportunidades)
   })).filter(x=>x.chave);
+  // mesmo grupo: o nome de um cliente contém o do outro ("Fundação X" e "X"). Continuam clientes separados (outro comprador),
+  // só aparecem juntos para mostrar que a Peers está no grupo
+  const contem = (a, b)=>a.chave.length>=4 && (" "+b.chave+" ").includes(" "+a.chave+" ");
+  CLIENTES.peers.forEach(a=>{ a.grupo = CLIENTES.peers.filter(b=>b!==a && (contem(a, b) || contem(b, a))); });
   juntarClientes();
 }
 function juntarClientes(){
@@ -4195,10 +4232,11 @@ function juntarClientes(){
   CLIENTES.nomes = CLIENTES.peers.concat(CLIENTES.proprios.filter(c=>!oficiais.has(c.chave)));
 }
 // "cliente ativo · último projeto: Supply Chain, 08/2026 · MD Fulano" (base oficial) ou "cliente"/"prospect" (lista própria)
-function detalheCliente(c){
+function detalheCliente(c, semGrupo){
   if(!c.peers) return c.rotulo;
   return c.rotulo + (c.offering ? " · último projeto: " + c.offering + (c.fim ? ", " + c.fim : "") : "") +
-    (c.md ? " · MD " + nomeCurto(c.md) : "");
+    (c.md ? " · MD " + nomeCurto(c.md) : "") +
+    (!semGrupo && (c.grupo||[]).length ? " · mesmo grupo: " + c.grupo.map(g=>g.nome+" ("+g.rotulo+")").join(", ") : "");
 }
 function citaComMaiuscula(texto, chave){
   const t = " " + String(texto||"").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^A-Za-z0-9]+/g," ") + " ";
@@ -4239,7 +4277,17 @@ function tagCliente(nome){
 }
 function tagDoCliente(c){
   const ex = c.peers && !c.ativo;
-  return '<span class="tag-cli'+(ex?' ex':'')+'" title="'+esc(detalheCliente(c))+'">'+(c.peers ? (ex ? 'ex-cliente' : 'cliente ativo') : esc(c.rotulo))+'</span>';
+  const ativo = ex && (c.grupo||[]).find(g=>g.ativo);
+  return '<span class="tag-cli'+(ex?' ex':'')+'" title="'+esc(detalheCliente(c))+'">'+(c.peers ? (ex ? 'ex-cliente' : 'cliente ativo') : esc(c.rotulo))+'</span>' +
+    (ativo ? '<span class="tag-cli grp" title="'+esc(ativo.nome+': '+detalheCliente(ativo, true))+'">grupo ativo</span>' : '');
+}
+// "Fundação X · cliente ativo · 16 projetos · até 01/2027", em cartões lado a lado (o próprio cliente primeiro)
+function cartoesGrupo(c){
+  const item = (g, voce)=>'<div class="g-item'+(g.ativo?' at':'')+(voce?' voce':'')+'"><b>'+esc(g.nome)+(voce?' <span class="g-st">(esta conta)</span>':'')+'</b>' +
+    '<span class="g-st">'+esc(g.rotulo)+'</span>' +
+    '<span>'+g.projetos+(g.projetos===1?' projeto':' projetos')+(g.fim ? ' · '+(mesesDesde(g.fim)>0?'fim ':'até ')+esc(g.fim) : '')+'</span>' +
+    (g.md ? '<span class="g-st">MD '+esc(nomeCurto(g.md))+'</span>' : '')+'</div>';
+  return '<div class="g-lista">'+item(c, true)+c.grupo.map(g=>item(g, false)).join("")+'</div>';
 }
 function barraComercial(){
   const ajuda = 'A lista fica só no seu navegador: não é enviada a lugar nenhum e some ao fechar a página. Formato: uma empresa por linha (CSV ou Excel); segunda coluna opcional com “Cliente” ou “Prospect”.';
@@ -4334,6 +4382,8 @@ function montarConta(){
       (cli.offerings.length ? " (" + cli.offerings.join(", ") + ")" : "") +
       (cli.ultimo ? " · último: " + cli.ultimo + (cli.fim ? ", fim " + cli.fim : "") : "") +
       [["líder de conta", cli.lider], ["N1", cli.n1], ["MD", cli.md]].filter(x=>x[1]).map(x=>" · " + x[0] + " " + x[1]).join(""));
+    (cli.grupo||[]).forEach(g=>L.push("Mesmo grupo na Peers: " + g.nome + " · " + g.rotulo + " · " + g.projetos + (g.projetos===1 ? " projeto" : " projetos") +
+      (g.fim ? (mesesDesde(g.fim)>0 ? ", fim " : ", até ") + g.fim : "") + (g.md ? " · MD " + g.md : "")));
   }
   L.push("");
   L.push("--- FINANÇAS ---");
