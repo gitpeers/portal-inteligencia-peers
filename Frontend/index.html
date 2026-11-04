@@ -376,7 +376,7 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 .roda-top{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
 .roda-col{min-width:0}
 .roda-col .card{margin-bottom:0}
-.roda-scroll{height:430px;overflow-y:auto;margin:0 -8px;padding:0 8px}
+.roda-scroll{height:280px;overflow-y:auto;margin:0 -8px;padding:0 8px}
 .roda-item{padding:11px 0;border-top:1px solid var(--grey-light);font-size:.8rem;line-height:1.5}
 .roda-item:first-child{border-top:0;padding-top:0}
 .roda-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.68rem;color:var(--grey);margin-bottom:3px}
@@ -393,7 +393,105 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 .roda-tab td,.roda-tab th{vertical-align:top}
 .roda-chips2{display:flex;flex-wrap:wrap;gap:5px}
 .roda-linha{cursor:pointer}
-@media(max-width:1000px){.roda-top{grid-template-columns:1fr}.roda-scroll{height:340px}}
+.roda-linha:hover td{background:var(--serene-soft)}
+.roda-nome{font-size:1.4rem;font-weight:600;color:var(--navy);letter-spacing:-.01em;margin:0 0 4px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px}
+.roda-nome span{font-size:.78rem;font-weight:500;color:var(--grey);letter-spacing:0}
+.roda-rot{font-size:.64rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8a93a3;margin:18px 0 9px;display:flex;align-items:center;gap:12px}
+.roda-ver{background:#fff;border:1px solid var(--navy);color:var(--navy);border-radius:var(--pill);padding:3px 12px;font:inherit;font-size:.68rem;font-weight:600;letter-spacing:0;text-transform:none;cursor:pointer}
+.roda-ver:hover{background:var(--navy);color:#fff}
+.roda-sub{display:block;font-size:.68rem;font-weight:400;color:var(--grey);margin-top:2px}
+.roda-kv-s{font-size:.92rem!important;line-height:1.3!important;font-weight:600}
+.roda-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.roda-2>.card{margin-bottom:0;min-width:0}
+.roda-txt p{margin:0 0 10px;font-size:.82rem;line-height:1.6}
+.roda-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px}
+.roda-bar{display:grid;grid-template-columns:minmax(110px,200px) 1fr 26px;gap:10px;align-items:center;margin:0 0 7px;font-size:.76rem}
+.roda-bar>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.roda-bar .t{height:13px;background:var(--grey-light);border-radius:4px;overflow:hidden}
+.roda-bar .t i{display:block;height:100%;background:var(--navy);border-radius:4px}
+.roda-bar b{text-align:right;font-variant-numeric:tabular-nums}
+.roda-3 .roda-bar{grid-template-columns:minmax(80px,120px) 1fr 24px}
+.roda-txt b{color:var(--navy);font-weight:700}
+.roda-conclui{margin-top:14px;background:var(--neon-soft);border:1px solid #e9f58c;border-left:3px solid var(--neon-strong);border-radius:var(--r-sm);padding:11px 14px;font-size:.8rem;line-height:1.6;color:var(--text2)}
+.roda-conclui .rt{display:block;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);margin-bottom:4px}
+.roda-conclui b{color:var(--navy)}
+.roda-stack{display:flex;flex-direction:column;gap:18px;min-width:0}
+.roda-stack>.card{margin-bottom:0}
+.roda-inds{display:flex;flex-direction:column;gap:10px}
+.roda-ind{border:1px solid var(--grey-border);border-radius:var(--r-md);padding:12px 14px;cursor:pointer;transition:border-color var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
+.roda-ind:hover{border-color:var(--navy);box-shadow:var(--shadow)}
+.roda-ind-h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
+.roda-ind-h b{display:block;font-size:.82rem;line-height:1.3;color:var(--navy)}
+.roda-ind-h span:not(.badge){display:block;font-size:.68rem;color:var(--grey);margin-top:2px}
+.roda-cmp{display:grid;grid-template-columns:78px 1fr 70px;gap:8px;align-items:center;font-size:.74rem;margin-top:5px}
+.roda-cmp>span:first-child{color:var(--grey-dark);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.roda-cmp .t{height:11px;background:var(--grey-light);border-radius:4px;overflow:hidden}
+.roda-cmp .t i{display:block;height:100%;border-radius:4px}
+.roda-cmp .t i.pl{background:var(--navy)}
+.roda-cmp .t i.st{background:var(--grey-strong)}
+.roda-cmp .t i.neg{background:var(--t3)}
+.roda-cmp b{text-align:right;font-variant-numeric:tabular-nums}
+.roda-ind-f{font-size:.66rem;color:var(--grey);margin-top:8px}
+.roda-chip i.fl,.roda-farol-leg i.fl{display:inline-block;width:9px;height:9px;border-radius:50%;flex:none}
+.roda-chip i.fl{margin-left:8px;vertical-align:middle}
+.roda-chip.on i.fl{box-shadow:0 0 0 2px rgba(255,255,255,.4)}
+.fl.verde{background:var(--t2)}.fl.amarelo{background:var(--warn)}.fl.vermelho{background:var(--t3)}
+.roda-farol-leg{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:.68rem;color:var(--grey);margin:0 0 9px}
+.roda-farol-leg span{display:inline-flex;align-items:center;gap:6px}
+.op-chip.emp{background:var(--blue-soft);color:var(--navy)}
+.op-chip.set{background:#fff;color:var(--grey-dark);border:1px dashed var(--grey-strong)}
+.roda-info{display:grid;grid-template-columns:minmax(0,1fr) 320px;padding:0;overflow:hidden}
+.roda-info-l{padding:20px 24px;min-width:0}
+.roda-info-r{padding:20px 24px;border-left:1px solid var(--grey-border);background:var(--serene-soft)}
+.roda-info .roda-rot{margin:12px 0 9px}
+.roda-info .roda-nome{margin:0 0 2px}
+.roda-fin{display:grid;grid-template-columns:repeat(auto-fit,minmax(122px,1fr));gap:10px}
+.roda-f{background:var(--serene-soft);border:1px solid var(--serene-mid);border-radius:var(--r-md);padding:10px 12px;min-width:0}
+.roda-f b{display:block;font-size:1.05rem;font-weight:600;line-height:1.2;font-variant-numeric:tabular-nums}
+.roda-f span{display:block;font-size:.66rem;color:var(--grey-dark);margin-top:3px;line-height:1.3}
+.roda-f em{display:block;font-style:normal;font-size:.64rem;color:var(--grey);margin-top:1px}
+.roda-fonte{font-size:.68rem;color:var(--grey);margin:8px 0 0;line-height:1.5}
+.roda-dl{display:grid;grid-template-columns:56px 1fr;gap:7px 10px;font-size:.78rem;margin:0}
+.roda-dl dt{color:var(--grey);font-size:.68rem;padding-top:2px}
+.roda-dl dd{margin:0;font-weight:600;color:var(--navy);min-width:0}
+.roda-dl .tag-cli{margin-left:0}
+.roda-sub2{display:block;font-weight:400;font-size:.68rem;color:var(--grey);margin-top:1px}
+.roda-conc{margin-top:16px;padding-top:14px;border-top:1px solid var(--grey-light)}
+.roda-cc{font-size:.76rem;line-height:1.45;margin:0 0 7px}
+.roda-cc a{color:var(--navy);text-decoration:none}
+.roda-cc a:hover{text-decoration:underline}
+.roda-2b{align-items:start}
+.roda-click{cursor:pointer;transition:border-color var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
+.roda-click:hover{border-color:var(--navy);box-shadow:var(--shadow-md)}
+.roda-abrir{margin-top:12px;font-size:.74rem;font-weight:600;color:var(--navy);display:flex;gap:6px}
+.roda-op{padding:11px 0;border-top:1px solid var(--grey-light);font-size:.8rem;line-height:1.5}
+.roda-op:first-of-type{border-top:0;padding-top:0}
+.roda-op-h{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:3px}
+.roda-op a{color:var(--navy);font-weight:600;text-decoration:none}
+.roda-op a:hover{text-decoration:underline}
+.roda-stats{display:grid;grid-template-columns:.8fr .95fr 1.45fr 1.2fr 1.2fr;gap:1px;background:var(--grey-border);border:1px solid var(--grey-border);border-radius:var(--r-md);overflow:hidden;margin-bottom:26px}
+.roda-stats>div{background:#fff;padding:14px 18px;min-width:0;display:flex;flex-direction:column}
+.roda-stats .l{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8a93a3;margin-bottom:7px}
+.roda-stats .v{font-size:1.1rem;font-weight:600;color:var(--navy);line-height:1.25;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.roda-stats .s{font-size:.7rem;color:var(--grey);margin-top:auto;padding-top:5px}
+@media(max-width:760px){.roda-stats{grid-template-columns:repeat(2,1fr)}}
+.gt-leg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.7rem;color:var(--grey-dark);margin:2px 0 12px}
+.gt-leg i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px}
+.gt-leg b{color:var(--grey);font-weight:600;margin-left:2px}
+.gt-wrap{max-height:380px;overflow:auto;border:1px solid var(--grey-border);border-radius:var(--r-md);background:#fff}
+.gt{min-width:560px}
+.gt-r{display:grid;grid-template-columns:minmax(150px,32%) 1fr;height:27px;align-items:center;border-top:1px solid var(--grey-light)}
+.gt-r:first-child{border-top:0}
+.gt-h{position:sticky;top:0;z-index:2;background:#fff;height:30px;border-bottom:1px solid var(--grey-border)}
+.gt-n{padding:0 12px;font-size:.72rem;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:7px;min-width:0}
+.gt-h .gt-n{color:var(--grey);font-weight:700;font-size:.64rem;letter-spacing:.08em;text-transform:uppercase}
+.gt-n u{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--t2);flex:none;text-decoration:none}
+.gt-p{position:relative;height:100%}
+.gt-y{position:absolute;top:50%;transform:translateY(-50%);padding-left:5px;font-size:.64rem;color:var(--grey);font-weight:600}
+.gt-b{position:absolute;top:7px;height:13px;border-radius:4px;min-width:5px}
+.gt-hoje{position:absolute;top:0;bottom:0;width:1px;background:var(--t3);opacity:.7}
+@media(max-width:1000px){.roda-info{grid-template-columns:1fr}.roda-info-r{border-left:0;border-top:1px solid var(--grey-border)}}
+@media(max-width:1000px){.roda-top,.roda-2{grid-template-columns:1fr}.roda-scroll{height:240px}}
 .box-com{background:var(--blue-soft);border:1px solid #cbdaee;padding:11px 14px;border-radius:var(--r-sm);
   font-size:.8rem;line-height:1.55;color:var(--text2);margin-bottom:11px}
 .rcard-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
@@ -1916,6 +2014,7 @@ function ligarOportunidades(){
   if(estado.aba!=="oportunidades") return;
   document.querySelectorAll("[data-opv]").forEach(b=>b.addEventListener("click", ()=>{ estadoOport.visao = b.dataset.opv; renderizar(); }));
   document.querySelectorAll("[data-roda]").forEach(b=>b.addEventListener("click", ()=>{ estadoRoda.player = b.dataset.roda; renderizar(); }));
+  document.querySelectorAll("[data-rodaproj]").forEach(b=>b.addEventListener("click", ()=>abrirProjetosRoda(b.dataset.rodaproj)));
   document.querySelectorAll("[data-opcopiar]").forEach(b=>b.addEventListener("click", ()=>copiarOport(+b.dataset.opcopiar, b)));
   document.querySelectorAll("[data-opconx]").forEach(b=>b.addEventListener("click", ()=>irConexoes(+b.dataset.opconx)));
 }
@@ -1934,6 +2033,14 @@ function citaAlgum(texto, chaves){
   const t = normTxt(texto);
   return chaves.some(k=>t.includes(" "+k+" ") && citaComMaiuscula(texto, k));
 }
+const fmtMi = v => v==null ? '—' : (Math.abs(v)>=1000 ? 'R$ '+fmtN(v/1000,1)+' bi' : 'R$ '+fmtN(v,0)+' mi');
+// acha a empresa numa lista (finanças trimestrais ou Valor 1000): nome igual, depois outra grafia da roda, depois nome que contém a grafia
+function achaEmpresaRoda(lista, nomeDe, pl){
+  const k = x=>chaveNome(nomeDe(x)), principal = chaveNome(pl.nome);
+  const todas = [...new Set(pl.nomes.concat(pl.nome).map(chaveNome).filter(Boolean))];
+  return lista.find(x=>k(x)===principal) || lista.find(x=>todas.includes(k(x))) ||
+    lista.find(x=>todas.some(c=>(" "+k(x)+" ").includes(" "+c+" "))) || null;
+}
 function rodaDados(){
   if(rodaDados.cache) return rodaDados.cache;
   const naJanela = it=>{ const d = diasEntre(it.data); return d<=0 && d>=-DIAS_OPORT; };
@@ -1947,11 +2054,20 @@ function rodaDados(){
     const noticias = radar.filter(r=>citaAlgum(textoRadar(r), chaves)).map(r=>({...norm(r), titulo:r.manchete, angulo:r.anguloPeers||"", alta:r.relevancia==="alta"}));
     const movimentos = movs.filter(m=>casa(chaveNome(m.player)) || citaAlgum(textoMov(m), chaves)).map(m=>({...norm(m), titulo:m.tese, tipo:m.tipo||"", valor:m.valor||"", angulo:m.leitura||""}));
     [noticias, movimentos].forEach(l=>{ l.forEach(x=>{ x.tit = noTit(x); }); if(l===noticias) l.forEach(x=>{ x.cita = !x.tit; }); l.sort((a,b)=>b.tit-a.tit || b.data.localeCompare(a.data)); });
+    // finanças: resultado trimestral (companhias abertas) e/ou Valor 1000; o setor vem do roda.json (industria e divisao) ou dessas bases
+    const tri = achaEmpresaRoda(DADOS.trimestral, e=>e.nome, pl);
+    const v1k = achaEmpresaRoda(DADOS.players, p=>p.nome, pl);
+    const valor = v1k ? v1k.segmentos[0].valor : null;
+    const setor = pl.industria && pl.divisao ? {industria:pl.industria, divisao:pl.divisao}
+      : tri ? {industria:tri.industria, divisao:tri.divisao} : valor ? {industria:valor.ind, divisao:valor.div} : null;
+    const clientes = CLIENTES.peers.filter(c=>casa(c.chave));
     return {
-      nome:pl.nome, chaves, noticias, movimentos,
+      nome:pl.nome, chaves, noticias, movimentos, tri, valor, setor, clientes,
+      cliente: clientes.find(c=>chaves.includes(c.chave)) || clientes[0] || null,
+      offPortal: [...new Set(clientes.flatMap(c=>c.offPortal))],
       conc: conc.filter(c=>citaAlgum(c.fato+" "+(c.manchete||""), chaves)),
+      concTodos: DADOS.concorrencia.filter(c=>citaAlgum(c.fato+" "+(c.manchete||""), chaves)).sort((a,b)=>b.data.localeCompare(a.data)),
       agenda: DADOS.agenda.filter(a=>diasEntre(a.data)>=0 && citaAlgum(a.titulo, chaves)).sort((a,b)=>a.data.localeCompare(b.data)),
-      cliente: CLIENTES.peers.find(c=>casa(c.chave)) || null,
       pontes: ligado.filter(([, p])=>(p.players||[]).some(x=>casa(chaveNome(x.nome)))).map(([chave, p])=>({chave, p, x:p.players.find(x=>casa(chaveNome(x.nome)))}))
     };
   });
@@ -1982,57 +2098,357 @@ function itemRoda(x, mostrarPlayer, extra){
 }
 function blocoOfferingsRoda(sel){
   const por = new Map();
-  sel.forEach(d=>[...d.noticias, ...d.movimentos].forEach(x=>{
+  sel.forEach(d=>[...d.noticias.filter(x=>!x.cita), ...d.movimentos].forEach(x=>{
     if(!x.offering) return;
     if(!por.has(x.offering)) por.set(x.offering, new Map());
     const m = por.get(x.offering); if(!m.has(d.nome)) m.set(d.nome, []); m.get(d.nome).push(x);
   }));
   const linhas = [...por].map(([off, m])=>({off, m, q:[...m.values()].reduce((s,l)=>s+l.length,0)})).sort((a,b)=>b.q-a.q || a.off.localeCompare(b.off));
   if(!linhas.length) return '<div class="roda-vazio">Nenhuma notícia ou movimento do recorte aponta para uma offering da Peers nos últimos '+DIAS_OPORT+' dias.</div>';
-  return '<div class="table-wrap"><table class="data-table roda-tab"><thead><tr><th>Offering</th><th>Players</th><th>O que abre</th></tr></thead><tbody>' +
+  return '<div class="table-wrap"><table class="data-table roda-tab"><thead><tr><th>Offering</th><th>Empresas com sinal (número de notícias ou movimentos)</th><th>Principal sinal</th></tr></thead><tbody>' +
     linhas.map(l=>{
       const topo = [...l.m.values()].flat().sort((a,b)=>(b.alta?1:0)-(a.alta?1:0) || b.data.localeCompare(a.data))[0];
       const chips = [...l.m].map(([nome, its])=>{
-        const d = sel.find(s=>s.nome===nome), fez = d.cliente && d.cliente.offPortal.includes(l.off);
+        const d = sel.find(s=>s.nome===nome), fez = d.offPortal.includes(l.off);
         return '<span class="op-chip '+(fez?'feita':'abre')+'" title="'+(fez?'A Peers já fez esta offering ali':'A Peers ainda não fez esta offering ali')+'">'+esc(nome)+(fez?' · já fez':'')+' ('+its.length+')</span>';
       }).join("");
       return '<tr><td><b>'+esc(l.off)+'</b><div class="cardnote" style="margin:2px 0 0">'+l.q+(l.q===1?' sinal':' sinais')+'</div></td><td><div class="roda-chips2">'+chips+'</div></td>' +
         '<td>'+(topo.url?'<a href="'+esc(topo.url)+'" target="_blank" rel="noopener">'+esc(topo.titulo)+'</a>':esc(topo.titulo))+(topo.angulo?'<div class="roda-ang">'+esc(topo.angulo)+'</div>':'')+'</td></tr>';
     }).join("") + '</tbody></table></div>' +
-    '<p class="cardnote" style="margin:10px 0 0">Destaque em neon: a Peers ainda não fez a offering no player (pela carteira de projetos). Cinza: já fez.</p>';
+    '<p class="cardnote" style="margin:10px 0 0">Neon: a Peers ainda não fez essa offering na empresa, pela carteira de projetos (oportunidade de entrada). Cinza: a Peers já fez.</p>';
+}
+const kRoda = (v, l, sub, cls)=>'<div class="kbox"><div class="v'+(cls?' '+cls:'')+'">'+v+'</div><div class="l">'+l+(sub?'<span class="roda-sub">'+sub+'</span>':'')+'</div></div>';
+const fRoda = (v, l, sub)=>'<div class="roda-f"><b>'+v+'</b><span>'+l+'</span>'+(sub?'<em>'+sub+'</em>':'')+'</div>';
+
+// ---- Informações da empresa: finanças em uma linha, relação com a Peers numa coluna estreita ao lado ----
+function financasRoda(d){
+  const t = d.tri, v = d.valor;
+  if(t){
+    const m = t.m, p = t.fonte.periodo, a = x=>x!=null ? fmtPct(x,true)+' a/a' : '';
+    const tiles = t.banco
+      ? [fRoda(fmtMi(m.margemFinanceira),'Margem financeira · '+esc(p), a(m.crescMFB)), fRoda(fmtMi(m.lucroLiquido),'Lucro líquido', a(m.crescLL)),
+         fRoda(fmtPct(m.roe),'ROE'), fRoda(m.carteira==null?'—':'R$ '+fmtN(m.carteira,0)+' bi','Carteira de crédito', a(m.crescCarteira)), fRoda(fmtPct(m.inadimplencia),'Inadimplência +90 dias')]
+      : [fRoda(fmtMi(m.receita),'Receita '+esc(m.receitaTipo||'líquida')+' · '+esc(p), a(m.cresc)), fRoda(fmtPct(m.margemEbitda),'Margem EBITDA'),
+         fRoda(fmtPct(m.margemLiquida),'Margem líquida'), fRoda(fmtMi(m.lucroLiquido),'Lucro líquido')];
+    if(v) tiles.push(fRoda('Nº '+v.pos,'Valor 1000', v.pos24 ? 'era Nº '+v.pos24+' em 2024' : ''));
+    return '<div class="roda-fin">'+tiles.join("")+'</div><p class="roda-fonte">Fonte: '+esc(t.fonte.nome)+', '+esc(p)+(v ? '; Valor 1000, ed. 2026 (ano 2025)' : '')+'.</p>';
+  }
+  if(v){
+    const tiles = [fRoda('Nº '+v.pos,'Valor 1000', v.pos24 ? 'era Nº '+v.pos24+' em 2024' : ''), fRoda(fmtMi(v.rol),'Receita líquida · 2025', v.varRol!=null ? fmtPct(v.varRol,true)+' no ano' : '')];
+    if(v.mEb!=null) tiles.push(fRoda(fmtPct(v.mEb),'Margem EBITDA'));
+    if(v.ml!=null) tiles.push(fRoda(fmtPct(v.ml),'Margem líquida'));
+    if(v.ll!=null) tiles.push(fRoda(fmtMi(v.ll),'Lucro líquido · 2025', v.varLl!=null ? fmtPct(v.varLl,true)+' no ano' : ''));
+    return '<div class="roda-fin">'+tiles.join("")+'</div><p class="roda-fonte">Fonte: Valor 1000, edição 2026 (ano 2025). Sem resultado trimestral no portal.</p>';
+  }
+  return '<div class="roda-vazio" style="padding:6px 0">Sem dados financeiros no portal: a empresa não está nas companhias abertas nem no Valor 1000.</div>';
+}
+function relacaoRoda(d){
+  const c = d.cliente;
+  if(!c) return '<div class="roda-vazio" style="padding:4px 0">Sem projeto na base de clientes da Peers.</div>';
+  const total = d.clientes.reduce((s,x)=>s+x.projetos,0);
+  const li = (r, v)=>'<dt>'+r+'</dt><dd>'+v+'</dd>';
+  return '<dl class="roda-dl">' + li('Situação', tagDoCliente(c) || esc(c.rotulo)) +
+    li('Projetos', total+(d.clientes.length>1 ? ' <span class="roda-sub2">em '+d.clientes.length+' contas do grupo</span>' : '')) +
+    li('Último', esc(c.ultimo||'—')+((c.offering||c.fim) ? '<span class="roda-sub2">'+[c.offering && esc(c.offering), c.fim && 'fim '+esc(c.fim)].filter(Boolean).join(' · ')+'</span>' : '')) +
+    li('Líder', esc(nomeCurto(c.lider)||'—')) + li('MD', esc(nomeCurto(c.md)||'—')) + '</dl>';
+}
+function blocoInfoRoda(d){
+  return '<div class="card roda-info"><div class="roda-info-l">' +
+      '<div class="roda-nome">'+esc(d.nome)+(d.setor ? '<span>'+esc(d.setor.industria)+' · '+esc(d.setor.divisao)+'</span>' : '<span>setor não definido</span>')+'</div>' +
+      '<div class="roda-rot">Finanças</div>'+financasRoda(d)+'</div>' +
+    '<div class="roda-info-r"><div class="roda-rot">Relação com a Peers</div>'+relacaoRoda(d)+'</div></div>';
+}
+
+// ---- Mercado da empresa: texto corrido com o essencial em negrito, uma conclusão e os concorrentes que citam a empresa ----
+const bo = s=>'<b>'+s+'</b>';
+const LEITURA_TIPO = {
+  "Parceria tecnológica":"busca capacidade tecnológica por parceria",
+  "Troca de executivo":"muda a liderança, o que costuma abrir revisão de prioridades",
+  "Aquisição":"mexe no portfólio por M&A, e a integração e a captura de valor viram a próxima agenda",
+  "Fusão":"mexe no portfólio por M&A, e a integração e a captura de valor viram a próxima agenda",
+  "Entrada em nova geografia":"expande para novas regiões, o que exige estruturar operação e governança",
+  "Redesenho de estrutura":"reorganiza a estrutura, com revisão de papéis, processos e custos",
+  "Participação minoritária":"aposta em novas frentes sem assumir o controle",
+  "Investimento anunciado":"entra num ciclo de investimento, que pede priorização e retorno do capital",
+  "Novo modelo de negócio":"reposiciona o modelo de negócio",
+  "Saída de segmento":"foca no core e se desfaz de frentes"
+};
+function textoMercadoRoda(d){
+  const t = d.tri, v = d.valor, n = esc(d.nome), par = [], concl = [];
+  const vs = (x, med)=>x==null || med==null ? '' : (x>med ? 'acima' : (x<med ? 'abaixo' : 'em linha com'));
+  const minus = s=>s.charAt(0).toLowerCase()+s.slice(1);
+  // 1. posição financeira e o que ela indica
+  if(t){
+    const m = t.m, p = esc(t.fonte.periodo);
+    const pares = DADOS.trimestral.filter(e=>e.divisao===t.divisao && e.fonte.periodo===t.fonte.periodo && e!==t);
+    let s;
+    if(t.banco){
+      s = 'No '+p+', '+n+' teve lucro líquido de '+bo(fmtMi(m.lucroLiquido))+(m.crescLL!=null ? ' ('+bo(fmtPct(m.crescLL,true))+' a/a)' : '')+', ROE de '+bo(fmtPct(m.roe))+
+        ', carteira de crédito de '+bo('R$ '+fmtN(m.carteira,0)+' bi')+(m.crescCarteira!=null ? ' ('+fmtPct(m.crescCarteira,true)+')' : '')+' e inadimplência acima de 90 dias de '+bo(fmtPct(m.inadimplencia))+'.';
+      const mr = mediana(pares.map(e=>e.m.roe)), r = vs(m.roe, mr);
+      if(r && pares.length>=3){
+        s += ' O ROE ficou '+bo(r+' da mediana')+' dos '+pares.length+' bancos do portal ('+fmtPct(mr)+').';
+        concl.push(r==='acima' ? 'Rentabilidade acima dos pares: o banco gera mais retorno que a mediana do setor.' : r==='abaixo' ? 'Rentabilidade abaixo dos pares: há pressão para melhorar retorno e eficiência.' : 'Rentabilidade em linha com os pares.');
+      }
+    } else {
+      s = 'No '+p+', '+n+' teve receita '+esc(m.receitaTipo||'líquida')+' de '+bo(fmtMi(m.receita))+(m.cresc!=null ? ', '+bo(fmtPct(m.cresc,true))+' sobre o mesmo trimestre do ano anterior' : '')+
+        ', com margem EBITDA de '+bo(fmtPct(m.margemEbitda))+' e lucro líquido de '+bo(fmtMi(m.lucroLiquido))+' (margem de '+fmtPct(m.margemLiquida)+').';
+      const mc = mediana(pares.map(e=>e.m.cresc)), me = mediana(pares.map(e=>e.m.margemEbitda)), a = vs(m.cresc, mc), b = vs(m.margemEbitda, me);
+      if((a || b) && pares.length>=3){
+        s += ' Frente às '+pares.length+' empresas da divisão '+esc(t.divisao)+' no portal, '+[a && 'o crescimento ficou '+bo(a+' da mediana')+' ('+fmtPct(mc)+')', b && 'a margem EBITDA ficou '+bo(b+' da mediana')+' ('+fmtPct(me)+')'].filter(Boolean).join(' e ')+'.';
+        const alto = x=>x==='acima', baixo = x=>x==='abaixo';
+        concl.push(alto(a) && alto(b) ? 'Posição financeira de força: cresce e rende acima da divisão.'
+          : alto(a) && baixo(b) ? 'Cresce mais que a divisão, mas com margem menor: tende a priorizar rentabilidade e eficiência.'
+          : baixo(a) && alto(b) ? 'Margem confortável, mas crescimento abaixo da divisão: o desafio é voltar a crescer.'
+          : baixo(a) && baixo(b) ? 'Crescimento e margem abaixo da divisão: pressão por eficiência e por reposicionamento.'
+          : a ? 'Crescimento '+(alto(a) ? 'acima' : baixo(a) ? 'abaixo' : 'em linha com')+' da divisão; sem comparação clara de margem.'
+          : 'Margem '+(alto(b) ? 'acima' : baixo(b) ? 'abaixo' : 'em linha com')+' da divisão; sem comparação clara de crescimento.');
+      }
+    }
+    if(v) s += ' No Valor 1000 (ano 2025), ocupa a '+bo('posição '+v.pos)+'.';
+    par.push(s);
+  } else if(v){
+    par.push('Sem resultado trimestral no portal. No Valor 1000 (ano 2025), '+n+' ocupa a '+bo('posição '+v.pos)+(v.pos24 ? ' (era '+v.pos24+' em 2024)' : '')+', com receita líquida de '+bo(fmtMi(v.rol))+
+      (v.varRol!=null ? ' ('+bo(fmtPct(v.varRol,true))+' no ano)' : '')+(v.ml!=null ? ' e margem líquida de '+bo(fmtPct(v.ml)) : '')+'.');
+    if(v.varRol!=null) concl.push(v.varRol>=0 ? 'Receita em alta no último ano, mesmo sem resultado trimestral no portal.' : 'Receita em queda no último ano: vale entender se é ciclo do setor ou perda de mercado.');
+  } else par.push('Sem dados financeiros de '+n+' no portal.');
+  // 2. últimos 30 dias: o que saiu e o que indica
+  const nt = d.noticias.filter(x=>x.tit), soTexto = d.noticias.length - nt.length, mm = d.movimentos.length;
+  const topo = l=>l.slice().sort((a,b)=>(b.alta?1:0)-(a.alta?1:0) || b.tit-a.tit || b.data.localeCompare(a.data))[0];
+  const offs = new Map(); [...nt, ...d.movimentos].forEach(x=>{ if(x.offering) offs.set(x.offering, (offs.get(x.offering)||0)+1); });
+  const ordOffs = [...offs].sort((a,b)=>b[1]-a[1]);
+  if(!nt.length && !mm){
+    par.push('Nos últimos '+DIAS_OPORT+' dias o portal não registrou notícia nem movimento sobre '+n+(soTexto ? ' (há '+soTexto+(soTexto===1?' citação':' citações')+' só no corpo de matérias sobre outros temas)' : '')+', então a leitura de mercado se apoia nos resultados e no setor. Pode ser silêncio real ou falta de fonte do Radar para a empresa.');
+  } else {
+    let s = 'Nos últimos '+DIAS_OPORT+' dias, '+n+' esteve no noticiário';
+    if(mm){ const x = topo(d.movimentos); s += ': o principal movimento'+(x.tipo ? ' ('+esc(x.tipo.toLowerCase())+')' : '')+' foi '+bo('“'+esc(x.titulo.replace(/\.$/,''))+'”')+' ('+formatarData(x.data).slice(0,5)+')'; if(x.angulo) s += ', que, na leitura da Peers, '+esc(minus(x.angulo.replace(/\.$/,''))); s += '.';
+      if(LEITURA_TIPO[x.tipo]) concl.push('O movimento indica que a empresa '+LEITURA_TIPO[x.tipo]+'.'); }
+    else s += '.';
+    if(nt.length){ const x = topo(nt); s += ' Na imprensa, '+(mm ? 'também ' : '')+'chama atenção '+bo('“'+esc(x.titulo)+'”')+' ('+esc(x.fonte||'')+', '+formatarData(x.data).slice(0,5)+')'+(nt.length>1 ? ', entre '+nt.length+' notícias do período' : '')+'.'; }
+    if(ordOffs.length) s += ' Os sinais abrem conversa de '+ordOffs.slice(0,3).map(o=>bo(esc(o[0]))).join(', ').replace(/, ([^,]*)$/, ' e $1')+'.';
+    if(soTexto) s += ' ('+soTexto+(soTexto===1?' outra matéria só cita':' outras matérias só citam')+' a empresa no corpo do texto: confira antes de usar.)';
+    par.push(s);
+  }
+  if(d.agenda.length) par.push('Próxima data no radar: '+d.agenda.slice(0,3).map(a=>bo(esc(a.titulo))+' ('+formatarData(a.data).slice(0,5)+')').join('; ')+'.');
+  // 3. o que isso significa para a Peers
+  if(ordOffs.length){
+    const [off, q] = ordOffs[0], fez = d.offPortal.includes(off), c = d.cliente;
+    const rel = !c ? 'a Peers não tem projeto na empresa, então seria porta de entrada' : c.ativo ? 'como cliente ativo, é caminho de expansão' : 'como ex-cliente, é um bom motivo para reabrir a conversa';
+    concl.push('Para a Peers, a oportunidade mais forte é '+bo(esc(off))+' ('+q+(q===1?' sinal':' sinais')+'), que a Peers '+(fez?'já fez':'ainda não fez')+' na empresa; '+rel+'.');
+  } else {
+    const os = ordenaOps(oportunidadesRoda(d).set)[0];
+    if(os){
+      const [off, its] = os, fez = d.offPortal.includes(off), c = d.cliente;
+      const rel = !c ? 'seria porta de entrada' : c.ativo ? 'como cliente ativo, é caminho de expansão' : 'como ex-cliente, é um bom motivo para reabrir a conversa';
+      concl.push('Sem sinal novo da própria empresa, a conversa pode partir do setor: a oportunidade mais forte é '+bo(esc(off))+' ('+its.length+(its.length===1?' sinal':' sinais')+' do setor), que a Peers '+(fez?'já fez':'ainda não fez')+' na empresa; '+rel+'.');
+    } else if(d.cliente) concl.push('Sem sinal novo de offering no período: vale manter o relacionamento e acompanhar a próxima data.');
+  }
+  if(d.concTodos.length){ const nomes = [...new Set(d.concTodos.map(c=>c.nome).filter(Boolean))].slice(0,3).map(esc).join(', ');
+    concl.push('Há '+d.concTodos.length+(d.concTodos.length===1?' notícia':' notícias')+' de consultorias concorrentes ligadas à empresa ('+nomes+'): vale checar se já existe projeto em curso.'); }
+  return '<div class="roda-txt">'+par.map(s=>'<p>'+s+'</p>').join("")+'</div>' +
+    (concl.length ? '<div class="roda-conclui"><span class="rt">O que isso indica</span>'+concl.join('<br>')+'</div>' : '') +
+    concorrentesRoda(d) +
+    '<p class="roda-fonte">Texto e conclusão montados automaticamente por regra, sem IA, com os resultados, notícias e movimentos do portal. Confira nas fontes antes de usar com cliente.</p>';
+}
+function concorrentesRoda(d){
+  const l = d.concTodos.slice(0, 3);
+  const desde = DADOS.concorrencia.reduce((m,c)=>!m || c.data<m ? c.data : m, "");
+  return '<div class="roda-conc"><div class="roda-rot" style="margin-top:0">Concorrentes na empresa</div>' +
+    (l.length ? l.map(c=>'<div class="roda-cc"><span class="badge bg-n">'+esc(c.nome||'')+'</span> <span class="roda-sub2" style="display:inline">'+formatarData(c.data).slice(0,5)+'</span> ' +
+        (c.url ? '<a href="'+esc(c.url)+'" target="_blank" rel="noopener">'+esc(c.fato)+'</a>' : esc(c.fato))+'</div>').join("") +
+      '<p class="roda-fonte">Notícias de consultorias concorrentes que citam a empresa'+(d.concTodos.length>3 ? ' ('+d.concTodos.length+' desde '+formatarData(desde).slice(0,5)+', as 3 mais recentes)' : '')+'. Citação não prova projeto: confira.</p>'
+      : '<p class="roda-fonte" style="margin:0">Nenhuma consultoria concorrente citada junto a '+esc(d.nome)+' nas fontes monitoradas'+(desde ? ' desde '+formatarData(desde).slice(0,5) : '')+'.</p>') + '</div>';
+}
+// ---- O setor: situação atual, mudanças em curso e o que isso indica (leituras de IA do portal) ----
+function textoSetorRoda(d){
+  if(!d.setor) return '<div class="roda-vazio">Setor não definido para esta empresa. Para mostrar o mercado dela, acrescente <b>"industria"</b> e <b>"divisao"</b> a ela no roda.json e publique a lista de novo.</div>';
+  const S = d.setor, par = [];
+  const segs = DADOS.indicadores.filter(s=>s.industria===S.industria && s.divisao===S.divisao);
+  const fin = DADOS.analises.financas[S.industria+"|"+S.divisao];
+  const lei = segs.slice(0,2).map(s=>DADOS.analises.indicadores[s.id]).filter(a=>a && a.texto).map(a=>a.texto);
+  if(fin && fin.texto) par.push(esc(fin.texto));
+  if(lei.length) par.push(lei.map(esc).join(' '));
+  const rec = DADOS.radar.filter(r=>r.industria===S.industria && r.divisao===S.divisao && diasEntre(r.data)<=0 && diasEntre(r.data)>=-60 && r.relevancia==="alta");
+  const reg = rec.filter(r=>(r.temas||[]).includes("Regulação e política pública")).sort((a,b)=>b.data.localeCompare(a.data)).slice(0,2);
+  const out = rec.filter(r=>!reg.includes(r)).sort((a,b)=>b.data.localeCompare(a.data)).slice(0,2);
+  const frase = r=>bo('“'+esc(r.manchete)+'”')+' ('+formatarData(r.data).slice(0,5)+')'+(r.porQueImporta ? ': '+esc(r.porQueImporta) : '.');
+  if(reg.length) par.push('No campo regulatório, o Radar destaca '+reg.map(frase).join(' Também: '));
+  if(out.length) par.push((reg.length ? 'Outras mudanças em curso no setor: ' : 'Mudanças em curso no setor, segundo o Radar dos últimos 60 dias: ')+out.map(frase).join(' Além disso: '));
+  // o que isso indica: as leituras "so what" do portal para os indicadores do setor (as que citam a empresa vêm primeiro)
+  const sw = Object.entries(DADOS.analises.sowhat||{}).filter(([k, x])=>segs.some(s=>k.startsWith(s.id+"|")) && x.impacto)
+    .sort((a, b)=>(citaAlgum(b[1].impacto+" "+(b[1].oportunidade||""), d.chaves)?1:0)-(citaAlgum(a[1].impacto+" "+(a[1].oportunidade||""), d.chaves)?1:0) || (b[1].geradoEm||"").localeCompare(a[1].geradoEm||"")).slice(0,2);
+  const concl = sw.map(([, x])=>esc(x.impacto)+(x.oportunidade ? ' '+bo('Para a Peers:')+' '+esc(x.oportunidade) : ''));
+  return (par.length ? '<div class="roda-txt">'+par.map(s=>'<p>'+s+'</p>').join("")+'</div>'
+      : '<div class="roda-vazio">Ainda não há leitura nem notícia de alta relevância do setor '+esc(S.industria)+' · '+esc(S.divisao)+' no portal.</div>') +
+    (concl.length ? '<div class="roda-conclui"><span class="rt">O que isso indica</span>'+concl.join('<br><br>')+'</div>' : '') +
+    '<p class="roda-fonte">Situação atual e o que isso indica: leituras geradas por IA a partir dos indicadores do portal. Mudanças em curso: notícias de alta relevância do Radar do setor nos últimos 60 dias.</p>';
+}
+function blocoMercadoRoda(d){
+  return '<div class="roda-2"><div class="card"><div class="card-title"><span class="dot"></span>Mercado da empresa</div>'+textoMercadoRoda(d)+'</div>' +
+    '<div class="card"><div class="card-title"><span class="dot"></span>O setor'+(d.setor ? '<span class="hint">'+esc(d.setor.industria)+' · '+esc(d.setor.divisao)+'</span>' : '')+'</div>'+textoSetorRoda(d)+'</div></div>';
 }
 function blocoEntramosRoda(sel){
   return '<div class="table-wrap"><table class="data-table roda-tab"><thead><tr><th>Player</th><th>Relação com a Peers</th><th>Offerings já feitas</th><th>Último projeto e responsáveis</th></tr></thead><tbody>' +
     sel.map(d=>{
       const c = d.cliente;
       if(!c) return '<tr><td><b>'+esc(d.nome)+'</b></td><td><span class="badge bg-n">sem projeto na base</span></td><td>—</td><td>—</td></tr>';
-      return '<tr><td><b>'+esc(d.nome)+'</b></td><td>'+tagDoCliente(c)+'<div class="cardnote" style="margin:3px 0 0">'+c.projetos+(c.projetos===1?' projeto':' projetos')+'</div></td>' +
-        '<td><div class="roda-chips2">'+(c.offPortal.length ? c.offPortal.map(o=>'<span class="op-chip feita">'+esc(o)+'</span>').join("") : '<span class="op-sub">—</span>')+'</div></td>' +
+      const total = d.clientes.reduce((s,x)=>s+x.projetos,0);
+      return '<tr class="roda-linha" data-rodaproj="'+esc(d.nome)+'" title="Abrir a análise dos projetos"><td><b>'+esc(d.nome)+'</b></td><td>'+tagDoCliente(c)+'<div class="cardnote" style="margin:3px 0 0">'+total+(total===1?' projeto':' projetos')+'</div></td>' +
+        '<td><div class="roda-chips2">'+(d.offPortal.length ? d.offPortal.map(o=>'<span class="op-chip feita">'+esc(o)+'</span>').join("") : '<span class="op-sub">—</span>')+'</div></td>' +
         '<td>'+(c.ultimo ? esc(c.ultimo)+(c.fim?' · fim '+esc(c.fim):'') : '—')+'<div class="cardnote" style="margin:3px 0 0">'+
           [["Líder",c.lider],["MD",c.md]].filter(y=>y[1]).map(y=>y[0]+' '+esc(nomeCurto(y[1]))).join(" · ")+'</div></td></tr>';
-    }).join("") + '</tbody></table></div>';
+    }).join("") + '</tbody></table></div><p class="cardnote" style="margin:10px 0 0">Clique numa linha para abrir a análise dos projetos: offerings, líderes e linha do tempo.</p>';
+}
+
+// análise dos projetos de uma empresa: usa a lista de projetos da base de clientes (publicar_clientes.py)
+function contaRoda(lista, f){
+  const m = new Map(); lista.forEach(p=>{ const k = f(p); if(k) m.set(k, (m.get(k)||0)+1); });
+  return [...m].sort((a,b)=>b[1]-a[1] || a[0].localeCompare(b[0]));
+}
+function barrasRoda(pares, max){
+  if(!pares.length) return '<div class="roda-vazio" style="padding:4px 0">Sem dado na base.</div>';
+  const topo = pares[0][1];
+  return pares.slice(0, max||8).map(([k, n])=>'<div class="roda-bar"><span title="'+esc(k)+'">'+esc(k)+'</span><span class="t"><i style="width:'+Math.max(4, Math.round(n/topo*100))+'%"></i></span><b>'+n+'</b></div>').join("");
 }
 function blocoSetorRoda(sel){
   const corPos = {"acima":"b2", "abaixo":"b3", "em linha":"bg-n"};
+  const unico = sel.length===1;
   const linhas = sel.flatMap(d=>d.pontes.map(o=>({d, ...o})));
   const sem = sel.filter(d=>!d.pontes.length).map(d=>esc(d.nome));
-  return (linhas.length ? '<div class="table-wrap"><table class="data-table roda-tab"><thead><tr><th>Player</th><th>Indicador do setor</th><th>Player</th><th>Setor</th><th>Posição</th><th>Período e fonte</th></tr></thead><tbody>' +
-    linhas.map(l=>{
-      const p = l.p, s = p.setor||{}, ref = s.referencia, x = l.x;
-      const setor = ref===null || ref===undefined ? '—' : (p.comparar==="var" ? fmtMetrica(ref,'%') : fmtMetrica(ref,p.unidadeMetrica));
-      return '<tr class="roda-linha" data-aprof="'+esc(l.chave)+'" title="Abrir a visão por player deste indicador"><td><b>'+esc(l.d.nome)+'</b></td>' +
-        '<td>'+esc(p.indicador)+'<div class="cardnote" style="margin:2px 0 0">'+esc((DADOS.indicadores.find(i=>i.id===p.segmento)||{}).segmento||'')+'</div></td>' +
-        '<td class="num">'+fmtMetrica(x.valor,p.unidadeMetrica)+'<div class="cardnote" style="margin:2px 0 0">'+esc(p.rotuloMetrica||'')+'</div></td><td class="num">'+setor+'</td>' +
-        '<td>'+(x.posicao ? '<span class="badge '+corPos[x.posicao]+'">'+esc(x.posicao)+(x.posicao!=="em linha" ? ' · '+fmtDif(x.diferenca) : '')+'</span>' : '<span class="badge bg-n">sem comparação direta</span>')+'</td>' +
-        '<td class="aprof-det">'+esc(x.periodo)+' · '+esc(x.fonte)+'</td></tr>';
-    }).join("") + '</tbody></table></div><p class="cardnote" style="margin:10px 0 0">Clique numa linha para abrir a visão por player completa do indicador.</p>' : '') +
+  const barra = (rot, v, un, max, cls)=>'<div class="roda-cmp"><span title="'+esc(rot)+'">'+esc(rot)+'</span><span class="t"><i class="'+cls+(v<0?' neg':'')+'" style="width:'+Math.max(3, Math.abs(v)/max*100).toFixed(1)+'%"></i></span><b>'+fmtMetrica(v, un)+'</b></div>';
+  const cards = linhas.map(l=>{
+    const p = l.p, s = p.setor||{}, ref = s.referencia, x = l.x, un = p.unidadeMetrica, unRef = p.comparar==="var" ? '%' : p.unidadeMetrica;
+    const max = Math.max(Math.abs(x.valor||0), Math.abs(ref||0)) || 1;
+    return '<div class="roda-ind" data-aprof="'+esc(l.chave)+'" title="Abrir a visão por player deste indicador">' +
+      '<div class="roda-ind-h"><div><b>'+esc(p.indicador)+'</b><span>'+(unico ? '' : esc(l.d.nome)+' · ')+esc((DADOS.indicadores.find(i=>i.id===p.segmento)||{}).segmento||'')+'</span></div>' +
+        (x.posicao ? '<span class="badge '+corPos[x.posicao]+'">'+esc(x.posicao)+(x.posicao!=="em linha" ? ' · '+fmtDif(x.diferenca) : '')+'</span>' : '<span class="badge bg-n">sem comparação direta</span>')+'</div>' +
+      barra(l.d.nome, x.valor, un, max, 'pl') + (ref===null || ref===undefined ? '' : barra('Setor', ref, unRef, max, 'st')) +
+      '<div class="roda-ind-f">'+esc(p.rotuloMetrica||'')+' · '+esc(x.periodo)+' · '+esc(x.fonte)+'</div></div>';
+  }).join("");
+  return (cards ? '<div class="roda-inds">'+cards+'</div><p class="cardnote" style="margin:4px 0 0">Barra azul-marinho: a empresa. Barra cinza: referência do setor. Clique num indicador para abrir a visão por player.</p>' : '') +
     (sem.length ? '<div class="roda-vazio">Sem comparação com indicador do setor no portal para: '+sem.join(", ")+'. Para incluir, ligue o player a um indicador em <b>indicadores_players.json</b>.</div>' : '');
 }
+
+// ---- visão de uma empresa: onde a Peers já entrou e oportunidades, lado a lado ----
+function blocoEntrouUnico(d){
+  const c = d.cliente;
+  if(!c) return '<div class="card"><div class="card-title"><span class="dot"></span>Onde a Peers já entrou</div><div class="roda-vazio">A Peers não tem projeto com '+esc(d.nome)+' na base de clientes: toda oportunidade ao lado é de entrada.</div></div>';
+  const projs = d.clientes.flatMap(x=>x.lista||[]), ofs = contaRoda(projs, p=>p.offering);
+  const total = d.clientes.reduce((s,x)=>s+x.projetos,0);
+  return '<div class="card roda-click" data-rodaproj="'+esc(d.nome)+'" title="Abrir a análise dos projetos"><div class="card-title"><span class="dot"></span>Onde a Peers já entrou<span class="hint">'+total+(total===1?' projeto':' projetos')+'</span></div>' +
+    (ofs.length ? barrasRoda(ofs, 6) + (ofs.length>6 ? '<p class="roda-fonte" style="margin:4px 0 0">e mais '+(ofs.length-6)+' offerings</p>' : '')
+      : '<div class="roda-chips2">'+(c.offerings.length ? c.offerings.map(o=>'<span class="op-chip feita">'+esc(o)+'</span>').join("") : '—')+'</div>') +
+    '<div class="roda-abrir">Abrir análise dos projetos <span>→</span></div></div>';
+}
+// oportunidades por offering de uma empresa: os sinais da própria empresa (notícias e movimentos) e, na falta deles, os do setor
+// (leituras "so what" dos indicadores do setor; as notícias do Radar do setor ficam só no texto, porque a classificação por setor ainda erra)
+function oportunidadesRoda(d){
+  if(d._op) return d._op;
+  const emp = new Map(), set = new Map();
+  const add = (m, off, it)=>{ if(!off) return; if(!m.has(off)) m.set(off, []); m.get(off).push(it); };
+  [...d.noticias.filter(x=>!x.cita), ...d.movimentos].forEach(x=>add(emp, x.offering, x));
+  if(d.setor){
+    const S = d.setor, segs = DADOS.indicadores.filter(s=>s.industria===S.industria && s.divisao===S.divisao);
+    Object.entries(DADOS.analises.sowhat||{}).filter(([k, x])=>segs.some(s=>k.startsWith(s.id+"|")) && x.oportunidade).forEach(([k, x])=>{
+      const off = DADOS.offerings.find(o=>x.oportunidade.startsWith(o+":"));
+      add(set, off, {titulo:"Leitura do setor: "+k.split("|")[1], angulo:x.oportunidade.slice(off ? off.length+1 : 0).trim(), origem:"leitura do setor"});
+    });
+  }
+  d._op = {emp, set};
+  return d._op;
+}
+const ordenaOps = m=>[...m].sort((a,b)=>b[1].length-a[1].length || a[0].localeCompare(b[0]));
+function blocoOportUnico(d){
+  const {emp, set} = oportunidadesRoda(d);
+  const linhas = ordenaOps(emp).map(([off, its])=>({off, its, deEmpresa:true}))
+    .concat(ordenaOps(set).filter(([off])=>!emp.has(off)).slice(0, 5).map(([off, its])=>({off, its, deEmpresa:false})));
+  const faltam = DADOS.offerings.filter(o=>!d.offPortal.includes(o));
+  return '<div class="card"><div class="card-title"><span class="dot"></span>Oportunidades por offering<span class="hint">sinais da empresa e do setor</span></div>' +
+    (linhas.length ? linhas.map(({off, its, deEmpresa})=>{
+      const fez = d.offPortal.includes(off), topo = its.slice().sort((a,b)=>(b.alta?1:0)-(a.alta?1:0) || (b.data||"").localeCompare(a.data||""))[0];
+      return '<div class="roda-op"><div class="roda-op-h"><b>'+esc(off)+'</b><span class="op-chip '+(fez?'feita':'abre')+'">'+(fez?'a Peers já fez aqui':(d.cliente ? 'a Peers ainda não fez aqui' : 'entrada nova'))+'</span>' +
+        '<span class="op-chip '+(deEmpresa?'emp':'set')+'">'+(deEmpresa?'sinal da empresa':'sinal do setor')+'</span><span class="roda-sub2" style="display:inline">'+its.length+(its.length===1?' sinal':' sinais')+'</span></div>' +
+        '<div>'+(topo.url ? '<a href="'+esc(topo.url)+'" target="_blank" rel="noopener">'+esc(topo.titulo)+'</a>' : esc(topo.titulo))+'</div>'+(topo.angulo ? '<div class="roda-ang">'+esc(topo.angulo)+'</div>' : '')+'</div>';
+    }).join("") : '<div class="roda-vazio">Nenhum sinal da empresa nem do setor aponta para uma offering da Peers nos últimos '+DIAS_OPORT+' dias.</div>') +
+    (faltam.length && d.cliente ? '<div class="roda-op"><div class="roda-op-h"><b>Ainda não feitas pela Peers na empresa</b></div><div class="roda-chips2">'+faltam.map(o=>'<span class="op-chip feita">'+esc(o)+'</span>').join("")+'</div></div>'
+      : (!d.cliente ? '<div class="roda-op"><div class="cardnote" style="margin:0">A Peers não tem projeto com '+esc(d.nome)+': qualquer offering é uma entrada nova.</div></div>' : '')) + '</div>';
+}
+
+// farol da empresa nos últimos 30 dias: verde (movimento ou 2+ notícias com a empresa na manchete), amarelo (1 notícia, só citação ou data próxima), vermelho (nada)
+function farolRoda(d){
+  const nt = d.noticias.filter(x=>x.tit).length, mm = d.movimentos.length, proxima = d.agenda.some(a=>diasEntre(a.data)<=14);
+  const resumo = nt+' '+(nt===1?'notícia':'notícias')+' com a empresa na manchete, '+mm+' '+(mm===1?'movimento':'movimentos')+(proxima ? ', data próxima na agenda' : '');
+  if(mm>=1 || nt>=2) return ['verde', 'Sinal forte: '+resumo];
+  if(nt===1 || d.noticias.length || proxima) return ['amarelo', 'Sinal fraco: '+resumo];
+  return ['vermelho', 'Sem sinal da empresa nos últimos '+DIAS_OPORT+' dias no portal'];
+}
+
+// ---- janela de análise dos projetos ----
+const PAL_RODA = ["#011334","#2f63b0","#0b7a55","#c4343a","#e0a020","#7a5ab5","#1f9db0","#b5651d","#677185"];
+const ymRoda = t=>{ const m = /^(\d{2})\/(\d{4})$/.exec(t||""); return m ? (+m[2])*12 + (+m[1]) - 1 : null; };
+const rotYm = ym=>String(ym%12+1).padStart(2,"0")+"/"+Math.floor(ym/12);
+// linha do tempo em barras: uma linha por projeto, do início ao fim, na mesma escala de anos, colorida por offering
+function linhaDoTempoRoda(projs, ofs){
+  const cor = o=>PAL_RODA[Math.min(ofs.findIndex(x=>x[0]===o), PAL_RODA.length-1)] || PAL_RODA[PAL_RODA.length-1];
+  const h = new Date(HOJE+"T00:00:00"), hoje = h.getFullYear()*12 + h.getMonth();
+  const itens = projs.map(p=>{ const i = ymRoda(p.inicio); let f = ymRoda(p.fim); return i===null ? null : {...p, i, f:Math.max(f===null ? i : f, i)}; }).filter(Boolean).sort((a,b)=>b.i-a.i || b.f-a.f);
+  const semData = projs.length - itens.length;
+  if(!itens.length) return '<div class="roda-vazio">Os projetos não têm data de início na base.</div>';
+  const min = Math.floor(Math.min(...itens.map(x=>x.i))/12)*12, max = Math.ceil((Math.max(...itens.map(x=>x.f), hoje)+1)/12)*12, anos = (max-min)/12;
+  const pct = x=>((x-min)/(max-min)*100).toFixed(2);
+  const grade = 'background-image:linear-gradient(to right,var(--grey-light) 1px,transparent 1px);background-size:'+(100/anos)+'% 100%';
+  const ativo = x=>x.f>=hoje;
+  return '<div class="gt-leg">'+ofs.slice(0, PAL_RODA.length).map(([o, n])=>'<span><i style="background:'+cor(o)+'"></i>'+esc(o)+' <b>'+n+'</b></span>').join("")+'</div>' +
+    '<div class="gt-wrap"><div class="gt">' +
+      '<div class="gt-r gt-h"><span class="gt-n">'+itens.length+(itens.length===1?' projeto':' projetos')+'</span><div class="gt-p" style="'+grade+'">' +
+        Array.from({length:anos}, (_, k)=>'<span class="gt-y" style="left:'+pct(min+k*12)+'%">'+(Math.floor(min/12)+k)+'</span>').join("")+'</div></div>' +
+      itens.map(x=>'<div class="gt-r"><span class="gt-n" title="'+esc(x.projeto||'')+'">'+(ativo(x) ? '<u title="em andamento"></u>' : '')+esc(x.projeto||'—')+'</span><div class="gt-p" style="'+grade+'">' +
+        '<i class="gt-hoje" style="left:'+pct(hoje+0.5)+'%"></i>' +
+        '<i class="gt-b" style="left:'+pct(x.i)+'%;width:'+Math.max(0.6, (x.f+1-x.i)/(max-min)*100).toFixed(2)+'%;background:'+cor(x.offering)+'" ' +
+          'title="'+esc((x.projeto||'')+' · '+(x.offering||'sem offering')+' · '+rotYm(x.i)+' a '+rotYm(x.f)+(x.conta ? ' · '+x.conta : '')+' · '+[x.lider, x.md].filter(Boolean).map(nomeCurto).join(' / '))+'"></i></div></div>').join("") +
+    '</div></div><p class="roda-fonte" style="margin-top:8px">Do mais recente ao mais antigo. Ponto verde: em andamento. Linha vermelha: hoje. Passe o mouse na barra para ver offering, datas, líder e MD.'+(semData ? ' '+semData+(semData===1?' projeto sem data de início fica de fora.':' projetos sem data de início ficam de fora.') : '')+'</p>';
+}
+const celRoda = (rot, v, sub)=>'<div><div class="l">'+rot+'</div><div class="v">'+v+'</div>'+(sub ? '<div class="s">'+sub+'</div>' : '<div class="s">&nbsp;</div>')+'</div>';
+function abrirProjetosRoda(nome){
+  const d = rodaDados().find(x=>x.nome===nome);
+  if(!d || !d.cliente) return;
+  const c = d.cliente, multi = d.clientes.length>1;
+  const projs = d.clientes.flatMap(x=>(x.lista||[]).map(p=>({...p, conta:multi ? x.nome : ''})));
+  const total = d.clientes.reduce((s,x)=>s+x.projetos,0);
+  const temLista = projs.length>0;
+  const ofs = contaRoda(projs, p=>p.offering), lids = contaRoda(projs, p=>p.lider && nomeCurto(p.lider)),
+        n1s = contaRoda(projs, p=>p.n1 && nomeCurto(p.n1)), mds = contaRoda(projs, p=>p.md && nomeCurto(p.md));
+  const anos = projs.map(p=>+(p.inicio||"").slice(3)).filter(Boolean), fins = projs.map(p=>ymRoda(p.fim)).filter(x=>x!==null);
+  const topo = l=>l.length ? [esc(l[0][0]), l[0][1]+' de '+projs.length+' projetos'] : ['—', ''];
+  const sinais = new Set([...d.noticias.filter(x=>!x.cita), ...d.movimentos].map(x=>x.offering).filter(Boolean));
+  const faltam = DADOS.offerings.filter(o=>!d.offPortal.includes(o));
+  const sem = '<p class="cardnote" style="margin:0 0 14px"><span class="badge b3">detalhe por projeto indisponível</span> A base de clientes publicada no portal ainda não traz a lista de projetos. Ela aparece depois de publicar a base de novo com a versão atual de <b>publicar_clientes.py</b>. Por enquanto, valem o resumo e as offerings abaixo.</p>';
+  const m = document.getElementById("mFicha");
+  m.innerHTML = '<div class="modal-head"><div><h3>'+esc(d.nome)+' · projetos da Peers</h3><p>'+esc(c.rotulo)+(multi ? ' · '+d.clientes.length+' contas do grupo: '+d.clientes.map(x=>esc(x.nome)).join(', ') : '')+'</p></div>' +
+    '<button class="modal-close" onclick="fecharModal(\'Ficha\')">Fechar</button></div>' +
+    '<div class="modal-body">' + (temLista ? '' : sem) +
+    '<div class="roda-stats">' +
+      celRoda('Projetos', total, fins.length ? 'último com fim em '+rotYm(Math.max(...fins)) : '') +
+      celRoda('Período', anos.length ? Math.min(...anos)+' – '+(fins.length ? Math.floor(Math.max(...fins)/12) : '…') : '—', anos.length ? (Math.floor(Math.max(...fins, 0)/12) - Math.min(...anos) + 1)+' anos de relação' : '') +
+      (temLista ? celRoda('Offering principal', topo(ofs)[0], topo(ofs)[1]) + celRoda('Líder de conta', topo(lids)[0], topo(lids)[1]) + celRoda('MD', topo(mds)[0], topo(mds)[1])
+        : celRoda('Offering principal', esc(c.offerings[0]||'—')) + celRoda('Líder (último projeto)', esc(nomeCurto(c.lider)||'—')) + celRoda('MD (último projeto)', esc(nomeCurto(c.md)||'—'))) +
+    '</div>' +
+    (temLista ? '<div class="card-title"><span class="dot"></span>Linha do tempo dos projetos</div>' + linhaDoTempoRoda(projs, ofs) +
+      '<div class="roda-3" style="margin-top:26px"><div><div class="card-title"><span class="dot"></span>Líder de conta</div>'+barrasRoda(lids, 6)+'</div>' +
+      '<div><div class="card-title"><span class="dot"></span>N1 responsável</div>'+barrasRoda(n1s, 6)+'</div>' +
+      '<div><div class="card-title"><span class="dot"></span>MD</div>'+barrasRoda(mds, 6)+'</div></div>'
+      : '<div class="card-title"><span class="dot"></span>Offerings já feitas</div><div class="roda-chips2">'+(c.offerings.length ? c.offerings.map(o=>'<span class="op-chip feita">'+esc(o)+'</span>').join("") : '—')+'</div>') +
+    '<div class="card-title" style="margin-top:26px"><span class="dot"></span>Onde ainda não entramos<span class="hint">neon: há notícia ou movimento nos últimos '+DIAS_OPORT+' dias</span></div>' +
+      '<div class="roda-chips2">'+(faltam.length ? faltam.map(o=>'<span class="op-chip '+(sinais.has(o)?'abre':'feita')+'">'+esc(o)+'</span>').join("") : '<span class="op-sub">A Peers já fez todas as offerings do portal.</span>')+'</div>' +
+    '<p class="cardnote" style="margin:16px 0 0">Fonte: base de clientes da Peers (propostas recusadas ou canceladas não contam). Uso interno.</p></div>';
+  abrirModal("Ficha");
+}
+
 function renderRoda(){
   const dados = rodaDados();
   if(!dados.some(d=>d.nome===estadoRoda.player)) estadoRoda.player = "todos";
   const sel = estadoRoda.player==="todos" ? dados : dados.filter(d=>d.nome===estadoRoda.player);
-  const unico = sel.length===1;
+  const unico = sel.length===1, d1 = sel[0];
   const noticias = sel.flatMap(d=>d.noticias).sort((a,b)=>b.data.localeCompare(a.data));
   const movs = sel.flatMap(d=>d.movimentos).sort((a,b)=>b.data.localeCompare(a.data));
   const sem = dados.filter(d=>!totalRoda(d) && !d.agenda.length).map(d=>esc(d.nome));
@@ -2041,21 +2457,26 @@ function renderRoda(){
   const caixa = (titulo, itens, html, sw)=>'<div class="roda-col"><div class="card"><div class="card-title"><span class="dot"></span>'+titulo+'<span class="hint">'+itens.length+' nos últimos '+DIAS_OPORT+' dias</span></div>' +
     '<div class="roda-scroll">'+(itens.length ? html : '<div class="roda-vazio">Nada nos últimos '+DIAS_OPORT+' dias.</div>')+'</div>' +
     '<div class="roda-sw">'+sw+'</div></div></div>';
-  return '<div class="roda-chips">' +
-      '<button type="button" class="roda-chip '+(!unico?'on':'')+'" data-roda="todos">Todos<b>'+dados.reduce((s,d)=>s+totalRoda(d),0)+'</b></button>' +
-      dados.map(d=>'<button type="button" class="roda-chip '+(unico&&sel[0]===d?'on':'')+(totalRoda(d)?'':' zero')+'" data-roda="'+esc(d.nome)+'">'+esc(d.nome)+'<b>'+totalRoda(d)+'</b></button>').join("") + '</div>' +
-    (sem.length && !unico ? '<div class="roda-aviso"><b>Sem nada no portal nos últimos '+DIAS_OPORT+' dias:</b> '+sem.join(", ")+'. Pode ser silêncio real ou falta de fonte no Radar para essas empresas.</div>' : '') +
-    (agenda.length ? '<p class="op-regra"><b>Próximas datas:</b> '+agenda.map(a=>esc(a.titulo)+' ('+formatarData(a.data).slice(0,5)+')').join(' · ')+'</p>' : '') +
-    '<div class="roda-top">' +
+  const caixas = '<div class="roda-top">' +
       caixa('Notícias do Radar', noticias, noticias.map(x=>itemRoda(x, !unico, '')).join(""), soWhatRoda(noticias, 'notícia', 'notícias')) +
       caixa('Movimentos estratégicos', movs, movs.map(x=>itemRoda(x, !unico, (x.tipo?'<span class="badge bg-n">'+esc(x.tipo)+'</span>':'')+(x.valor && x.valor!=="Não divulgado"?'<span class="badge bg-n">'+esc(x.valor)+'</span>':''))).join(""), soWhatRoda(movs, 'movimento', 'movimentos')) +
-    '</div>' +
-    (conc.length ? '<div class="card"><div class="card-title"><span class="dot"></span>Concorrência nos players<span class="hint">uso interno</span></div>' +
+    '</div>';
+  const concHtml = conc.length ? '<div class="card"><div class="card-title"><span class="dot"></span>Concorrência nos players<span class="hint">uso interno</span></div>' +
       conc.map(c=>'<div class="roda-item"><div class="roda-meta"><span class="roda-pl">'+esc(c.player)+'</span><span class="badge bg-n">'+esc(c.nome||'')+'</span><span>'+formatarData(c.data).slice(0,5)+'</span></div>' +
-        (c.url?'<a href="'+esc(c.url)+'" target="_blank" rel="noopener">'+esc(c.fato)+'</a>':esc(c.fato))+(c.impacto?'<div class="roda-ang"><span>Impacto</span>'+esc(c.impacto)+'</div>':'')+'</div>').join("")+'</div>' : '') +
-    '<div class="card"><div class="card-title"><span class="dot"></span>Oportunidades por offering<span class="hint">a partir das notícias e movimentos acima</span></div>'+blocoOfferingsRoda(sel)+'</div>' +
-    '<div class="card"><div class="card-title"><span class="dot"></span>Onde a Peers já entrou</div>'+blocoEntramosRoda(sel)+'</div>' +
-    '<div class="card"><div class="card-title"><span class="dot"></span>Resultado dos players frente ao setor</div>'+blocoSetorRoda(sel)+'</div>';
+        (c.url?'<a href="'+esc(c.url)+'" target="_blank" rel="noopener">'+esc(c.fato)+'</a>':esc(c.fato))+(c.impacto?'<div class="roda-ang"><span>Impacto</span>'+esc(c.impacto)+'</div>':'')+'</div>').join("")+'</div>' : '';
+  const entramos = '<div class="card"><div class="card-title"><span class="dot"></span>Onde a Peers já entrou</div>'+blocoEntramosRoda(sel)+'</div>';
+  const oport = '<div class="card"><div class="card-title"><span class="dot"></span>Oportunidades por offering<span class="hint">a partir das notícias e movimentos</span></div>'+blocoOfferingsRoda(sel)+'</div>';
+  const setorTab = '<div class="card"><div class="card-title"><span class="dot"></span>Resultado dos players frente ao setor</div>'+blocoSetorRoda(sel)+'</div>';
+  const chips = '<div class="roda-farol-leg"><span>Farol dos últimos '+DIAS_OPORT+' dias:</span><span><i class="fl verde"></i>sinal forte (movimento ou 2+ notícias)</span><span><i class="fl amarelo"></i>sinal fraco (1 notícia ou data próxima)</span><span><i class="fl vermelho"></i>sem sinal</span></div>' +
+    '<div class="roda-chips">' +
+      '<button type="button" class="roda-chip '+(!unico?'on':'')+'" data-roda="todos">Todos</button>' +
+      dados.map(d=>{ const [fl, tip] = farolRoda(d); return '<button type="button" class="roda-chip '+(unico&&sel[0]===d?'on':'')+'" data-roda="'+esc(d.nome)+'" title="'+esc(tip)+'">'+esc(d.nome)+'<i class="fl '+fl+'"></i></button>'; }).join("") + '</div>';
+  if(unico) // visão de uma empresa: informações, mercado e setor, notícias e movimentos, onde a Peers já entrou e oportunidades
+    return chips + blocoInfoRoda(d1) + blocoMercadoRoda(d1) + (noticias.length || movs.length ? caixas : '<div class="roda-aviso" style="margin-top:0"><b>Sem notícias do Radar nem movimentos estratégicos sobre '+esc(d1.nome)+' nos últimos '+DIAS_OPORT+' dias.</b> A leitura fica por conta do mercado, do setor e das oportunidades abaixo.</div>') + '<div class="roda-2 roda-2b"><div class="roda-stack">' + blocoEntrouUnico(d1) + blocoOportUnico(d1) + '</div>' + setorTab + '</div>';
+  return chips +
+    (sem.length ? '<div class="roda-aviso"><b>Sem nada no portal nos últimos '+DIAS_OPORT+' dias:</b> '+sem.join(", ")+'. Pode ser silêncio real ou falta de fonte no Radar para essas empresas.</div>' : '') +
+    (agenda.length ? '<p class="op-regra"><b>Próximas datas:</b> '+agenda.map(a=>esc(a.titulo)+' ('+formatarData(a.data).slice(0,5)+')').join(' · ')+'</p>' : '') +
+    caixas + concHtml + oport + entramos + setorTab;
 }
 
 function irConexoes(i){
@@ -4392,10 +4813,12 @@ const STATUS_CLI = {"Cliente ativo":"cliente ativo", "Finalizado até 6 meses":"
 // Sem lista de nomes aqui: o repositório é público e os clientes são confidenciais.
 function carregarClientesPeers(c){
   CLIENTES.geradoEm = c.geradoEm || "";
-  CLIENTES.peers = (c.clientes || []).map(([nome, status, projetos, ultimo, offering, fim, offerings, lider, n1, md, offPortal])=>({
+  CLIENTES.peers = (c.clientes || []).map(([nome, status, projetos, ultimo, offering, fim, offerings, lider, n1, md, offPortal, lista])=>({
     nome, chave: chaveNome(nome), tipo: "Cliente", peers: true, ativo: status==="Cliente ativo",
     rotulo: STATUS_CLI[status] || "cliente", projetos, ultimo, offering, fim, offerings: offerings || [], lider, n1, md,
-    offPortal: offPortal || []      // as offerings já feitas, com os nomes do portal (para a aba Oportunidades)
+    offPortal: offPortal || [],     // as offerings já feitas, com os nomes do portal (para a aba Oportunidades)
+    // os projetos, do mais recente ao mais antigo (a Roda gigante analisa); vem vazio se a base foi publicada antes dessa versão
+    lista: (lista || []).map(([projeto, off, inicio, fimP, ld, n1p, mdp])=>({projeto, offering:off, inicio, fim:fimP, lider:ld, n1:n1p, md:mdp}))
   })).filter(x=>x.chave);
   // mesmo grupo: o nome de um cliente contém o do outro ("Fundação X" e "X"). Continuam clientes separados (outro comprador),
   // só aparecem juntos para mostrar que a Peers está no grupo
