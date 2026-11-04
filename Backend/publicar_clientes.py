@@ -6,7 +6,8 @@ Supabase/comercial.sql). Nunca vai para o repositório, que é público.
 
 Vai para o portal, por cliente: nome, status (ativo ou há quanto tempo terminou o último projeto), número de projetos,
 o último projeto (nome, offering e mês de fim), as offerings já feitas e os responsáveis (líder de conta, N1 e MD do
-último projeto). Ficam de fora o código e as datas exatas dos projetos. Propostas recusadas ou canceladas não contam.
+último projeto), mais a lista de todos os projetos (nome, offering, mês de início e de fim, líder, N1 e MD) para a análise da
+Roda gigante. Ficam de fora o código e as datas exatas dos projetos. Propostas recusadas ou canceladas não contam.
 
     python publicar_clientes.py "<pasta Base de clientes>"
 
@@ -53,7 +54,7 @@ def montar(arquivo):
             continue
         inicio = r[ix["DataInicio"]] if isinstance(r[ix["DataInicio"]], datetime) else datetime.min
         projetos.setdefault(g(r, "Cliente"), []).append({
-            "inicio": inicio, "projeto": g(r, "Projeto"), "offering": g(r, "OfferingMajoritaria"),
+            "inicio": inicio, "inicio_txt": inicio.strftime("%m/%Y") if inicio != datetime.min else "", "projeto": g(r, "Projeto"), "offering": g(r, "OfferingMajoritaria"),
             "fim": g(r, "Mês/Ano Fim"), "status": g(r, "Status Cliente"), "lider": g(r, "LiderConta"),
             "n1": g(r, "N1Responsavel"), "md": g(r, "MDConta")})
     clientes = []
@@ -71,7 +72,8 @@ def montar(arquivo):
         offerings = [o for o, _ in Counter(p["offering"] for p in ps if p["offering"]).most_common()]
         clientes.append([nome, status, len(ps), ultimo["projeto"], ultimo["offering"], ultimo["fim"],
                          offerings, resp("lider"), resp("n1"), resp("md"),
-                         sorted({OFFERING_PORTAL[o] for o in offerings if o in OFFERING_PORTAL})])
+                         sorted({OFFERING_PORTAL[o] for o in offerings if o in OFFERING_PORTAL}),
+                         [[x["projeto"], x["offering"], x["inicio_txt"], x["fim"], x["lider"], x["n1"], x["md"]] for x in ps]])
     return clientes
 
 
@@ -86,7 +88,8 @@ def main():
     gerado = datetime.fromtimestamp(arquivo.stat().st_mtime).strftime("%d/%m/%Y")
     conteudo = {"geradoEm": gerado, "sha": hashlib.sha256(arquivo.read_bytes()).hexdigest(),
                 # [nome, status, projetos, último projeto, offering do último, fim do último (mm/aaaa),
-                #  offerings já feitas, líder de conta, N1, MD, offerings já feitas com os nomes do portal]
+                #  offerings já feitas, líder de conta, N1, MD, offerings já feitas com os nomes do portal,
+                #  todos os projetos, do mais recente ao mais antigo: [projeto, offering, início mm/aaaa, fim mm/aaaa, líder, N1, MD]]
                 "clientes": clientes}
     chamar("POST", "conexoes?on_conflict=nome", [{"nome": "clientes", "conteudo": conteudo, "atualizado_em": agora().isoformat()}],
            {"Prefer": "resolution=merge-duplicates,return=minimal"})

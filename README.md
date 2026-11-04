@@ -204,25 +204,41 @@ tem, na janela de 30 dias (`DIAS_OPORT`), sem rotina nova e sem digitar nada. O 
 portal. A lista de empresas fica na tabela protegida `conexoes`, linha `roda`, e **nunca neste repositório**, porque as
 empresas são confidenciais. Sem essa linha, a sub-aba não aparece.
 
-- **Chips no topo** filtram uma empresa ou mostram todas, com a contagem de notícias e movimentos de cada uma.
-- **Notícias do Radar e Movimentos estratégicos**, lado a lado, em caixas de altura fixa com rolagem. Embaixo de cada uma,
-  um "So what geral" montado por regra (concentração por empresa, offerings que abrem, destaque), sem IA e avisado como
-  tal na tela. A empresa só conta se o nome aparece com maiúscula; quando aparece só no resumo e não na manchete, o item
-  leva a marca "citação no texto" (evita nome de pessoa ou palavra comum).
-- **Oportunidades por offering**, a partir das notícias e movimentos: cada offering com as empresas que ela abre. Em neon,
-  a Peers ainda não fez a offering na empresa; em cinza, já fez (usa `offPortal` da base de clientes, como em Expandir contas).
-- **Onde a Peers já entrou**: relação com a empresa, offerings já feitas, último projeto, líder e MD (base de clientes).
-- **Resultado frente ao setor**: as linhas da visão por player dos Indicadores (`aprofundamento.json`) em que a empresa
-  aparece, com a posição contra o setor. Clicar abre a ficha do indicador. Empresa sem indicador ligado mostra um aviso;
-  para incluir, ligue-a em `indicadores_players.json`.
-- **Concorrência** aparece só se uma consultoria concorrente foi citada junto com a empresa (uso interno, como na aba
-  Concorrência), e **Próximas datas** vem da Agenda.
+- **Filtro no topo**: um nome por empresa, cada um com um **farol** dos últimos 30 dias (verde: um movimento ou 2 ou mais
+  notícias com a empresa na manchete; amarelo: 1 notícia, citação só no corpo do texto ou data na Agenda em até 14 dias;
+  vermelho: nada no portal). Sem números: empresa sem notícia também é uma conta a trabalhar, e a página vem completa.
+- **Visão de uma empresa**, de cima para baixo:
+  1. *Informações da empresa*: finanças em uma linha (resultado trimestral das companhias abertas, ou Valor 1000 quando não há)
+     e, numa coluna ao lado, a relação com a Peers (situação, projetos, último projeto, líder, MD).
+  2. *Mercado da empresa* e *O setor*, em texto corrido com o essencial em negrito e uma caixa **"O que isso indica"**. No
+     mercado, o texto e a conclusão são montados por regra, sem IA (posição frente à mediana da divisão, o que o tipo de
+     movimento sugere, a oportunidade mais forte para a Peers e o alerta de concorrente). No setor, vêm das leituras de IA
+     dos indicadores (`analises.json`: situação atual, impacto e oportunidade) e das notícias de alta relevância do Radar
+     do setor nos últimos 60 dias, regulação primeiro. A mini parte **Concorrentes na empresa** fica dentro do mercado:
+     notícias de consultorias concorrentes que citam a empresa desde o início da coleta (citação não prova projeto).
+  3. *Notícias do Radar* e *Movimentos estratégicos*, em caixas de altura fixa com rolagem e um "So what geral" por regra.
+     Sem nenhum dos dois, as caixas dão lugar a uma faixa de aviso. A empresa só conta com o nome em maiúscula; quando
+     aparece só no resumo, o item leva a marca "citação no texto".
+  4. *Onde a Peers já entrou* (clique abre a análise dos projetos) e, abaixo, *Oportunidades por offering*, ao lado de
+     *Resultado frente ao setor*. As oportunidades vêm dos sinais da empresa e, na falta deles, das leituras do setor,
+     com a marca de origem; neon: a Peers ainda não fez a offering na empresa. O resultado frente ao setor é uma lista de
+     cartões com barras (empresa x setor) e a posição; clicar abre a visão por player do indicador.
+- **Análise dos projetos** (janela aberta em "Onde a Peers já entrou"): faixa com projetos, período, offering principal,
+  líder de conta e MD; linha do tempo em barras (uma por projeto, colorida por offering, com a data de hoje marcada);
+  líder de conta, N1 e MD que mais aparecem; e as offerings ainda não feitas. Usa a lista de projetos da base de clientes,
+  que `publicar_clientes.py` envia como 12º item de cada cliente. Sem isso (base publicada antes dessa versão), a janela
+  mostra o resumo e um aviso.
+- **Visão Todos**: caixas de Radar e Movimentos, concorrência citada, oportunidades por offering (empresas com sinal),
+  onde a Peers já entrou e resultado frente ao setor, mais as próximas datas da Agenda.
 
 Para publicar ou trocar a lista, na pasta Backend, com `SUPABASE_URL` e `SUPABASE_SERVICE_KEY` definidas:
 `python publicar_roda.py "<roda.json>"`, com o arquivo guardado **fora** da pasta sincronizada com o repositório. Cada
 empresa leva o nome mostrado e as grafias que contam como citação (`{"nome": "...", "nomes": ["...", "..."]}`).
+Para mostrar o card do setor de uma empresa que não está nas companhias abertas nem no Valor 1000, acrescente a ela
+`"industria"` e `"divisao"` (nomes da taxonomia do portal) no mesmo arquivo e publique a lista de novo.
 
-Limites conhecidos: o casamento é por nome, então empresa sem cobertura nas fontes do Radar aparece zerada (a tela avisa);
-o mesmo fato noticiado por várias fontes aparece repetido; o texto do "So what geral" ainda não vem da rotina de IA (a
-rotina hoje evita citar clientes, então passar para IA exige mudar essa regra). A janela só foi testada com os dados
-locais; a conferência com login e a base de clientes reais é feita no portal.
+Limites conhecidos: o casamento é por nome, então empresa sem cobertura nas fontes do Radar fica com farol vermelho
+mesmo havendo notícia fora do portal; o mesmo fato noticiado por várias fontes aparece repetido; o texto do mercado da
+empresa e o "So what geral" são por regra, sem IA (passar para a rotina de IA exige mudar a regra de que ela evita citar
+clientes); a classificação de setor das notícias do Radar ainda erra em parte, e isso aparece em "Mudanças em curso no
+setor". A janela só foi testada com os dados locais; a conferência com login e a base de clientes reais é feita no portal.
