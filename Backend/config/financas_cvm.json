@@ -1,5 +1,5 @@
 {
- "_como_usar": "Base automática de Finanças a partir dos dados abertos da CVM (ITR). 'setores' liga o setor de atividade do cadastro da CVM (sem o prefixo 'Emp. Adm. Part. - ') a [indústria, divisão]; quando a empresa está no Valor 1000, vale a classificação do Valor 1000. Setores fora da lista (securitizadoras, holdings sem setor) ficam de fora. 'excecoes' corrige empresas que a regra classifica mal: CNPJ -> nome e [indústria, divisão]; vale sobre o setor da CVM e sobre o Valor 1000.",
+ "_como_usar": "Base automática de Finanças a partir dos dados abertos da CVM (ITR). 'setores' liga o setor de atividade do cadastro da CVM (sem o prefixo 'Emp. Adm. Part. - ') a [indústria, divisão]; quando a empresa está no Valor 1000, vale a classificação do Valor 1000. Setores fora da lista (securitizadoras, holdings sem setor) ficam de fora. 'excecoes' corrige empresas que a regra classifica mal: CNPJ -> nome e [indústria, divisão]; vale sobre o setor da CVM e sobre o Valor 1000. 'individual': CNPJs que entram pelo demonstrativo individual porque não publicam consolidado (ex.: Comgás); use só para empresa sem controladas, para não contar em dobro com o grupo. Em 'excecoes', 'nome' troca o nome mostrado.",
  "setores": {
   "Serviços Transporte e Logística": [
    "Transportes & Logística",
@@ -354,6 +354,16 @@
     "Health",
     "Indústria Health"
    ]
+  },
+  "61.856.571/0001-17": {
+   "nome": "Comgás",
+   "classe": [
+    "Power & Utilities",
+    "Petróleo e gás"
+   ]
   }
+ },
+ "individual": {
+  "61.856.571/0001-17": "Comgás"
  }
 }

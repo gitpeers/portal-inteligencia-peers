@@ -1,5 +1,5 @@
 {
- "_como_usar": "Números ajustados e KPIs operacionais das empresas acompanhadas, tirados dos releases de resultado. A cada temporada, a sessão trimestral (ver documento do protótipo) atualiza 'periodo' e os números de cada empresa a partir dos releases listados em Backend/releases_trimestre.json, guardando em 'release' o link usado. Para incluir ou tirar uma empresa, acrescente ou apague o item (com o CNPJ). Quando a CVM já tiver um trimestre mais novo que este, o portal mostra o número contábil da CVM até a sessão.",
+ "_como_usar": "Números ajustados e KPIs operacionais das empresas acompanhadas, tirados dos releases de resultado. A cada temporada, a sessão trimestral (ver documento do protótipo) atualiza 'periodo' e os números de cada empresa a partir dos releases listados em Backend/releases_trimestre.json, guardando em 'release' o link usado. Para incluir ou tirar uma empresa, acrescente ou apague o item (com o CNPJ). Quando a CVM já tiver um trimestre mais novo que este, o portal mostra o número contábil da CVM até a sessão. Durante a temporada, a empresa que já divulgou ganha o próprio 'periodo' (ex.: '3T26'); as demais seguem no 'periodo' geral.",
  "periodo": "2T26",
  "empresas": [
   {
@@ -9,81 +9,67 @@
    "div": "Banking",
    "valorId": null,
    "metr": {
-    "margemFinanceira": 33500,
-    "crescMFB": 5,
-    "lucroLiquido": 12407,
-    "crescLL": 7.8,
-    "carteira": 1520,
-    "crescCarteira": 9.6,
-    "inadimplencia": 1.9,
-    "roe": 24.3,
-    "cet1": 12.3
+    "margemFinanceira": 34611,
+    "crescMFB": 7.8,
+    "lucroLiquido": 12617,
+    "crescLL": 6.2,
+    "carteira": 1544,
+    "crescCarteira": 10.2,
+    "inadimplencia": 1.97,
+    "roe": 23.56,
+    "cet1": 12.7
    },
    "fin": [
     [
      "Margem Financeira Bruta",
-     "33.500"
+     "34.611"
     ],
     [
      "Crescimento MFB",
-     "+3,6% (t/t) ~+5,0% (a/a)"
+     "+3,4% (t/t) +7,8% (a/a)"
     ],
     [
      "Resultado Operacional",
-     "18.900*"
+     "N/D"
     ],
     [
      "Lucro Líquido Recorrente",
-     "12.407"
+     "12.617"
     ],
     [
      "Crescimento LL",
-     "+1,0% (t/t) +7,8% (a/a)"
+     "+1,7% (t/t) +6,2% (a/a)"
     ]
    ],
    "op": [
     [
      "Carteira de Crédito  (R$ bi)",
-     "1.520"
+     "1.544"
     ],
     [
      "Crescimento da Carteira de Crédito",
-     "+2,7% (t/t) +9,6% (a/a)"
+     "+1,4% (t/t) +10,2% (a/a)"
     ],
     [
      "Inadimplência +90D (%)",
-     "1,9%"
+     "2,0%"
     ],
     [
      "ROE (%)",
-     "24,3%"
+     "23,6%"
     ],
     [
      "Crescimento  ROE",
-     "-0,5 p.p. (t/t) +1,0 p.p. (a/a)"
+     "−0,7 p.p. (t/t) +0,3 p.p. (a/a)"
     ],
     [
      "Capital Principal – CET1 (%) Mínimo 7%",
-     "12,3%"
-    ],
-    [
-     "Cobertura de PDD",
-     "59,0%"
-    ],
-    [
-     "Base de cálculo",
-     "Estágio 3"
-    ],
-    [
-     "Δ t/t",
-     "-0,3 p.p."
-    ],
-    [
-     "Δ a/a",
-     "-0,2 p.p."
+     "12,7%"
     ]
    ],
-   "cnpj": "60.872.504/0001-23"
+   "cnpj": "60.872.504/0001-23",
+   "periodo": "3T26",
+   "release": "https://www.itau.com.br/relacoes-com-investidores/en/results-and-reports/results-center/"
   },
   {
    "id": "santander",

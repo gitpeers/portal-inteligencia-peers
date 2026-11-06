@@ -259,9 +259,10 @@ def main():
     base = ler_json(CONFIG / "financas_releases.json")
     ano = int(agora().strftime("%Y"))
     base_cnpj = {e["cnpj"] for e in base["empresas"]}
-    fim, contas = numeros_cvm(ano, base_cnpj)
+    individual = base_cnpj | set(cfg.get("individual", {}))   # acompanhadas e as listadas em 'individual'
+    fim, contas = numeros_cvm(ano, individual)
     if fim is None:                       # início do ano, antes do 1º ITR: usa o ano anterior
-        fim, contas = numeros_cvm(ano - 1, base_cnpj)
+        fim, contas = numeros_cvm(ano - 1, individual)
     log(f"CVM: trimestre {rotulo(fim)}, {len(contas)} empresas com DRE")
 
     cadastro = {c["CNPJ_CIA"]: c for c in csv.DictReader(io.StringIO(baixar(CADASTRO, timeout=120).decode("latin-1")), delimiter=";")
@@ -285,23 +286,25 @@ def main():
                 continue
             ind, div = cfg["setores"][setor]
         ind, div = cfg.get("excecoes", {}).get(cnpj, {}).get("classe", (ind, div))   # correções da revisão por empresa
-        nome = nome_valor.get(vid) or re.sub(r"\s+(S\.?\s?A\.?|S/A)$", "", (cad["DENOM_COMERC"] or cad["DENOM_SOCIAL"]).strip(), flags=re.I).title()
+        nome = cfg.get("excecoes", {}).get(cnpj, {}).get("nome") or nome_valor.get(vid) or re.sub(r"\s+(S\.?\s?A\.?|S/A)$", "", (cad["DENOM_COMERC"] or cad["DENOM_SOCIAL"]).strip(), flags=re.I).title()
         e = empresa_cvm(cnpj, nome, ind, div, vid, fim_emp, c)
         if e:
             empresas.append(e)
 
     # empresas acompanhadas: vale o trimestre mais recente; no mesmo trimestre, o número ajustado do release
     ordem = lambda r: (int(r[2:]), int(r[0]))
+    # durante a temporada, cada empresa pode trazer o próprio "periodo" (quem já divulgou passa para o trimestre novo)
     for e in base["empresas"]:
+        per = e.get("periodo") or base["periodo"]
         c = contas.get(e["cnpj"])
         fim_emp = ultimo_trimestre(c, fim[:4]) if c else None
-        if fim_emp and ordem(rotulo(fim_emp)) > ordem(base["periodo"]):
+        if fim_emp and ordem(rotulo(fim_emp)) > ordem(per):
             novo = empresa_cvm(e["cnpj"], e["nome"], e["ind"], e["div"], e["valorId"], fim_emp, c)
             if novo:
-                novo.update({"id": e["id"], "op": e["op"], "opPeriodo": base["periodo"], "release": e.get("release")})
+                novo.update({"id": e["id"], "op": e["op"], "opPeriodo": e.get("opPeriodo") or per, "release": e.get("release")})
                 empresas.append(novo)
                 continue
-        empresas.append({**e, "fonte": "release", "periodo": base["periodo"]})
+        empresas.append({**e, "fonte": "release", "periodo": per})
 
     try:
         log(f"IF.data: carteira, ROE e CET1 de {bancos_ifdata(empresas)} bancos que vêm da CVM")

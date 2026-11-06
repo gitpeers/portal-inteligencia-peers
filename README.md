@@ -33,6 +33,7 @@ Backend/
   publicar_conexoes.py  envia o Mapa de Conexões para a aba Relacionamentos (só a lista de acesso comercial)
   publicar_clientes.py  envia a base de clientes da Peers para o Time comercial e as Conexões (só a lista de acesso)
   publicar_roda.py      envia a lista de empresas da Roda gigante para a sub-aba de Oportunidades (só a lista de acesso)
+  arquivar_roda.py      todo dia, guarda 90 dias de notícias e movimentos das empresas da Roda (quadro No mercado)
   validar_fontes.py     testa se cada fonte de notícias tem feed ativo (rodar uma vez por mês)
   ia/                   rotina de IA: instruções (ROTINA.md) e scripts que preparam e aplicam as análises
   comum.py              funções compartilhadas
@@ -228,17 +229,25 @@ empresas são confidenciais. Sem essa linha, a sub-aba não aparece.
   líder de conta, N1 e MD que mais aparecem; e as offerings ainda não feitas. Usa a lista de projetos da base de clientes,
   que `publicar_clientes.py` envia como 12º item de cada cliente. Sem isso (base publicada antes dessa versão), a janela
   mostra o resumo e um aviso.
+- **Faixa de atualização e No mercado** (visão de uma empresa, desde 06/11/2026): a faixa diz de que trimestre é o
+  resultado no portal, a próxima data de resultado, quando o Radar foi atualizado e de quando é a pesquisa fora do portal.
+  O quadro **No mercado** é uma linha do tempo de 90 dias que junta Radar, movimentos, concorrência, o arquivo da Roda e a
+  pesquisa fora do portal (RI da empresa, Valor 1000 e, por último, mídia de terceiros, com aviso para conferir a fonte).
+  O mesmo fato em várias fontes vira um evento só (datas a até 3 dias e palavras ou valor em comum); notícias que só citam
+  a empresa ficam recolhidas em "menções". O Radar guarda 30 dias e os movimentos uns 45: o resto vem de
+  `arquivar_roda.py`, que roda no GitHub Actions depois de `enviar_dados.py` e guarda os itens na própria linha "roda"
+  (`conteudo.arquivo`); o log só mostra contagens, porque é público.
 - **Visão Todos**: caixas de Radar e Movimentos, concorrência citada, oportunidades por offering (empresas com sinal),
   onde a Peers já entrou e resultado frente ao setor, mais as próximas datas da Agenda.
 
 Para publicar ou trocar a lista, na pasta Backend, com `SUPABASE_URL` e `SUPABASE_SERVICE_KEY` definidas:
-`python publicar_roda.py "<roda.json>"`, com o arquivo guardado **fora** da pasta sincronizada com o repositório. Cada
+`python publicar_roda.py "<roda.json>" ["<roda_pesquisa.json>"]`, com os arquivos guardados **fora** da pasta sincronizada com o repositório (hoje em `04. ⚙️ Gestão da Área\00. Apoio\Roda gigante`). Republicar a lista mantém o arquivo de 90 dias e, sem o segundo arquivo, a pesquisa já publicada. Cada
 empresa leva o nome mostrado e as grafias que contam como citação (`{"nome": "...", "nomes": ["...", "..."]}`).
 Para mostrar o card do setor de uma empresa que não está nas companhias abertas nem no Valor 1000, acrescente a ela
 `"industria"` e `"divisao"` (nomes da taxonomia do portal) no mesmo arquivo e publique a lista de novo.
 
 Limites conhecidos: o casamento é por nome, então empresa sem cobertura nas fontes do Radar fica com farol vermelho
-mesmo havendo notícia fora do portal; o mesmo fato noticiado por várias fontes aparece repetido; o texto do mercado da
+mesmo havendo notícia fora do portal; o mesmo fato noticiado por várias fontes aparece repetido na visão Todos (na ficha, vira um evento só); o texto do mercado da
 empresa e o "So what geral" são por regra, sem IA (passar para a rotina de IA exige mudar a regra de que ela evita citar
 clientes); a classificação de setor das notícias do Radar ainda erra em parte, e isso aparece em "Mudanças em curso no
 setor". A janela só foi testada com os dados locais; a conferência com login e a base de clientes reais é feita no portal.
