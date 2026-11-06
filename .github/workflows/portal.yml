@@ -52,6 +52,10 @@ jobs:
       - name: Devolver os dados ao Supabase
         working-directory: Backend
         run: python enviar_dados.py --todos
+      - name: Arquivo de 90 dias da Roda gigante
+        working-directory: Backend
+        continue-on-error: true      # se falhar, o portal segue; o quadro mostra só a janela do Radar
+        run: python arquivar_roda.py
       - name: Gravar configurações no repositório
         run: |
           git config user.name "github-actions[bot]"
