@@ -2169,6 +2169,12 @@ function financasRoda(d){
     if(v.ll!=null) tiles.push(fRoda(fmtMi(v.ll),'Lucro líquido · 2025', v.varLl!=null ? fmtPct(v.varLl,true)+' no ano' : ''));
     return '<div class="roda-fin">'+tiles.join("")+'</div><p class="roda-fonte">Fonte: Valor 1000, edição 2026 (ano 2025). Sem resultado trimestral no portal.</p>';
   }
+  // fora das duas bases: números da pesquisa fora do portal (em geral do grupo controlador), com o escopo dito
+  const pf = d.pesquisa && d.pesquisa.financas;
+  if(pf && (pf.linhas||[]).length)
+    return '<div class="roda-fin">'+pf.linhas.map((l, i)=>fRoda(esc(l[1]), esc(l[0])+(i===0 && pf.periodo ? ' · '+esc(pf.periodo) : ''), esc(l[2]||''))).join("")+'</div>' +
+      '<p class="roda-fonte">Fonte: '+(pf.url ? '<a href="'+esc(pf.url)+'" target="_blank" rel="noopener">'+esc(pf.fonte)+' ↗</a>' : esc(pf.fonte||''))+(pf.escopo ? '. Escopo: <b>'+esc(pf.escopo)+'</b>' : '') +
+      '. A empresa não está nas companhias abertas nem no Valor 1000: o número vem da pesquisa fora do portal.</p>';
   return '<div class="roda-vazio" style="padding:6px 0">Sem dados financeiros no portal: a empresa não está nas companhias abertas nem no Valor 1000.</div>';
 }
 function relacaoRoda(d){
@@ -2240,13 +2246,20 @@ function textoMercadoRoda(d){
     par.push('Sem resultado trimestral no portal. No Valor 1000 (ano 2025), '+n+' ocupa a '+bo('posição '+v.pos)+(v.pos24 ? ' (era '+v.pos24+' em 2024)' : '')+', com receita líquida de '+bo(fmtMi(v.rol))+
       (v.varRol!=null ? ' ('+bo(fmtPct(v.varRol,true))+' no ano)' : '')+(v.ml!=null ? ' e margem líquida de '+bo(fmtPct(v.ml)) : '')+'.');
     if(v.varRol!=null) concl.push(v.varRol>=0 ? 'Receita em alta no último ano, mesmo sem resultado trimestral no portal.' : 'Receita em queda no último ano: vale entender se é ciclo do setor ou perda de mercado.');
+  } else if(d.pesquisa && d.pesquisa.financas && d.pesquisa.financas.texto){
+    par.push(esc(d.pesquisa.financas.texto)+' <span class="roda-fonte">('+esc(d.pesquisa.financas.fonte||'pesquisa fora do portal')+(d.pesquisa.financas.escopo ? '; escopo: '+esc(d.pesquisa.financas.escopo) : '')+')</span>');
   } else par.push('Sem dados financeiros de '+n+' no portal.');
   // 2. últimos 30 dias: o que saiu e o que indica
   const nt = d.noticias.filter(x=>x.tit), soTexto = d.noticias.length - nt.length, mm = d.movimentos.length;
   const topo = l=>l.slice().sort((a,b)=>(b.alta?1:0)-(a.alta?1:0) || b.tit-a.tit || b.data.localeCompare(a.data))[0];
   const offs = new Map(); [...nt, ...d.movimentos].forEach(x=>{ if(x.offering) offs.set(x.offering, (offs.get(x.offering)||0)+1); });
   const ordOffs = [...offs].sort((a,b)=>b[1]-a[1]);
-  if(!nt.length && !mm){
+  const pesq = ((d.pesquisa && d.pesquisa.itens) || []).filter(x=>x.data && diasEntre(x.data)<=0 && diasEntre(x.data)>=-DIAS_MERCADO).sort((a,b)=>b.data.localeCompare(a.data));
+  if(!nt.length && !mm && pesq.length){
+    const x = pesq[0], ori = {ri:'no RI da empresa', grupo:'no grupo controlador', site:'no site da empresa', valor1000:'no Valor 1000', midia:'na mídia de terceiros'};
+    par.push('O Radar não registrou notícia nem movimento sobre '+n+' nos últimos '+DIAS_OPORT+' dias. Fora do portal, a pesquisa achou '+pesq.length+(pesq.length===1?' item':' itens')+' em '+DIAS_MERCADO+' dias; o mais recente, '+(ori[x.origem]||'')+', é '+bo('“'+esc(x.titulo)+'”')+' ('+esc(x.fonte||'')+', '+formatarData(x.data).slice(0,5)+').' +
+      (x.origem==='midia' ? ' É mídia de terceiros: confira a fonte antes de usar.' : '')+' A linha do tempo completa está no quadro No mercado.');
+  } else if(!nt.length && !mm){
     par.push('Nos últimos '+DIAS_OPORT+' dias o portal não registrou notícia nem movimento sobre '+n+(soTexto ? ' (há '+soTexto+(soTexto===1?' citação':' citações')+' só no corpo de matérias sobre outros temas)' : '')+', então a leitura de mercado se apoia nos resultados e no setor. Pode ser silêncio real ou falta de fonte do Radar para a empresa.');
   } else {
     let s = 'Nos últimos '+DIAS_OPORT+' dias, '+n+' esteve no noticiário';
@@ -2506,7 +2519,8 @@ function frescorRoda(d){
   const t = d.tri, prox = d.agenda.find(a=>/resultado|balan/i.test(a.titulo));
   const partes = [
     t ? (ordemTri(t.fonte.periodo)===ult ? fr("novo", esc(t.fonte.periodo)+' no portal · '+esc(t.fonte.nome)) : fr("", 'Último resultado no portal: '+esc(t.fonte.periodo)))
-      : d.valor ? fr("", 'Sem resultado trimestral: Valor 1000 (2025)') : fr("", 'Sem resultado público'),
+      : d.valor ? fr("", 'Sem resultado trimestral: Valor 1000 (2025)')
+      : d.pesquisa && d.pesquisa.financas ? fr("", 'Números do grupo controlador: '+esc(d.pesquisa.financas.periodo||'')) : fr("", 'Sem resultado público'),
     prox ? fr("prox", 'Próximo resultado: '+formatarData(prox.data).slice(0,5)) : '',
     fr("ok", 'Radar atualizado em '+formatarData(HOJE).slice(0,5)),
     d.pesquisa ? fr("prox", 'Pesquisa fora do portal'+(RODA.pesquisa.geradoEm ? ' de '+esc(RODA.pesquisa.geradoEm.slice(0,5)) : '')) : ''
