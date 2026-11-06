@@ -29,3 +29,9 @@ Frontend/dados/
 
 # Cópia do controle de versão do repositório original (do amigo), guardada só por segurança
 .git_do_amigo_backup/
+
+# Materiais internos da Roda gigante (CRM, metas, NPS, leads): nunca vão para o repositório público
+roda gigante/
+*.log
+*.html
+!Frontend/index.html
