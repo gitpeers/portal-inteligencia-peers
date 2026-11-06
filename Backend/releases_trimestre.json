@@ -1,6 +1,6 @@
 {
  "trimestre": "3T26",
- "atualizadoEm": "2026-10-30",
+ "atualizadoEm": "2026-11-06",
  "releases": [
   {
    "id": "itau",
@@ -13,8 +13,9 @@
    "id": "santander",
    "nome": "Santander",
    "cnpj": "90.400.888/0001-42",
-   "data": null,
-   "link": null
+   "data": "2026-10-28",
+   "assunto": "Release de Resultados 3T26 - Versão em Português",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1580897&numSequencia=1105603&numVersao=1"
   },
   {
    "id": "bradesco",
@@ -133,8 +134,9 @@
    "id": "ambev",
    "nome": "Ambev",
    "cnpj": "07.526.557/0001-00",
-   "data": null,
-   "link": null
+   "data": "2026-10-29",
+   "assunto": "Press-Release de resultados 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1581368&numSequencia=1106074&numVersao=1"
   },
   {
    "id": "jbs",
@@ -182,8 +184,9 @@
    "id": "hypera",
    "nome": "Hypera",
    "cnpj": "02.932.074/0001-91",
-   "data": null,
-   "link": null
+   "data": "2026-10-27",
+   "assunto": "Press Release 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1580862&numSequencia=1105568&numVersao=1"
   },
   {
    "id": "blau",
