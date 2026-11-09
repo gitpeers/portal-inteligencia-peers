@@ -77,6 +77,24 @@ button,input,select,textarea{font-family:inherit}
 .mh-link:focus-visible{box-shadow:var(--focus);border-radius:4px}
 .rcard-destaque{box-shadow:0 0 0 3px var(--neon),var(--shadow-md)!important;transition:box-shadow .3s}
 
+/* faixa de cotações: passa sozinha, para no mouse; sem animação para quem pediu menos movimento */
+.tk{display:flex;align-items:stretch;background:var(--navy);color:#fff;border-radius:var(--r-md);overflow:hidden;margin:0 0 18px;box-shadow:var(--shadow);font-size:.78rem}
+.tk-rot{flex:none;display:flex;flex-direction:column;justify-content:center;padding:8px 14px;background:var(--navy-deep);border-right:1px solid rgba(255,255,255,.08);line-height:1.25}
+.tk-rot b{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--neon)}
+.tk-rot small{font-size:.64rem;color:#aab4c5;white-space:nowrap}
+.tk-vp{flex:1;min-width:0;overflow:hidden;display:flex;align-items:center;-webkit-mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent)}
+.tk-trilho{display:flex;width:max-content;animation:tk-anda var(--tk-dur,60s) linear infinite}
+.tk:hover .tk-trilho,.tk:focus-within .tk-trilho{animation-play-state:paused}
+.tk-it{display:inline-flex;align-items:baseline;gap:6px;padding:9px 16px;white-space:nowrap;border-right:1px solid rgba(255,255,255,.07)}
+.tk-it .tk-t{font-weight:700;letter-spacing:.02em}
+.tk-it .tk-p{color:#cfd6e2}
+.tk-it .tk-v{font-weight:700}
+.tk-it.sobe .tk-v{color:#4fe0a6}.tk-it.cai .tk-v{color:#ff8a8f}.tk-it.zero .tk-v{color:#aab4c5}
+.tk-it.mkt .tk-t{color:var(--neon)}
+@keyframes tk-anda{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (max-width:600px){.tk-rot{padding:6px 10px;max-width:118px}.tk-rot b{font-size:.58rem;white-space:normal}.tk-rot small{white-space:normal}}
+@media (prefers-reduced-motion: reduce){.tk-trilho{animation:none}.tk-vp{overflow-x:auto}.tk-trilho .tk-copia{display:none}}
+
 /* ---- HEADER ---- */
 /* cabeçalho compacto: logo e título numa linha, ações numa linha à direita */
 .header{background:linear-gradient(160deg,var(--navy) 0%,var(--navy-deep) 100%);padding:12px 40px;display:flex;
@@ -1045,11 +1063,12 @@ async function iniciarAcesso(){
    DADOS · lidos da tabela "secoes" do Supabase, que recebe uma cópia dos arquivos em dados/
    sempre que os scripts do Backend ou a rotina de IA os atualizam
    ========================================================= */
+let COTACOES = null;   // faixa de ações: seção cotacoes (Backend/atualizar_cotacoes.py, a cada 15 min no pregão)
 let HOJE, PERIODO_TRI, VALOR1000_CAMPOS, VALOR1000, TAXONOMIA, TRIMESTRAL_2T26, INDICADORES_SETORIAIS, DADOS, CONEXOES = null;
 
 async function carregarDados(){
   const nomes = ["edicao","taxonomia","radar","movimentos","agenda","valor1000","companhias_abertas","indicadores"];
-  const {data, error} = await sb.from("secoes").select("nome,conteudo").in("nome", [...nomes, "analises", "concorrencia", "concorrentes", "aprofundamento", "cenario"]);
+  const {data, error} = await sb.from("secoes").select("nome,conteudo").in("nome", [...nomes, "analises", "concorrencia", "concorrentes", "aprofundamento", "cenario", "cotacoes"]);
   if(error) throw new Error(error.message);
   const porNome = Object.fromEntries(data.map(l=>[l.nome, l.conteudo]));
   const faltando = nomes.filter(n=>!(n in porNome));
@@ -1085,6 +1104,8 @@ async function carregarDados(){
     concorrentes,
     cenario: porNome.cenario || null      // Cenário 2027 (PE): sem a seção, a aba não aparece
   };
+  COTACOES = porNome.cotacoes || null;
+  if(!carregarDados.relogio) carregarDados.relogio = setInterval(atualizarCotacoes, 5*60*1000);
   const dataBr = formatarData(HOJE);
   document.querySelector(".header-badge").innerHTML = "Edição <b>" + esc(dataBr) + "</b>";
   // Visão comercial (Mapa de Conexões): só para a lista de acesso (Supabase/comercial.sql). Para os demais, a
@@ -2061,7 +2082,7 @@ function renderOportunidades(){
       .map(([id, t, q])=>'<button type="button" data-opv="'+id+'" class="'+(v===id?'on':'')+'">'+t+'<b>'+q+'</b></button>').join("") + '</div>';
   if(v==="roda" && temRoda()){
     return '<div class="sec-head"><h2>Oportunidades</h2><p>Roda gigante: as empresas da roda, com o que saiu no portal nos últimos '+DIAS_OPORT+' dias, onde a Peers pode entrar e como cada uma anda frente ao setor. Visível só para quem tem acesso à base de clientes.</p></div>' +
-      subsHtml + renderRoda();
+      subsHtml + faixaDaAba() + renderRoda();
   }
   return '<div class="sec-head"><h2>Oportunidades</h2><p>Quem ligar esta semana e por quê: clientes e ex-clientes da Peers com notícia nova no portal ' +
       '(últimos '+DIAS_OPORT+' dias) e alguém da Peers que conhece decisores lá. Base de clientes de '+esc(CLIENTES.geradoEm)+'. Visível só para quem tem acesso à base de clientes.</p></div>' +
@@ -2844,6 +2865,71 @@ function renderizar(){
 }
 
 /* =========================================================
+   FAIXA DE COTAÇÕES · Edição do dia, Finanças e Roda gigante
+   ========================================================= */
+async function atualizarCotacoes(){
+  if(document.hidden) return;
+  try{
+    const {data} = await sb.from("secoes").select("conteudo").eq("nome", "cotacoes").maybeSingle();
+    if(!data || !data.conteudo || (COTACOES && data.conteudo.atualizadoEm===COTACOES.atualizadoEm)) return;
+    COTACOES = data.conteudo;
+    const el = document.getElementById("tkFaixa");
+    if(el) el.outerHTML = faixaDaAba();
+  }catch(e){ /* sem rede: fica a faixa anterior */ }
+}
+document.addEventListener("visibilitychange", ()=>{ if(!document.hidden && COTACOES) atualizarCotacoes(); });
+const fmtVarCot = v => (v>0?'▲ ':v<0?'▼ ':'')+Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2, maximumFractionDigits:2})+'%';
+function itemCot(t, preco, c, nome, mkt){
+  const cls = c.v>0.004 ? 'sobe' : c.v<-0.004 ? 'cai' : 'zero';
+  return '<span class="tk-it '+cls+(mkt?' mkt':'')+'" title="'+esc(nome)+'"><span class="tk-t">'+esc(t)+'</span><span class="tk-p">'+preco+'</span><span class="tk-v">'+fmtVarCot(c.v)+'</span></span>';
+}
+// empresas: [{id, nome}] com o id das companhias abertas; mercado: true põe Ibovespa e dólar no começo
+function faixaCotacoes(empresas, rotulo, mercado){
+  if(!COTACOES) return '';
+  const A = COTACOES.acoes || {}, M = COTACOES.mercado || {};
+  const vistos = new Set();
+  const acoes = empresas.filter(e=>cotacaoViva(e.id) && !vistos.has(A[e.id].t) && vistos.add(A[e.id].t)).map(e=>({...A[e.id], nome:e.nome}));
+  const its = (mercado && M.ibov ? [itemCot('Ibovespa', Math.round(M.ibov.p).toLocaleString('pt-BR')+' pts', M.ibov, 'Ibovespa', 1)] : [])
+    .concat(mercado && M.dolar ? [itemCot('Dólar', 'R$ '+M.dolar.p.toLocaleString('pt-BR',{minimumFractionDigits:2, maximumFractionDigits:2}), M.dolar, 'Dólar comercial', 1)] : [])
+    .concat(acoes.map(a=>itemCot(a.t, 'R$ '+a.p.toLocaleString('pt-BR',{minimumFractionDigits:2, maximumFractionDigits:2}), a, a.nome)));
+  if(!its.length) return '<div id="tkFaixa" hidden></div>';
+  // horário do dado mais recente; se não for de hoje, é o fechamento do último pregão
+  const h = [M.ibov, ...acoes].filter(Boolean).map(x=>x.h).sort().pop() || COTACOES.atualizadoEm;
+  const hojeLocal = new Date().toLocaleDateString('sv-SE', {timeZone:'America/Sao_Paulo'});
+  const quando = h.slice(0,10)===hojeLocal ? 'às '+h.slice(11,16)+' · atraso de ~15 min' : 'fechamento de '+formatarData(h.slice(0,10)).slice(0,5);
+  const lista = its.join('');
+  return '<div class="tk" id="tkFaixa" role="region" aria-label="Cotações do dia">' +
+    '<div class="tk-rot"><b>'+esc(rotulo)+'</b><small>'+quando+'</small></div>' +
+    '<div class="tk-vp"><div class="tk-trilho" style="--tk-dur:'+Math.max(25, its.length*4)+'s"><div style="display:flex">'+lista+'</div>' +
+    '<div class="tk-copia" style="display:flex" aria-hidden="true">'+lista+'</div></div></div></div>';
+}
+// cotação parada há mais de uma semana (ação suspensa ou sem negócio) não entra na faixa
+function cotacaoViva(id){
+  const c = (COTACOES.acoes||{})[id];
+  if(!c) return false;
+  if(!cotacaoViva.limite || cotacaoViva.base!==COTACOES){
+    const ult = Object.values(COTACOES.acoes).map(x=>x.h).sort().pop() || '';
+    cotacaoViva.base = COTACOES; cotacaoViva.limite = new Date(new Date(ult.slice(0,10)) - 7*864e5).toISOString().slice(0,10);
+  }
+  return c.h.slice(0,10) >= cotacaoViva.limite;
+}
+const cot = id => (COTACOES.acoes||{})[id] || {};
+const maisNegociadas = (a, b) => (cot(b.id).n||0) - (cot(a.id).n||0);
+function faixaDaAba(){
+  if(!COTACOES) return '';
+  const doRecorte = DADOS.trimestral.filter(e=>(!estado.industrias.size || estado.industrias.has(e.industria)) && cotacaoViva(e.id)).sort(maisNegociadas);
+  if(estado.aba==="home"){    // sem recorte: as 40 mais negociadas, das que mais sobem às que mais caem
+    const lista = estado.industrias.size ? doRecorte.slice(0, 60) : doRecorte.slice(0, 40).sort((a,b)=>(cot(b.id).v||0)-(cot(a.id).v||0));
+    return faixaCotacoes(lista, estado.industrias.size ? 'Bolsa hoje · seu recorte' : 'Bolsa hoje · 40 mais negociadas', true);
+  }
+  if(estado.aba==="financas")
+    return estado.industrias.size ? faixaCotacoes(doRecorte, 'Bolsa hoje · '+(estado.industrias.size===1 ? [...estado.industrias][0] : 'seu recorte'), false) : '';
+  if(estado.aba==="oportunidades" && estadoOport.visao==="roda" && temRoda())
+    return faixaCotacoes(rodaDados().filter(d=>d.tri).map(d=>({id:d.tri.id, nome:d.nome})).sort(maisNegociadas), 'Bolsa hoje · Roda gigante', false);
+  return '';
+}
+
+/* =========================================================
    HOME — EDIÇÃO DO DIA
    ========================================================= */
 // Mostra tantas manchetes quanto cabem ao lado de Movimentos + Agenda, para os dois lados terminarem juntos.
@@ -2901,6 +2987,7 @@ function renderHome(){
       ? '<button class="btn-audio" onclick="abrirAudio()">▶ Ouvir o resumo <small>' + rotuloDuracao(durSeg) + '</small></button>'
       : '') +
   '</div>' +
+  faixaDaAba() +
   '<div class="kpi-strip">' + kpis.map(k=>
     '<div class="kpi '+k.cls+'"><div class="kpi-label">'+k.l+'</div>' +
     '<div class="kpi-value">'+k.v+'</div><div class="kpi-sub">'+k.s+'</div></div>'
@@ -3506,7 +3593,7 @@ function renderFinancas(){
     (abertas ? 'Esta base traz o trimestre mais recente das companhias abertas; para ver também as empresas fechadas, em base anual, troque para Maiores empresas · Valor 1000 no seletor Base.'
              : 'Esta base traz o ranking anual das 1.000 maiores empresas do país; para o trimestre mais recente das companhias abertas, troque para Companhias abertas no seletor Base.') +
     (alvos.length>1 ? ' Um painel por indústria selecionada — os indicadores de setores diferentes não são comparáveis entre si.' : '') +
-  '</p></div>' +
+  '</p></div>' + faixaDaAba() +
   (!sel.length
     ? '<div class="card"><div class="vazio">Escolha uma ou mais indústrias no filtro acima para ver as finanças dos players.</div></div>' : '') +
   (estado.offerings.size

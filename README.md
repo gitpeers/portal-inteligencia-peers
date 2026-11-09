@@ -35,6 +35,7 @@ Backend/
   publicar_roda.py      envia a lista de empresas da Roda gigante para a sub-aba de Oportunidades (só a lista de acesso)
   publicar_cenario.py   publica a aba Cenário 2027 (Mercado) a partir do arquivo da equipe, guardado fora do repositório
   atualizar_cenario.py  rotina diária da aba Cenário 2027: coluna Hoje (BC, IBGE, Ibovespa) e Focus
+  atualizar_cotacoes.py faixa de ações (Edição do dia, Finanças, Roda): a cada 15 min no pregão, pelo cotacoes.yml
   arquivar_roda.py      todo dia, guarda 90 dias de notícias e movimentos das empresas da Roda (quadro No mercado)
   validar_fontes.py     testa se cada fonte de notícias tem feed ativo (rodar uma vez por mês)
   ia/                   rotina de IA: instruções (ROTINA.md) e scripts que preparam e aplicam as análises
