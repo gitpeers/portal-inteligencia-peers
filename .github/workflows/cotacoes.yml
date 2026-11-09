@@ -1,0 +1,36 @@
+# Faixa de cotações do portal: a cada 15 minutos no horário do pregão (dias úteis, 10h às 18h de Brasília),
+# atualiza a seção "cotacoes" do Supabase (Backend/atualizar_cotacoes.py). Não grava nada no repositório e não
+# republica a página: quem estiver com o portal aberto recebe os números novos sozinho, a cada 5 minutos.
+# O GitHub pode atrasar alguns minutos as execuções agendadas. Precisa dos Secrets SUPABASE_URL e SUPABASE_SERVICE_KEY.
+name: Cotações da faixa de ações
+
+on:
+  schedule:
+    - cron: "*/15 13-20 * * 1-5"   # 10h00 às 17h45 em Brasília (UTC-3)
+    - cron: "10 21 * * 1-5"        # 18h10: fechamento do dia
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cotacoes
+  cancel-in-progress: true
+
+jobs:
+  cotacoes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: Backend
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Atualizar cotações
+        working-directory: Backend
+        run: python atualizar_cotacoes.py

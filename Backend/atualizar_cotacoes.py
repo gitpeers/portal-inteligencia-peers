@@ -86,7 +86,9 @@ def montar_mapa(empresas):
 
 def item(meta):
     quando = datetime.fromtimestamp(meta.get("regularMarketTime") or 0, timezone.utc).astimezone(agora().tzinfo)
+    # n: volume financeiro do dia em R$ milhões, para a faixa mostrar primeiro as ações que de fato negociam
     return {"p": round(meta["regularMarketPrice"], 4), "v": round(meta.get("regularMarketChangePercent") or 0, 2),
+            "n": round((meta.get("regularMarketVolume") or 0) * meta["regularMarketPrice"] / 1e6, 1),
             "h": quando.isoformat(timespec="minutes")}
 
 
