@@ -71,6 +71,12 @@ button,input,select,textarea{font-family:inherit}
 .cen-efeito{font-size:.82rem;line-height:1.5;color:var(--text2);border-left:3px solid var(--neon);padding-left:12px}
 @media (max-width:900px){.cen-lin{grid-template-columns:1fr 1fr}.cen-lin .cen-faixa-w,.cen-lin .cen-efeito{grid-column:1/-1}}
 
+/* manchete clicável da Edição do dia e destaque da notícia ao chegar no Radar */
+.mh-link{all:unset;cursor:pointer;color:inherit;font:inherit}
+.mh-link:hover{text-decoration:underline;text-decoration-color:var(--neon-strong);text-underline-offset:3px}
+.mh-link:focus-visible{box-shadow:var(--focus);border-radius:4px}
+.rcard-destaque{box-shadow:0 0 0 3px var(--neon),var(--shadow-md)!important;transition:box-shadow .3s}
+
 /* ---- HEADER ---- */
 /* cabeçalho compacto: logo e título numa linha, ações numa linha à direita */
 .header{background:linear-gradient(160deg,var(--navy) 0%,var(--navy-deep) 100%);padding:12px 40px;display:flex;
@@ -160,6 +166,7 @@ body.bloqueado #login{display:flex;min-height:100vh;align-items:center;justify-c
 .tri-msg{margin:auto;color:var(--grey-dark);font-size:.88rem;text-align:center;padding:48px 24px}
 /* na aba trimestral, o recorte do portal não vale (o dashboard tem filtros próprios) */
 body.aba-tri .filters-bar,body.aba-tri .filters-chips,body.aba-tri #btnBriefing{display:none !important}
+body.aba-sem-recorte .filters-bar>.flt-label:first-child,body.aba-sem-recorte .filters-bar>.ms,body.aba-sem-recorte .filters-chips{display:none !important}
 
 /* ---- CONEXÕES (visão comercial: só a lista de acesso) ---- */
 .box-conx{background:#fff;border:1.5px solid var(--navy);border-radius:var(--r-sm);padding:9px 12px;margin:8px 0;font-size:.78rem;line-height:1.5}
@@ -810,7 +817,7 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
     <div class="menu-topo">
       <button type="button" id="btnBriefTopo" class="btn-brief" aria-haspopup="true" aria-expanded="false">Gerar briefing <span aria-hidden="true">▾</span></button>
       <div class="menu-topo-lista" role="menu">
-        <button type="button" role="menuitem" onclick="fecharMenusTopo(); abrirConta()">Briefing de conta<small>Marque itens em qualquer seção e gere o briefing</small></button>
+        <button type="button" role="menuitem" onclick="fecharMenusTopo(); abrirConta()">Briefing de conta<small>Tudo o que o portal tem sobre uma empresa, num texto só</small></button>
         <button type="button" role="menuitem" onclick="fecharMenusTopo(); irBriefingConcorrentes()">Briefing de concorrentes<small>PDF com os movimentos do período escolhido</small></button>
       </div>
     </div>
@@ -847,7 +854,7 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
   <div class="filters-chips" id="fChips"></div>
 </div>
 
-<div class="content" id="conteudo"></div>
+<div class="content" id="conteudo"><div class="vazio" style="padding:70px 0;text-align:center">Carregando os dados do portal…</div></div>
 <!-- Análises trimestrais: fica fora do #conteudo para o dashboard não ser recarregado a cada troca de aba -->
 <div id="trimestral" hidden><div class="tri-msg" id="triMsg">Carregando…</div></div>
 
@@ -2827,6 +2834,7 @@ function renderizar(){
   const tri = estado.aba==="trimestral";
   c.hidden = tri;
   document.body.classList.toggle("aba-tri", tri);
+  document.body.classList.toggle("aba-sem-recorte", ["oportunidades","cenario"].includes(estado.aba));
   document.getElementById("trimestral").hidden = !tri;
   if(tri) abrirTrimestral();
   if(estado.modoVisualizacao==="comercial" && !tri) c.insertAdjacentHTML("afterbegin", barraComercial());
@@ -2907,11 +2915,11 @@ function renderHome(){
       ).join("") + '</ul>' : '<div class="vazio">Nada agendado nos próximos 30 dias.</div>') +
     '</div>' +
     '<div class="card" id="cardManchetes" style="margin:0">' +
-      '<div class="card-title"><span class="dot"></span>Principais manchetes<span class="hint">abra o Radar para o ângulo completo</span></div>' +
+      '<div class="card-title"><span class="dot"></span>Principais manchetes<span class="hint">clique na manchete para o ângulo completo no Radar</span></div>' +
       (manchetes.length ? manchetes.map(m=>
         '<div class="mh">' +
           '<span class="badge bp">'+esc(rotuloInd(m))+'</span> <span class="badge b1">'+m.offering+'</span> '+seloEdicao(m.data) +
-          '<h3>'+esc(m.manchete)+'</h3><p>'+esc(m.resumo)+'</p>' +
+          '<h3><button type="button" class="mh-link" data-irradar="'+esc(m.id)+'" title="Abrir no Radar">'+esc(m.manchete)+' ›</button></h3><p>'+esc(m.resumo)+'</p>' +
         '</div>').join("")
        : '<div class="vazio">Nenhuma manchete para este recorte.</div>') +
     '</div></div>' +
@@ -3060,7 +3068,7 @@ function renderCardRadar(item){
   const marcado = estado.selecionados.has("radar:"+item.id);
   const av = estado.avaliacoes[item.id];
   return '' +
-  '<div class="rcard '+(item.relevancia==='alta'?'alta':'')+'">' +
+  '<div class="rcard '+(item.relevancia==='alta'?'alta':'')+'" id="radar-'+esc(item.id)+'">' +
     '<div class="rcard-top">' +
       '<label class="cbx"><input type="checkbox" class="chk" data-tipo="radar" data-id="'+item.id+'" '+(marcado?'checked':'')+'> incluir no briefing</label>' +
       '<span>'+seloEdicao(item.data)+(item.ia===false ? ' <span class="selo-ia">Coleta automática</span>' : ' <span class="selo-ia">Gerado por IA</span>')+'</span>' +
@@ -3206,7 +3214,7 @@ function painelIndustria(ind){
     return '<div class="card">' +
       '<div class="card-title"><span class="dot"></span>'+esc(ind)+'</div>' +
       '<div class="vazio">Ainda não há cobertura de Finanças para '+esc(ind)+'.<br><br>' +
-      '<button class="btn">Solicitar benchmark ao PeersHub</button></div></div>';
+      '<span style="font-size:.8rem;color:var(--grey)">Para incluir, peça à equipe de R&I.</span></div></div>';
   }
   const seta = k => estadoFinancas.ordenarPor===k ? (estadoFinancas.ordemAsc?' ▲':' ▼') : '';
   // Divisões na ordem da taxonomia; as que não têm empresa no ranking ficam de fora da tabela.
@@ -3974,7 +3982,7 @@ function itemMovimento(m){
     (m.ia ? '<span class="selo-ia">Gerado por IA</span>' : '') + '</div>' +
     '<h4><span class="lnk-player" data-player="'+esc(m.player)+'">'+esc(m.player)+'</span></h4>' +
     '<p class="tese">'+esc(m.tese)+(m.valor && m.valor!=='—' && m.valor!=='Não divulgado' ? ' <b>('+esc(m.valor)+')</b>' : '')+'</p>' +
-    (m.leitura ? '<p class="leitura"><span class="rot">Leitura Peers:</span> '+esc(m.leitura)+'</p>' : '') +
+    (m.leitura ? '<p class="leitura"><span class="rot">Ângulo Peers:</span> '+esc(m.leitura)+'</p>' : '') +
     caixaClientes(textoMov(m)) + caixaConexoes(m.player, true) +
     '<p class="cardnote" style="margin:4px 0 8px">Fonte: '+linkFonte(m.fonte, m.url)+'</p>' +
     '<label class="cbx"><input type="checkbox" class="chk" data-tipo="movimento" data-id="'+m.id+'" ' +
@@ -4565,6 +4573,14 @@ function ligarEventos(){
   document.querySelectorAll("[data-conc]").forEach(el=>el.addEventListener("click", ()=>abrirFichaConcorrente(el.dataset.conc)));
   document.querySelectorAll("[data-ir]").forEach(b=>b.addEventListener("click", ()=>{
     estado.aba = b.dataset.ir; montarAbas(); renderizar(); window.scrollTo({top:0, behavior:'smooth'});
+  }));
+  // manchete da Edição do dia: abre o Radar já na notícia, com um destaque rápido
+  document.querySelectorAll("[data-irradar]").forEach(b=>b.addEventListener("click", ()=>{
+    estado.aba = "radar"; montarAbas(); renderizar();
+    const alvo = document.getElementById("radar-"+b.dataset.irradar);
+    if(!alvo){ window.scrollTo({top:0, behavior:'smooth'}); return; }
+    alvo.scrollIntoView({behavior:'smooth', block:'center'});
+    alvo.classList.add("rcard-destaque"); setTimeout(()=>alvo.classList.remove("rcard-destaque"), 2200);
   }));
   document.querySelectorAll("[data-aprof]").forEach(el=>el.addEventListener("click", ()=>abrirAprofundamento(el.dataset.aprof)));
 }
@@ -5296,7 +5312,7 @@ function montarConta(){
   if(!tri && !v1000) L.push("Sem dados financeiros no portal (fora das companhias abertas e do Valor 1000).");
   L.push("");
   L.push("--- MOVIMENTOS (até 12 meses) ---");
-  if(movs.length) movs.forEach(m=>{ L.push("• " + formatarData(m.data) + " · " + m.tipo + ": " + m.tese); if(m.leitura) L.push("  Leitura Peers: " + m.leitura); L.push("  Fonte: " + m.fonte + " · " + m.url); });
+  if(movs.length) movs.forEach(m=>{ L.push("• " + formatarData(m.data) + " · " + m.tipo + ": " + m.tese); if(m.leitura) L.push("  Ângulo Peers: " + m.leitura); L.push("  Fonte: " + m.fonte + " · " + m.url); });
   else L.push("Nenhum movimento registrado.");
   L.push("");
   L.push("--- RADAR (notícias recentes que citam a empresa) ---");
@@ -5341,7 +5357,7 @@ document.addEventListener("keydown", e=>{
    ========================================================= */
 function abrirBriefing(){
   if(estado.selecionados.size===0){
-    alert("Marque ao menos um item (Radar, Finanças, Movimentos ou Agenda) para gerar o briefing.");
+    alert("Marque ao menos um item (Radar, Indicadores, Finanças, Movimentos ou Agenda) para gerar o briefing.");
     return;
   }
   const L = [];
@@ -5414,7 +5430,7 @@ function abrirBriefing(){
       const i = DADOS.movimentos.find(m=>m.id===id);
       L.push("• [" + formatarData(i.data) + "] " + i.player + " — " + i.tipo + ": " + i.tese +
         (i.valor && i.valor!=='—' ? " (" + i.valor + ")" : ""));
-      if(i.leitura) L.push("  Leitura Peers: " + i.leitura);
+      if(i.leitura) L.push("  Ângulo Peers: " + i.leitura);
       L.push("  Fonte: " + i.fonte + (i.url ? " · " + i.url : ""));
       L.push("");
     });
