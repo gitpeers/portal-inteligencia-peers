@@ -9,6 +9,10 @@ O arquivo é uma lista de empresas, cada uma com o nome mostrado e as grafias qu
 
     [{"nome": "Itaú", "nomes": ["Itaú Unibanco", "Itaú"]}, {"nome": "Fleury", "nomes": ["Fleury"]}]
 
+Empresa que as fontes do Radar quase não cobrem: acrescente "buscar": true e "padrao": [indústria, divisão]. O robô
+diário (atualizar_noticias.py) passa a procurá-la no Google Notícias pelas grafias de "nomes", e as notícias dela
+entram no Radar sem contar no teto por divisão. Ao republicar a lista, mantenha esses campos no arquivo.
+
 O segundo arquivo, opcional, é a pesquisa fora do portal das empresas sem notícia (RI, grupo controlador, Valor 1000 e mídia):
 {"geradoEm": "05/11/2026", "empresas": [{"empresa", "capital_aberto", "nota", "itens": [{"origem", "titulo", "data",
 "fonte", "url", "resumo"}]}]}. Sem ele, a pesquisa já publicada continua. O arquivo de 90 dias (arquivar_roda.py)
