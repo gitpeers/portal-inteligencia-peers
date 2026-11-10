@@ -1,6 +1,10 @@
 """Atualiza o Radar e os Movimentos estratégicos a partir dos feeds RSS das fontes
 e, nos Movimentos, também dos fatos relevantes publicados na CVM (dados abertos).
 
+Empresas acompanhadas: as da Roda gigante marcadas com "buscar": true (linha protegida "roda" da tabela conexoes)
+também são procuradas no Google Notícias pelas grafias da lista, e as notícias delas não contam no teto por divisão.
+Os nomes são confidenciais e o log do GitHub Actions é público: só saem contagens.
+
 Sem IA: a indústria, a divisão, os temas e a offering de cada notícia vêm de palavras-chave
 (config/classificacao.json). Resumo, "Por que importa", Ângulo Peers e Leitura Peers ficam vazios.
 """
@@ -8,6 +12,7 @@ import csv
 import html
 import io
 import re
+import urllib.parse
 import zipfile
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
@@ -177,6 +182,50 @@ def coletar(fontes, cfg):
     return candidatos
 
 
+GNEWS = "https://news.google.com/rss/search?"
+
+
+def acompanhadas():
+    """Empresas da Roda gigante marcadas para busca própria de notícias: [{nome, nomes, padrao}]."""
+    try:
+        from supabase_api import SUPABASE_CHAVE, chamar
+        if not SUPABASE_CHAVE:
+            return []
+        linha = chamar("GET", "conexoes?select=conteudo&nome=eq.roda")
+        return [p for p in ((linha[0].get("conteudo") or {}).get("players") or []) if p.get("buscar")] if linha else []
+    except Exception as e:
+        log(f"  empresas acompanhadas: lista indisponível ({str(e)[:60]})")
+        return []
+
+
+def coletar_acompanhadas(empresas, dias=JANELA_DIAS):
+    """Notícias do Google Notícias com alguma grafia da empresa na manchete (marcadas com 'acompanhada')."""
+    limite = agora() - timedelta(days=dias)
+    candidatos, falhas = [], 0
+    for p in empresas:
+        termos = [t for t in dict.fromkeys((p.get("nomes") or []) + [p["nome"]]) if t]
+        q = " OR ".join(f'"{t}"' for t in termos) + f" when:{dias}d"
+        url = GNEWS + urllib.parse.urlencode({"q": q, "hl": "pt-BR", "gl": "BR", "ceid": "BR:pt-419"})
+        try:
+            itens = ler_feed({"url": url})
+        except Exception:
+            falhas += 1
+            continue
+        rx = re.compile(r"\b(" + "|".join(re.escape(normalizar(t).strip()) for t in termos) + r")\b")
+        for n in itens:
+            quando = data_do_item(n["data"])
+            titulo = texto_limpo(n["titulo"])
+            veiculo = "Google Notícias"
+            if " - " in titulo:                     # o Google acrescenta " - Veículo" à manchete
+                titulo, veiculo = titulo.rsplit(" - ", 1)
+            if not n["link"] or not quando or quando < limite or not rx.search(normalizar(titulo)):
+                continue
+            candidatos.append({"titulo": titulo.strip(), "link": n["link"], "resumo": "", "quando": quando,
+                               "fonte": {"nome": veiculo.strip(), "padrao": p.get("padrao")}, "acompanhada": True})
+    log(f"  empresas acompanhadas: {len(empresas)} na lista, {len(candidatos)} notícias" + (f", {falhas} busca(s) falharam" if falhas else ""))
+    return candidatos
+
+
 def montar_radar(candidatos, cfg):
     itens = []
     for n in candidatos:
@@ -189,6 +238,7 @@ def montar_radar(candidatos, cfg):
             "industria": industria, "divisao": divisao, "offering": offering, "temas": temas,
             "relevancia": relevancia, "fonte": n["fonte"]["nome"], "url": n["link"],
             "data": n["quando"].strftime("%Y-%m-%d"), "id": identificador("r", n["link"]), "ia": False,
+            **({"acompanhada": True} if n.get("acompanhada") else {}),
         })
     return itens
 
@@ -255,8 +305,8 @@ def aplicar_teto(itens):
     ordem = sorted(itens, key=lambda i: (i["data"], i.get("relevancia") == "alta"), reverse=True)
     contagem, final = {}, []
     for i in ordem:
-        if i.get("oculto"):    # descartado pela rotina de IA: fica guardado para não voltar na coleta, sem ocupar vaga
-            final.append(i)
+        if i.get("oculto") or i.get("acompanhada"):   # descartado pela IA (fica guardado para não voltar) ou de
+            final.append(i)                            # empresa acompanhada: não ocupa vaga no teto da divisão
             continue
         k = (i["industria"], i.get("divisao"))
         if contagem.get(k, 0) < TETO_POR_DIVISAO:
@@ -304,6 +354,7 @@ def main():
     cfg = ler_json(CONFIG / "classificacao.json")
     log(f"Lendo {len(fontes)} feeds")
     candidatos = coletar(fontes, cfg)
+    candidatos += coletar_acompanhadas(acompanhadas())
 
     radar_novo = montar_radar(candidatos, cfg)
     radar = aplicar_teto(juntar(ler_json(DADOS / "radar.json"), radar_novo, RADAR_VALIDADE))
