@@ -3,55 +3,93 @@
     "casa": "fiscal|primário",
     "oque": "Resultado do governo central antes de pagar os juros da dívida: receitas menos despesas. Negativo é déficit e faz a dívida crescer mais rápido. É o termômetro da confiança fiscal.",
     "impacto": "Sem âncora fiscal, o mercado cobra mais prêmio de risco, e isso encarece juros e dólar para todo mundo. Para as empresas, significa crédito mais caro, planejamento de investimento e de preços mais incerto e decisões públicas (concessões, compras, reformas) mais lentas ou sujeitas a contingenciamento.",
-    "pess": {"motivo": "O IFI (Instituição Fiscal Independente do Senado) vê déficit primário potencial de 1,0% do PIB em 2027 (RAF 117, 29/10). Parte do RAF de setembro (PIB de 1,8%, IPCA de 4,0%, dúvida sobre os cortes de gasto em previdência e BPC) e soma cerca de R$ 40 bi de compromissos de campanha sem previsão no orçamento: Bolsa Família, perda de arrecadação das bets e pacote dos MEIs."},
-    "base": {"motivo": "Mediana do mercado para o resultado primário de 2027 no setor público consolidado, estável em déficit de 0,4% do PIB há semanas. O conceito é mais amplo que o do IFI e o do PLOA, que medem o governo central."},
-    "otim": {"motivo": "Não é projeção: é a meta fiscal de 2027 do PLDO, superávit de R$ 73,2 bi (0,5% do PIB) no governo central, com piso de 0,25%. O PLOA enviado em 31/08 projeta superávit efetivo de só 0,1% (R$ 18,6 bi), que chega a 0,6% depois das deduções legais."}
+    "pess": {
+      "motivo": "O IFI (Instituição Fiscal Independente do Senado) vê déficit primário potencial de 1,0% do PIB em 2027 (RAF 117, 29/10). Parte do RAF de setembro (PIB de 1,8%, IPCA de 4,0%, dúvida sobre os cortes de gasto em previdência e BPC) e soma cerca de R$ 40 bi de compromissos de campanha sem previsão no orçamento: Bolsa Família, perda de arrecadação das bets e pacote dos MEIs."
+    },
+    "base": {
+      "motivo": "Mediana do mercado para o resultado primário de 2027 no setor público consolidado, estável em déficit de 0,4% do PIB há semanas. O conceito é mais amplo que o do IFI e o do PLOA, que medem o governo central."
+    },
+    "otim": {
+      "motivo": "Não é projeção: é a meta fiscal de 2027 do PLDO, superávit de R$ 73,2 bi (0,5% do PIB) no governo central, com piso de 0,25%. O PLOA enviado em 31/08 projeta superávit efetivo de só 0,1% (R$ 18,6 bi), que chega a 0,6% depois das deduções legais."
+    }
   },
   {
     "casa": "selic",
     "oque": "Taxa básica de juros da economia, definida pelo Copom. Remunera a renda fixa e serve de referência para todos os empréstimos. O valor de fim de 2027 é onde ela deve estar ao término do ano.",
     "impacto": "Juro alto por mais tempo encarece empréstimos e financiamentos, aumenta o custo da dívida das empresas e faz o consumidor parcelar menos e comprar menos. Também desestimula investimentos novos, porque a renda fixa passa a render mais do que muitos projetos. Quando o juro cai, acontece o contrário.",
-    "pess": {"motivo": "Sem um plano fiscal crível, o prêmio de risco sobe, o real enfraquece e a inflação resiste perto de 5%. O Banco Central não consegue cortar juros e o mercado passa a precificar até alta da Selic. Nesse cenário o dólar vai a R$ 6,00 e o PIB cresce 0,9% (Morgan Stanley, 26/10)."},
-    "base": {"motivo": "Mediana das projeções do mercado no Focus de 03/11: Selic em 13,50% no fim de 2026 e 12,50% no fim de 2027, com pausa nos cortes até meados de 2027. O cenário base do Morgan Stanley é mais baixo, 11,25%."},
-    "otim": {"motivo": "O novo governo apresenta um programa fiscal de longo prazo, crível e com respaldo político. O ajuste é gradual, mas as expectativas melhoram na hora e a inflação converge para a meta (3,8%). Nesse cenário o dólar vai a R$ 4,50 e a dívida se estabiliza perto de 86% do PIB (Morgan Stanley)."}
+    "pess": {
+      "motivo": "Sem um plano fiscal crível, o prêmio de risco sobe, o real enfraquece e a inflação resiste perto de 5%. O Banco Central não consegue cortar juros e o mercado passa a precificar até alta da Selic. Nesse cenário o dólar vai a R$ 6,00 e o PIB cresce 0,9% (Morgan Stanley, 26/10)."
+    },
+    "base": {
+      "motivo": "Mediana das projeções do mercado no Focus do Banco Central, atualizada toda semana: o mercado espera um corte final em 2026 e pausa nos cortes até meados de 2027. O cenário base do Morgan Stanley é mais baixo, 11,25%."
+    },
+    "otim": {
+      "motivo": "O novo governo apresenta um programa fiscal de longo prazo, crível e com respaldo político. O ajuste é gradual, mas as expectativas melhoram na hora e a inflação converge para a meta (3,8%). Nesse cenário o dólar vai a R$ 4,50 e a dívida se estabiliza perto de 86% do PIB (Morgan Stanley)."
+    }
   },
   {
     "casa": "c[âa]mbio|d[óo]lar",
     "oque": "Preço do dólar em reais. Reflete juros, risco fiscal e fluxo de capital estrangeiro.",
     "impacto": "Dólar alto encarece insumos, máquinas e peças importadas e as dívidas em moeda estrangeira, e pressiona a inflação. Favorece quem exporta, mas dificulta o planejamento de preços e de margem de quem compra ou se financia em dólar.",
-    "pess": {"motivo": "O governo não assume compromisso fiscal e o mercado cobra prêmio de risco. Mesmo cenário da Selic a 15,5% (Morgan Stanley, 26/10)."},
-    "base": {"motivo": "Na nota de 26/10 o mercado primeiro desfaz o otimismo pós-1º turno e o dólar testa R$ 5,50. Depois passa a cobrar prêmio fiscal e o dólar vai a R$ 5,60 a R$ 5,70. Remessas de dividendos em novembro e dezembro podem pressionar. O primeiro teste é a escolha do ministro da Fazenda."},
-    "otim": {"motivo": "Não é um cenário otimista: R$ 5,40 é o consenso do mercado, a mediana do Focus para o fim de 2027. Muitos bancos veem o câmbio mais pressionado, acima de R$ 5,50, se os sinais fiscais não convencerem."}
+    "pess": {
+      "motivo": "O governo não assume compromisso fiscal e o mercado cobra prêmio de risco. Mesmo cenário da Selic a 15,5% (Morgan Stanley, 26/10)."
+    },
+    "base": {
+      "motivo": "Na nota de 26/10 o mercado primeiro desfaz o otimismo pós-1º turno e o dólar testa R$ 5,50. Depois passa a cobrar prêmio fiscal e o dólar vai a R$ 5,60 a R$ 5,70. Remessas de dividendos em novembro e dezembro podem pressionar. O primeiro teste é a escolha do ministro da Fazenda."
+    },
+    "otim": {
+      "motivo": "Não é um cenário otimista: R$ 5,40 é o consenso do mercado, a mediana do Focus para o fim de 2027. Muitos bancos veem o câmbio mais pressionado, acima de R$ 5,50, se os sinais fiscais não convencerem."
+    }
   },
   {
     "casa": "ipca|infla",
     "oque": "Variação dos preços ao consumidor, medida pelo IBGE. A meta é 3% ao ano, com tolerância de 1,5 ponto, o que dá um teto de 4,5%.",
     "impacto": "Inflação alta corrói o poder de compra, eleva o custo de insumos e salários e faz o Banco Central manter os juros altos por mais tempo. As empresas precisam repassar preços sem perder volume de vendas, e quem não consegue repassar perde margem.",
-    "pess": {"motivo": "Sem plano fiscal crível, expectativas desancoradas e dólar alto mantêm a inflação na faixa de 5%, e o Banco Central não consegue baixar os juros (Morgan Stanley, 26/10)."},
-    "base": {"motivo": "Mediana do mercado no Focus de 03/11 para o IPCA de 2027, acima do teto da meta. Em 2026 o Focus está em 5,22%."},
-    "otim": {"motivo": "Um programa fiscal crível melhora as expectativas de imediato, e a inflação converge para a meta, com Selic em 9,75% e dólar em R$ 4,50 (Morgan Stanley, 26/10)."}
+    "pess": {
+      "motivo": "Sem plano fiscal crível, expectativas desancoradas e dólar alto mantêm a inflação na faixa de 5%, e o Banco Central não consegue baixar os juros (Morgan Stanley, 26/10)."
+    },
+    "base": {
+      "motivo": "Mediana das projeções do mercado no Focus do Banco Central para o IPCA de 2027, atualizada toda semana. Está acima do teto da meta (4,5%), o que mantém o Banco Central cauteloso para cortar juros."
+    },
+    "otim": {
+      "motivo": "Um programa fiscal crível melhora as expectativas de imediato, e a inflação converge para a meta, com Selic em 9,75% e dólar em R$ 4,50 (Morgan Stanley, 26/10)."
+    }
   },
   {
     "casa": "pib|atividade",
     "oque": "Quanto a economia brasileira cresce acima da inflação, medido pelo IBGE. Resume o tamanho da demanda que as empresas vão encontrar.",
     "impacto": "Crescimento fraco significa vendas e receita subindo menos, mais pressão sobre margem e mais inadimplência. Crescimento forte abre espaço para expansão, contratação e investimento. Com juros altos, o crédito e o investimento perdem fôlego e o PIB tende a desacelerar.",
-    "pess": {"motivo": "Juros a 15,5% e perda de credibilidade fiscal comprimem a atividade. A piora vem em etapas: o mercado devolve o otimismo do 1º turno e, se o novo governo não sinalizar ajuste, entra a dominância fiscal, em que a inflação responde mais ao fiscal do que aos juros (Morgan Stanley, 26/10)."},
-    "base": {"motivo": "O Morgan Stanley e a mediana do Focus de 03/11 coincidem em 1,2%."},
-    "otim": {"motivo": "A queda dos juros e a melhora das expectativas sustentam a atividade, com dívida bruta em 85,4% do PIB (Morgan Stanley, 26/10)."}
+    "pess": {
+      "motivo": "Juros a 15,5% e perda de credibilidade fiscal comprimem a atividade. A piora vem em etapas: o mercado devolve o otimismo do 1º turno e, se o novo governo não sinalizar ajuste, entra a dominância fiscal, em que a inflação responde mais ao fiscal do que aos juros (Morgan Stanley, 26/10)."
+    },
+    "base": {
+      "motivo": "Referência do mercado: o Morgan Stanley (26/10) projeta 1,2%, e a mediana do Focus para 2027, atualizada toda semana, está próxima desse valor."
+    },
+    "otim": {
+      "motivo": "A queda dos juros e a melhora das expectativas sustentam a atividade, com dívida bruta em 85,4% do PIB (Morgan Stanley, 26/10)."
+    }
   },
   {
     "casa": "desemprego",
     "oque": "Taxa de desocupação medida pela PNAD do IBGE. É o último indicador a piorar num ciclo de juros altos.",
     "impacto": "Desemprego baixo sustenta renda e consumo, mas pressiona salários e dificulta contratar e reter gente. Quando sobe, a demanda cai e a inadimplência aumenta. Como é um indicador que reage com atraso, o emprego resistente hoje pode esconder um enfraquecimento à frente.",
-    "pess": {"motivo": "Cenário adverso do IFI: PIB de 0,6%, IPCA de 5,0%, Selic de 13% e dólar a R$ 5,48. Riscos externos (energia, barreiras comerciais, aperto financeiro) e incerteza fiscal elevam o prêmio de risco (RAF 113, junho)."},
-    "base": {"motivo": "Cenário base do IFI: PIB de 1,8%, IPCA de 4,0% e Selic de 12%, com desaceleração gradual da atividade e juros restritivos por mais tempo (RAF 113, junho). O Itaú segue na mesma direção, com Selic em 13,75% durante 2027 e endividamento alto."},
-    "otim": {"motivo": "Cenário favorável do IFI: PIB de 2,8%, IPCA de 3,3% e Selic de 11%. Os preços de energia se normalizam, as reformas elevam a produtividade e a condução fiscal mais austera derruba o prêmio de risco (RAF 113, junho, antes da eleição)."}
+    "pess": {
+      "motivo": "Cenário adverso do IFI: PIB de 0,6%, IPCA de 5,0%, Selic de 13% e dólar a R$ 5,48. Riscos externos (energia, barreiras comerciais, aperto financeiro) e incerteza fiscal elevam o prêmio de risco (RAF 113, junho)."
+    },
+    "base": {
+      "motivo": "Cenário base do IFI: PIB de 1,8%, IPCA de 4,0% e Selic de 12%, com desaceleração gradual da atividade e juros restritivos por mais tempo (RAF 113, junho). O Itaú segue na mesma direção, com Selic em 13,75% durante 2027 e endividamento alto."
+    },
+    "otim": {
+      "motivo": "Cenário favorável do IFI: PIB de 2,8%, IPCA de 3,3% e Selic de 11%. Os preços de energia se normalizam, as reformas elevam a produtividade e a condução fiscal mais austera derruba o prêmio de risco (RAF 113, junho, antes da eleição)."
+    }
   },
   {
     "casa": "cr[ée]dito|inadimpl",
     "oque": "Parcela do crédito livre, sem direcionamento, com atraso acima de 90 dias. Sobe quando o endividamento e os juros pesam sobre a renda.",
     "impacto": "Mais atraso nos pagamentos faz os bancos fecharem a torneira e cobrarem mais caro, o que encarece o crédito também para quem paga em dia. Empresas que vendem a prazo sofrem mais calote e precisam rever critérios de risco e cobrança.",
-    "base": {"motivo": "Pesquisa Febraban de Economia Bancária de setembro (20 instituições): projeção de 2027 revista de 5,6% para 5,9%, e a de 2026 de 5,8% para 6,1%. Motivos: endividamento elevado de empresas e famílias, e 65% dos bancos esperam alta da inadimplência das famílias até o fim do ano. O emprego resiliente alivia parte do efeito."}
+    "base": {
+      "motivo": "Pesquisa Febraban de Economia Bancária de setembro (20 instituições): projeção de 2027 revista de 5,6% para 5,9%, e a de 2026 de 5,8% para 6,1%. Motivos: endividamento elevado de empresas e famílias, e 65% dos bancos esperam alta da inadimplência das famílias até o fim do ano. O emprego resiliente alivia parte do efeito."
+    }
   },
   {
     "casa": "consumidor",
@@ -69,8 +107,14 @@
     "casa": "ibovespa|bolsa",
     "oque": "Principal índice da B3, com as ações mais negociadas. Cai quando juros e risco fiscal sobem, porque a renda fixa fica mais atraente e os lucros esperados diminuem.",
     "impacto": "Bolsa em queda encarece a captação de capital: emissões de ações e IPOs ficam inviáveis e o custo de capital sobe. Por outro lado, empresas com caixa compram ativos mais baratos, e as pressionadas saem do jogo. Também afeta a riqueza e a disposição de gastar dos investidores.",
-    "pess": {"motivo": "O P/L cairia de 9,6x (em 23/10) para 6,2x até meados de 2027, o equivalente a 130 mil pontos. Um plano fiscal tímido elevaria os prêmios de risco, enfraqueceria o real e limitaria os cortes de juros. Segundo o banco, o mercado precifica o cenário ruim mais rápido do que um ajuste fiscal, que leva anos (Morgan Stanley, 26/10)."},
-    "base": {"motivo": "A XP vê 200 mil no fim de 2027, alta de cerca de 19% que já não supera com folga a renda fixa, e por isso rebaixou a bolsa de compra para neutra. Motivos: volta da preocupação fiscal, inflação e juros em alta e risco de desaceleração que reduza os lucros. Negocia a 8,2x lucro, contra média histórica de 10x. Antes da eleição trabalhava com 240 a 250 mil."},
-    "otim": {"motivo": "O Safra vê 260 mil no fim de 2027. Há espaço para corte de juros se a atividade desacelerar, e o peso do Brasil nos índices emergentes (4,8%) está cerca de 35% abaixo do pico recente, o que abre espaço para entrada de capital se o risco cair. O déficit nominal, um dos maiores entre os emergentes, é o principal freio."}
+    "pess": {
+      "motivo": "O P/L cairia de 9,6x (em 23/10) para 6,2x até meados de 2027, o equivalente a 130 mil pontos. Um plano fiscal tímido elevaria os prêmios de risco, enfraqueceria o real e limitaria os cortes de juros. Segundo o banco, o mercado precifica o cenário ruim mais rápido do que um ajuste fiscal, que leva anos (Morgan Stanley, 26/10)."
+    },
+    "base": {
+      "motivo": "A XP vê 200 mil no fim de 2027, alta de cerca de 19% que já não supera com folga a renda fixa, e por isso rebaixou a bolsa de compra para neutra. Motivos: volta da preocupação fiscal, inflação e juros em alta e risco de desaceleração que reduza os lucros. Negocia a 8,2x lucro, contra média histórica de 10x. Antes da eleição trabalhava com 240 a 250 mil."
+    },
+    "otim": {
+      "motivo": "O Safra vê 260 mil no fim de 2027. Há espaço para corte de juros se a atividade desacelerar, e o peso do Brasil nos índices emergentes (4,8%) está cerca de 35% abaixo do pico recente, o que abre espaço para entrada de capital se o risco cair. O déficit nominal, um dos maiores entre os emergentes, é o principal freio."
+    }
   }
 ]
