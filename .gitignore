@@ -1,3 +1,16 @@
+# O REPOSITÓRIO É PÚBLICO. Só sobe o que está nesta lista; qualquer outro arquivo ou pasta salvo aqui fica de fora.
+# Para publicar algo novo na raiz, acrescente uma linha "!/nome" abaixo, de propósito.
+/*
+!/.github/
+!/Backend/
+!/Frontend/
+!/Supabase/
+!/.gitignore
+!/.nojekyll
+!/README.md
+!/index.html
+
+# Dentro das pastas liberadas, continuam de fora:
 # Documentos de trabalho da R&I: não vão para o repositório público
 *.docx
 *.pdf
