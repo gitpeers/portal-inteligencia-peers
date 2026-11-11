@@ -41,7 +41,7 @@ button,input,select,textarea{font-family:inherit}
 .cen-tab{width:100%;border-collapse:collapse;font-size:.84rem}
 .cen-tab th{font-size:.64rem;text-transform:uppercase;letter-spacing:.07em;color:var(--grey);font-weight:700;text-align:left;padding:10px 12px;
   border-bottom:1px solid var(--grey-border);background:var(--serene-soft)}
-.cen-tab th.n,.cen-tab td.n{text-align:right;font-variant-numeric:tabular-nums}
+.cen-tab th.n,.cen-tab td.n,.cen-tab .cen-th-pos,.cen-tab td.cen-pos{text-align:center;font-variant-numeric:tabular-nums}
 .cen-tab td{padding:8px 12px;border-top:1px solid var(--grey-light);vertical-align:middle}
 .cen-tab td b{display:block;font-size:.86rem;font-weight:600}
 .cen-tab td span{font-size:.7rem;color:var(--grey)}
@@ -73,7 +73,7 @@ button,input,select,textarea{font-family:inherit}
 .cen-row:hover .cen-go{color:var(--navy)}
 .cen-nd{color:var(--grey)}
 .cen-pos{width:150px}.cen-th-pos{width:150px}
-.cen-mini{position:relative;height:18px;margin:0 6px}
+.cen-mini{position:relative;height:18px;margin:0 auto;max-width:130px}
 .cen-mini .trilho{position:absolute;top:6px;height:6px;border-radius:3px;
   background:linear-gradient(90deg,var(--danger-soft),var(--grey-light) 50%,var(--ok-soft));border:1px solid var(--grey-border)}
 .cen-mini .mk{position:absolute;transform:translateX(-50%)}
@@ -1167,22 +1167,22 @@ const estadoConcorrencia = { visao:"feed", periodo:90, grupo:"todos", concorrent
 // Menu em dois grupos (com submenu vertical), mais a Edição do dia. A ordem das abas dentro do grupo é a do menu.
 const GRUPOS = [
   {id:"home"},
-  {id:"mercado", label:"Mercado", desc:"notícias e dados do setor", abas:[
-    {id:"radar", desc:"o que foi noticiado, com o ângulo para a Peers"},
-    {id:"indicadores", desc:"o setor em números, com a visão por player"},
-    {id:"agenda", desc:"datas e eventos dos próximos 90 dias"},
-    {id:"cenario", desc:"a macro do Brasil e do mundo: hoje, os cenários de 2027 e o efeito na empresa"}]},
-  {id:"players", label:"Players e concorrência", desc:"empresas, decisões e concorrentes", abas:[
-    {id:"financas", desc:"resultados das empresas e do ranking Valor 1000"},
-    {id:"trimestral", desc:"o dashboard do trimestre, empresa a empresa"},   // tela cheia, baixado só na primeira vez que abre
-    {id:"movimentos", desc:"aquisições, parcerias e trocas de comando"},
-    {id:"concorrencia", desc:"o que as consultorias concorrentes estão fazendo"}]},
+  {id:"mercado", label:"Mercado", desc:"Notícias e dados do setor", abas:[
+    {id:"radar", desc:"O que foi noticiado, com o ângulo para a Peers"},
+    {id:"indicadores", desc:"O setor em números, com a visão por player"},
+    {id:"agenda", desc:"Datas e eventos dos próximos 90 dias"},
+    {id:"cenario", desc:"Cenário de 2027, no Brasil e no mundo"}]},
+  {id:"players", label:"Players e concorrência", desc:"Empresas, decisões e concorrentes", abas:[
+    {id:"financas", desc:"Resultados das empresas e do ranking Valor 1000"},
+    {id:"trimestral", desc:"O dashboard do trimestre, empresa a empresa"},   // tela cheia, baixado só na primeira vez que abre
+    {id:"movimentos", desc:"Aquisições, parcerias e trocas de comando"},
+    {id:"concorrencia", desc:"O que as consultorias concorrentes estão fazendo"}]},
   // Só aparece para a lista de acesso comercial; cada item respeita a própria regra (ver abaDisponivel). Com um único
   // item liberado, o grupo vira botão direto; sem nenhum, some.
-  {id:"comercial", label:"Comercial", desc:"quem conhecemos e onde abordar", abas:[
-    {id:"conexoes", desc:"quem da Peers conhece alguém em cada empresa"},
-    {id:"oportunidades", desc:"clientes e ex-clientes com notícia nova: reativar e expandir"},
-    {id:"roda", desc:"as empresas da roda quinzenal, com o que saiu no portal"}]}
+  {id:"comercial", label:"Comercial", desc:"Quem conhecemos e onde abordar", abas:[
+    {id:"conexoes", desc:"Quem da Peers conhece alguém em cada empresa"},
+    {id:"oportunidades", desc:"Clientes e ex-clientes com notícia nova: reativar e expandir"},
+    {id:"roda", desc:"As empresas da roda quinzenal, com o que saiu no portal"}]}
 ];
 const ABAS = [
   {id:"home", label:"Edição do dia"},
@@ -3196,7 +3196,7 @@ function renderCenario(){
   const at = c.atualizadoEm ? formatarData(c.atualizadoEm.slice(0,10)).slice(0,5)+' '+c.atualizadoEm.slice(11,16) : '';
   const reg = (id, nome) => '<button type="button" class="vbtn'+(estadoCenario.regiao===id?' active':'')+'" data-regcen="'+id+'">'+nome+'</button>';
   return '<div class="sec-head cen-head"><div><h2>Cenário macroeconômico</h2>' +
-    '<p>Onde cada indicador está hoje e a faixa de cenários do planejamento estratégico para 2027. Clique em uma linha para ver o detalhe e o efeito na empresa.</p></div>' +
+    '<p>Cenário de 2027, no Brasil e no mundo. Clique em um indicador para ver o detalhe.</p></div>' +
     '<div class="vgroup">'+reg("brasil","Brasil")+reg("mundo","Mundo")+'</div></div>' +
     cenarioAtualCen(c) + tabelaCen(c) +
     '<p class="roda-fonte">'+esc(c.notaCenarios||'')+' Cenários e efeitos: '+esc(c.origem||'')+', corte de '+formatarData(c.corte)+'. ' +
@@ -3250,12 +3250,14 @@ function abrirCenario(id){
       '<div class="cen-mhoje"><div class="v">'+fmtCen(l.hoje.valor, l, l.sinalMais)+'</div>' +
         '<div class="m">hoje · '+notaHojeCen(l)+(l.hoje.auto ? '' : ' · atualizado à mão')+
         (ib!=null ? ' · Ibovespa '+(ib>0?'+':'−')+fmtN(Math.abs(ib),1)+'% desde a eleição' : '')+'</div>' +
-        (l.extra ? '<div class="m">'+esc(l.extra)+'</div>' : '') + '</div>' +
+        (l.extra ? '<div class="m">'+esc(l.extra)+'</div>' : '') +
+        (l.hoje.explicacao ? '<div class="cen-oque" style="margin-top:8px">'+esc(l.hoje.explicacao)+'</div>' : '') + '</div>' +
       (l.oque ? '<h4 class="cen-mh">O que é</h4><div class="cen-oque">'+esc(l.oque)+'</div>' : '') +
+      (l.impacto ? '<h4 class="cen-mh">O que isso significa para as empresas</h4><div class="cen-oque">'+esc(l.impacto)+'</div>' : '') +
       '<h4 class="cen-mh">Hoje e os cenários de 2027</h4><div class="cen-faixa-w">'+faixaCen(l)+'</div>' +
       (l.semProjecao ? '' : motivosCen(l)) +
       graficoCen(l, DADOS.cenario) +
-      (l.efeito ? '<h4 class="cen-mh">Efeito na empresa</h4><div class="cen-efeito">'+esc(l.efeito)+'</div>' : '') +
+      (l.efeito ? '<h4 class="cen-mh">Em uma frase</h4><div class="cen-efeito">'+esc(l.efeito)+'</div>' : '') +
     '</div>';
   abrirModal("Ficha");
 }
