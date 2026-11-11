@@ -2,6 +2,8 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<!-- Segurança: a página só carrega script dos CDNs abaixo e só conversa com o Supabase do portal -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.sheetjs.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://jznkivbmqrdfajxyklhp.supabase.co wss://jznkivbmqrdfajxyklhp.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portal de Inteligência Peers | Protótipo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -881,7 +883,7 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
   .content,.header,.nav-tabs,.filters-bar,.filters-chips{padding-left:16px;padding-right:16px}}
 @media(max-width:560px){.kpi-strip{grid-template-columns:1fr}.header h1{font-size:1.05rem}.header{padding:10px 16px}.header-marca .sep{display:none}.sec-head h2{font-size:1.35rem}}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" integrity="sha384-GFr3yTh5lJznCbZfpTtXnwboFsxqtTQoeTZCRHhE0579KrRmlCzen5AA8ohaB5ug" crossorigin="anonymous"></script>
 </head>
 <body class="bloqueado">
 
@@ -1253,6 +1255,11 @@ const ABAS = [
 /* =========================================================
    HELPERS
    ========================================================= */
+// endereço de link: só http(s), mailto e caminhos do próprio site; o resto vira "#"
+function escUrl(u){
+  const s = String(u == null ? "" : u).trim();
+  return esc(/^(https?:|mailto:|#|\/(?!\/))/i.test(s) ? s : "#");
+}
 function esc(s){
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
@@ -1273,7 +1280,7 @@ function diasEntre(iso){
 function n(v){ return v.toLocaleString('pt-BR'); }
 // Link para a matéria original; sem URL, mostra só o nome da fonte.
 function linkFonte(fonte, url){
-  return url ? '<a href="'+esc(url)+'" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">'+esc(fonte)+' ↗</a>' : esc(fonte);
+  return url ? '<a href="'+escUrl(url)+'" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">'+esc(fonte)+' ↗</a>' : esc(fonte);
 }
 // Regra da edição: o que foi publicado hoje é novo; o resto foi mantido da edição anterior.
 function seloEdicao(iso){
@@ -1695,7 +1702,7 @@ function carteiraConx(lista, como, meus, soEle){
   const comFato = lista.filter(x=>x.f);
   const unicos = lista.filter(x=>x.e.execs.size===1).map(x=>x.e.nome);
   const colegasDe = e=>{ const s = new Set(); e.leads.forEach(l=>l.ex.forEach(i=>{ if(i!==como) s.add(i); })); return s; };
-  const nomeLead = l=>l.url ? '<a href="'+esc(l.url)+'" target="_blank" rel="noopener">'+esc(l.nome)+'</a>' : '<b>'+esc(l.nome)+'</b>';
+  const nomeLead = l=>l.url ? '<a href="'+escUrl(l.url)+'" target="_blank" rel="noopener">'+esc(l.nome)+'</a>' : '<b>'+esc(l.nome)+'</b>';
   const tiles = [["a","Empresas na carteira",lista.length,"onde há conexão"],["b","Conexões sêniores",meus,"1º grau no LinkedIn"],
     ["c","Com fato novo",comFato.length,"notícia ou movimento no portal"],
     ["d","Único elo da Peers",soEle, soEle ? esc(unicos.slice(0, 3).join(", "))+(unicos.length>3?' e outras':'') : "sempre há um colega junto"]];
@@ -1703,7 +1710,7 @@ function carteiraConx(lista, como, meus, soEle){
     const e = x.e, f = fatosDaEmpresa(e)[0], dele = e.leads.filter(l=>l.ex.includes(como)), colegas = colegasDe(e);
     return '<div class="cart-emp"><h4>'+esc(e.nome)+(e.cli ? tagDoCliente(e.cli) : '')+'</h4>' +
       '<div class="cart-fato">'+(f.tipo==="Radar" ? '📰 ' : '🤝 ') +
-        (f.url ? '<a href="'+esc(f.url)+'" target="_blank" rel="noopener">'+esc(f.titulo)+'</a>' : esc(f.titulo)) +
+        (f.url ? '<a href="'+escUrl(f.url)+'" target="_blank" rel="noopener">'+esc(f.titulo)+'</a>' : esc(f.titulo)) +
         ' · '+formatarData(f.data).slice(0,5)+'</div>' +
       '<div>' + (f.offering ? '<span class="cart-tag off">'+esc(f.offering)+'</span>' : '') +
         (colegas.size ? '<span class="cart-tag bando">+'+colegas.size+(colegas.size===1?' colega':' colegas')+'</span>' : '') + '</div>' +
@@ -1790,6 +1797,7 @@ function carregarExcelJS(){
   return new Promise((ok, falha)=>{
     const s = document.createElement("script");
     s.src = "https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js";
+    s.integrity = "sha384-Pqp51FUN2/qzfxZxBCtF0stpc9ONI6MYZpVqmo8m20SoaQCzf+arZvACkLkirlPz"; s.crossOrigin = "anonymous";
     s.onload = ok; s.onerror = ()=>falha(new Error("não carregou o ExcelJS"));
     document.head.appendChild(s);
   });
@@ -2049,12 +2057,12 @@ function detalheConx(e){
       '</div>' : '';
   return quadroCli + (fatos.length ? '<div class="card-title" style="margin-bottom:6px"><span class="dot"></span>No portal</div>' +
       fatos.map(f=>'<div class="conx-fato"><b>'+esc(f.tipo)+' · '+formatarData(f.data)+'</b> · ' +
-        (f.url ? '<a href="'+esc(f.url)+'" target="_blank" rel="noopener">'+esc(f.titulo)+'</a>' : esc(f.titulo)) +
+        (f.url ? '<a href="'+escUrl(f.url)+'" target="_blank" rel="noopener">'+esc(f.titulo)+'</a>' : esc(f.titulo)) +
         (f.nota ? '<div class="sub" style="color:var(--grey-dark)">'+esc(f.nota)+'</div>' : '')+'</div>').join("") : '') +
     '<div class="card-title" style="margin:14px 0 4px"><span class="dot"></span>Quem da Peers chega aqui' +
       '<span class="hint">'+e.leads.length+(e.leads.length===1?' lead':' leads')+(e.bando?' · '+e.bando+' em bando':'')+'</span></div>' +
     leads.map(l=>'<div class="conx-lead">' +
-      '<div>'+(l.url ? '<a href="'+esc(l.url)+'" target="_blank" rel="noopener">'+esc(l.nome)+'</a>' : '<b>'+esc(l.nome)+'</b>') +
+      '<div>'+(l.url ? '<a href="'+escUrl(l.url)+'" target="_blank" rel="noopener">'+esc(l.nome)+'</a>' : '<b>'+esc(l.nome)+'</b>') +
         (l.ex.length>=2 ? ' <span class="tag-bando">bando</span>' : '')+'<div class="sub">'+esc(l.sen)+'</div></div>' +
       '<div>'+esc(l.cargo)+'</div>' +
       '<div>'+ordenar(l).map(chip).join("")+'</div></div>').join("") +
@@ -2127,11 +2135,11 @@ function quemChama(x){
   if(x.quem===undefined) return '<span class="op-sub">Ninguém da Peers com decisor conhecido lá.</span>';
   const ex = CONEXOES.execs[x.quem];
   return '<b>'+esc(nomeCurto(ex.nome))+'</b> ('+esc(ex.nivel)+') conhece '+x.rel.cont.get(x.quem)+(x.rel.cont.get(x.quem)===1?' decisor':' decisores')+' lá' +
-    (x.contato ? '<br><span class="op-sub">Contato mais sênior: ' + (x.contato.url ? '<a href="'+esc(x.contato.url)+'" target="_blank" rel="noopener">'+esc(x.contato.nome)+'</a>' : esc(x.contato.nome)) +
+    (x.contato ? '<br><span class="op-sub">Contato mais sênior: ' + (x.contato.url ? '<a href="'+escUrl(x.contato.url)+'" target="_blank" rel="noopener">'+esc(x.contato.nome)+'</a>' : esc(x.contato.nome)) +
       ', '+esc(x.contato.cargo)+'</span>' : '');
 }
 function noticiaOport(n, extra){
-  return (n.url ? '<a href="'+esc(n.url)+'" target="_blank" rel="noopener">📰 '+esc(n.titulo)+'</a>' : '<b>📰 '+esc(n.titulo)+'</b>') +
+  return (n.url ? '<a href="'+escUrl(n.url)+'" target="_blank" rel="noopener">📰 '+esc(n.titulo)+'</a>' : '<b>📰 '+esc(n.titulo)+'</b>') +
     ' · '+formatarData(n.data).slice(0,5) + (extra ? ' <span class="op-mais">+'+extra+(extra===1?' notícia':' notícias')+'</span>' : '');
 }
 function botoesOport(k, x){
@@ -2294,7 +2302,7 @@ function itemRoda(x, mostrarPlayer, extra){
   return '<div class="roda-item"><div class="roda-meta">' + (mostrarPlayer ? '<span class="roda-pl">'+esc(x.player)+'</span>' : '') +
     (x.alta ? '<span class="badge b3">relevância alta</span>' : '') + (x.cita ? '<span class="badge bg-n" title="O nome aparece só no resumo, não na manchete: confira se a notícia é mesmo sobre o player">citação no texto</span>' : '') + extra +
     '<span>'+esc(x.fonte||'')+' · '+formatarData(x.data).slice(0,5)+'</span></div>' +
-    (x.url ? '<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.titulo)+'</a>' : '<b>'+esc(x.titulo)+'</b>') +
+    (x.url ? '<a href="'+escUrl(x.url)+'" target="_blank" rel="noopener">'+esc(x.titulo)+'</a>' : '<b>'+esc(x.titulo)+'</b>') +
     (x.offering ? ' <span class="badge bg-n">'+esc(x.offering)+'</span>' : '') +
     (x.angulo ? '<div class="roda-ang"><span>Ângulo Peers</span>'+esc(x.angulo)+'</div>' : '') + '</div>';
 }
@@ -2315,7 +2323,7 @@ function blocoOfferingsRoda(sel){
         return '<span class="op-chip '+(fez?'feita':'abre')+'" title="'+(fez?'A Peers já fez esta offering ali':'A Peers ainda não fez esta offering ali')+'">'+esc(nome)+(fez?' · já fez':'')+' ('+its.length+')</span>';
       }).join("");
       return '<tr><td><b>'+esc(l.off)+'</b><div class="cardnote" style="margin:2px 0 0">'+l.q+(l.q===1?' sinal':' sinais')+'</div></td><td><div class="roda-chips2">'+chips+'</div></td>' +
-        '<td>'+(topo.url?'<a href="'+esc(topo.url)+'" target="_blank" rel="noopener">'+esc(topo.titulo)+'</a>':esc(topo.titulo))+(topo.angulo?'<div class="roda-ang">'+esc(topo.angulo)+'</div>':'')+'</td></tr>';
+        '<td>'+(topo.url?'<a href="'+escUrl(topo.url)+'" target="_blank" rel="noopener">'+esc(topo.titulo)+'</a>':esc(topo.titulo))+(topo.angulo?'<div class="roda-ang">'+esc(topo.angulo)+'</div>':'')+'</td></tr>';
     }).join("") + '</tbody></table></div>' +
     '<p class="cardnote" style="margin:10px 0 0">Neon: a Peers ainda não fez essa offering na empresa, pela carteira de projetos (oportunidade de entrada). Cinza: a Peers já fez.</p>';
 }
@@ -2346,7 +2354,7 @@ function financasRoda(d){
   const pf = d.pesquisa && d.pesquisa.financas;
   if(pf && (pf.linhas||[]).length)
     return '<div class="roda-fin">'+pf.linhas.map((l, i)=>fRoda(esc(l[1]), esc(l[0])+(i===0 && pf.periodo ? ' · '+esc(pf.periodo) : ''), esc(l[2]||''))).join("")+'</div>' +
-      '<p class="roda-fonte">Fonte: '+(pf.url ? '<a href="'+esc(pf.url)+'" target="_blank" rel="noopener">'+esc(pf.fonte)+' ↗</a>' : esc(pf.fonte||''))+(pf.escopo ? '. Escopo: <b>'+esc(pf.escopo)+'</b>' : '') +
+      '<p class="roda-fonte">Fonte: '+(pf.url ? '<a href="'+escUrl(pf.url)+'" target="_blank" rel="noopener">'+esc(pf.fonte)+' ↗</a>' : esc(pf.fonte||''))+(pf.escopo ? '. Escopo: <b>'+esc(pf.escopo)+'</b>' : '') +
       '. A empresa não está nas companhias abertas nem no Valor 1000: o número vem da pesquisa fora do portal.</p>';
   return '<div class="roda-vazio" style="padding:6px 0">Sem dados financeiros no portal: a empresa não está nas companhias abertas nem no Valor 1000.</div>';
 }
@@ -2470,7 +2478,7 @@ function concorrentesRoda(d){
   const desde = DADOS.concorrencia.reduce((m,c)=>!m || c.data<m ? c.data : m, "");
   return '<div class="roda-conc"><div class="roda-rot" style="margin-top:0">Concorrentes na empresa</div>' +
     (l.length ? l.map(c=>'<div class="roda-cc"><span class="badge bg-n">'+esc(c.nome||'')+'</span> <span class="roda-sub2" style="display:inline">'+formatarData(c.data).slice(0,5)+'</span> ' +
-        (c.url ? '<a href="'+esc(c.url)+'" target="_blank" rel="noopener">'+esc(c.fato)+'</a>' : esc(c.fato))+'</div>').join("") +
+        (c.url ? '<a href="'+escUrl(c.url)+'" target="_blank" rel="noopener">'+esc(c.fato)+'</a>' : esc(c.fato))+'</div>').join("") +
       '<p class="roda-fonte">Notícias de consultorias concorrentes que citam a empresa'+(d.concTodos.length>3 ? ' ('+d.concTodos.length+' desde '+formatarData(desde).slice(0,5)+', as 3 mais recentes)' : '')+'. Citação não prova projeto: confira.</p>'
       : '<p class="roda-fonte" style="margin:0">Nenhuma consultoria concorrente citada junto a '+esc(d.nome)+' nas fontes monitoradas'+(desde ? ' desde '+formatarData(desde).slice(0,5) : '')+'.</p>') + '</div>';
 }
@@ -2583,7 +2591,7 @@ function blocoOportUnico(d){
       const fez = d.offPortal.includes(off), topo = its.slice().sort((a,b)=>(b.alta?1:0)-(a.alta?1:0) || (b.data||"").localeCompare(a.data||""))[0];
       return '<div class="roda-op"><div class="roda-op-h"><b>'+esc(off)+'</b><span class="op-chip '+(fez?'feita':'abre')+'">'+(fez?'a Peers já fez aqui':(d.cliente ? 'a Peers ainda não fez aqui' : 'entrada nova'))+'</span>' +
         '<span class="op-chip '+(deEmpresa?'emp':'set')+'">'+(deEmpresa?'sinal da empresa':'sinal do setor')+'</span><span class="roda-sub2" style="display:inline">'+its.length+(its.length===1?' sinal':' sinais')+'</span></div>' +
-        '<div>'+(topo.url ? '<a href="'+esc(topo.url)+'" target="_blank" rel="noopener">'+esc(topo.titulo)+'</a>' : esc(topo.titulo))+'</div>'+(topo.angulo ? '<div class="roda-ang">'+esc(topo.angulo)+'</div>' : '')+'</div>';
+        '<div>'+(topo.url ? '<a href="'+escUrl(topo.url)+'" target="_blank" rel="noopener">'+esc(topo.titulo)+'</a>' : esc(topo.titulo))+'</div>'+(topo.angulo ? '<div class="roda-ang">'+esc(topo.angulo)+'</div>' : '')+'</div>';
     }).join("") : '<div class="roda-vazio">Nenhum sinal da empresa nem do setor aponta para uma offering da Peers nos últimos '+DIAS_OPORT+' dias.</div>') +
     (faltam.length && d.cliente ? '<div class="roda-op"><div class="roda-op-h"><b>Ainda não feitas pela Peers na empresa</b></div><div class="roda-chips2">'+faltam.map(o=>'<span class="op-chip feita">'+esc(o)+'</span>').join("")+'</div></div>'
       : (!d.cliente ? '<div class="roda-op"><div class="cardnote" style="margin:0">A Peers não tem projeto com '+esc(d.nome)+': qualquer offering é uma entrada nova.</div></div>' : '')) + '</div>';
@@ -2652,11 +2660,11 @@ function eventoRoda(g){
       (it.some(x=>x.alta) ? '<span class="badge b3">relevância alta</span>' : '') + (valor ? '<span class="badge bg-n">'+esc(valor)+'</span>' : '') +
       conc.filter(x=>x.conc).map(x=>'<span class="badge bg-n">'+esc(x.conc)+'</span>').join("") +
       offs.map(o=>'<span class="badge bg-n">'+esc(o)+'</span>').join("") + '</div>' +
-    '<div class="rev-t">'+(cab.url ? '<a href="'+esc(cab.url)+'" target="_blank" rel="noopener">'+esc(cab.titulo)+'</a>' : esc(cab.titulo))+'</div>' +
+    '<div class="rev-t">'+(cab.url ? '<a href="'+escUrl(cab.url)+'" target="_blank" rel="noopener">'+esc(cab.titulo)+'</a>' : esc(cab.titulo))+'</div>' +
     (resumo ? '<div class="rev-r">'+esc(resumo)+'</div>' : '') +
     (ang ? '<div class="rev-a"><span>Ângulo Peers</span>'+esc(ang)+'</div>' : pq ? '<div class="rev-a"><span>Por que importa</span>'+esc(pq)+'</div>' : '') +
     (imp ? '<div class="rev-a"><span>Impacto</span>'+esc(imp)+'</div>' : '') +
-    (fontes.length ? '<div class="rev-f">'+fontes.length+(fontes.length===1?' fonte: ':' fontes: ')+fontes.map(([f, u])=>u ? '<a href="'+esc(u)+'" target="_blank" rel="noopener">'+esc(f)+' ↗</a>' : esc(f)).join("")+'</div>' : '') + '</div>';
+    (fontes.length ? '<div class="rev-f">'+fontes.length+(fontes.length===1?' fonte: ':' fontes: ')+fontes.map(([f, u])=>u ? '<a href="'+escUrl(u)+'" target="_blank" rel="noopener">'+esc(f)+' ↗</a>' : esc(f)).join("")+'</div>' : '') + '</div>';
 }
 function blocoNoMercadoRoda(d){
   const janela = x=>x.data && diasEntre(x.data)<=0 && diasEntre(x.data)>=-DIAS_MERCADO;
@@ -2680,7 +2688,7 @@ function blocoNoMercadoRoda(d){
     (principais.length ? '<div class="rtl">'+principais.map(eventoRoda).join("")+'</div>'
       : '<div class="roda-vazio">Nada sobre '+esc(d.nome)+' nos últimos '+DIAS_MERCADO+' dias, nem no Radar nem na pesquisa fora do portal.</div>') +
     (mencoes.length ? '<details class="rev-men"><summary>'+mencoes.length+(mencoes.length===1?' menção em notícia':' menções em notícias')+' sobre outros assuntos</summary><ul>' +
-      mencoes.map(g=>{ const x = g.itens[0]; return '<li>'+formatarData(g.data).slice(0,5)+' · '+esc(x.fonte||'')+' · '+(x.url ? '<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.titulo)+'</a>' : esc(x.titulo))+'</li>'; }).join("")+'</ul></details>' : '') +
+      mencoes.map(g=>{ const x = g.itens[0]; return '<li>'+formatarData(g.data).slice(0,5)+' · '+esc(x.fonte||'')+' · '+(x.url ? '<a href="'+escUrl(x.url)+'" target="_blank" rel="noopener">'+esc(x.titulo)+'</a>' : esc(x.titulo))+'</li>'; }).join("")+'</ul></details>' : '') +
     (p && p.nota ? '<div class="rev-nota">'+esc(p.nota)+'</div>' : '') +
     '<div class="rev-nota">'+nota+'</div></div>';
 }
@@ -2788,7 +2796,7 @@ function renderRoda(){
     '</div>';
   const concHtml = conc.length ? '<div class="card"><div class="card-title"><span class="dot"></span>Concorrência nos players<span class="hint">uso interno</span></div>' +
       conc.map(c=>'<div class="roda-item"><div class="roda-meta"><span class="roda-pl">'+esc(c.player)+'</span><span class="badge bg-n">'+esc(c.nome||'')+'</span><span>'+formatarData(c.data).slice(0,5)+'</span></div>' +
-        (c.url?'<a href="'+esc(c.url)+'" target="_blank" rel="noopener">'+esc(c.fato)+'</a>':esc(c.fato))+(c.impacto?'<div class="roda-ang"><span>Impacto</span>'+esc(c.impacto)+'</div>':'')+'</div>').join("")+'</div>' : '';
+        (c.url?'<a href="'+escUrl(c.url)+'" target="_blank" rel="noopener">'+esc(c.fato)+'</a>':esc(c.fato))+(c.impacto?'<div class="roda-ang"><span>Impacto</span>'+esc(c.impacto)+'</div>':'')+'</div>').join("")+'</div>' : '';
   const entramos = '<div class="card"><div class="card-title"><span class="dot"></span>Onde a Peers já entrou</div>'+blocoEntramosRoda(sel)+'</div>';
   const oport = '<div class="card"><div class="card-title"><span class="dot"></span>Oportunidades por offering<span class="hint">a partir das notícias e movimentos</span></div>'+blocoOfferingsRoda(sel)+'</div>';
   const setorTab = '<div class="card"><div class="card-title"><span class="dot"></span>Resultado dos players frente ao setor</div>'+blocoSetorRoda(sel)+'</div>';
@@ -3776,7 +3784,7 @@ function abrirFichaTrimestral(id){
     '<div class="modal-body">' + caixaConexoes(e.nome, true) + '<div id="tabFicha"></div>' +
       '<p class="cardnote" style="margin:14px 0 0">'+(e.fonte.tipo==="cvm"
         ? 'Fonte: dados abertos da CVM (ITR do '+esc(e.fonte.periodo)+'), números contábeis consolidados; o lucro líquido é o atribuído aos controladores e o EBITDA é o resultado operacional mais depreciação e amortização.'
-        : 'Fonte: release de resultados do '+esc(e.fonte.periodo)+' da empresa, com os números ajustados divulgados'+(e.fonte.release ? ' (<a href="'+esc(e.fonte.release)+'" target="_blank" rel="noopener">abrir release</a>)' : '')+'.')+' Valores em R$ milhões, salvo indicação.</p>' +
+        : 'Fonte: release de resultados do '+esc(e.fonte.periodo)+' da empresa, com os números ajustados divulgados'+(e.fonte.release ? ' (<a href="'+escUrl(e.fonte.release)+'" target="_blank" rel="noopener">abrir release</a>)' : '')+'.')+' Valores em R$ milhões, salvo indicação.</p>' +
     '</div>';
   const tabela = (linhas, per) => '<table class="simple"><tr><th>Indicador</th><th style="text-align:right">'+esc(per||e.fonte.periodo)+'</th></tr>' +
     linhas.map(([k,val])=>'<tr><td>'+esc(k)+'</td><td>'+esc(val)+'</td></tr>').join("") + '</table>';
@@ -4034,7 +4042,7 @@ function blocoSowhat(s){
     '<details class="sowhat"><summary><span class="sw-tit">So what</span> · '+esc(x.nome)+'<span class="selo-ia">Gerado por IA</span></summary>' +
       linha('O que aconteceu', a.oQue) + linha('Por que', a.porQue) +
       ((a.fontes||[]).length ? '<div class="sw-fontes">Fonte: '+a.fontes.map(f=>
-        '<a href="'+esc(f.url)+'" target="_blank" rel="noopener">'+esc(f.manchete)+'</a> ('+esc(f.fonte)+', '+(f.oficial ? 'consultado em ' : '')+formatarData(f.data)+')').join('; ')+'</div>' : '') +
+        '<a href="'+escUrl(f.url)+'" target="_blank" rel="noopener">'+esc(f.manchete)+'</a> ('+esc(f.fonte)+', '+(f.oficial ? 'consultado em ' : '')+formatarData(f.data)+')').join('; ')+'</div>' : '') +
       linha('Impacto financeiro', a.impacto) + linha('Oportunidade', a.oportunidade) +
       '<div class="sw-nota">Escrito em '+formatarData(a.geradoEm)+' com os dados do portal; confira os números na fonte antes de usar com cliente.</div>' +
     '</details>').join("") + '</div>';
@@ -4510,7 +4518,8 @@ function carregarJsPDF(){
   if(window.jspdf) return Promise.resolve();
   return new Promise((ok, falha)=>{
     const s = document.createElement("script");
-    s.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.2.1/jspdf.umd.min.js";
+    s.integrity = "sha384-qovJwSBbRDPP5cEjCp8S0UP66wrvnjaa60XMOGzTNanrThcrGfXfnZkvgY8N1KT3"; s.crossOrigin = "anonymous";
     s.onload = ok; s.onerror = ()=>falha(new Error("não carregou o jsPDF"));
     document.head.appendChild(s);
   });
@@ -5576,15 +5585,17 @@ function barraComercial(){
     '<span><b>Lista carregada:</b> '+esc(CLIENTES.arquivo)+' · '+nCli+' clientes e '+(nProp-nCli)+' prospects. Só neste navegador.</span>' +
     soCitados + '<button class="btn-sec" onclick="limparListaClientes()">Limpar lista</button></div>';
 }
-function carregarScript(url){
-  return new Promise((ok, erro)=>{ const s = document.createElement("script"); s.src = url; s.onload = ok; s.onerror = erro; document.head.appendChild(s); });
+function carregarScript(url, integridade){
+  return new Promise((ok, erro)=>{ const s = document.createElement("script"); s.src = url;
+    if(integridade){ s.integrity = integridade; s.crossOrigin = "anonymous"; }
+    s.onload = ok; s.onerror = erro; document.head.appendChild(s); });
 }
 async function lerListaClientes(arq){
   if(!arq) return;
   let linhas;
   try{
     if(/\.xlsx?$/i.test(arq.name)){
-      if(!window.XLSX) await carregarScript("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js");
+      if(!window.XLSX) await carregarScript("https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js", "sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT");
       const wb = XLSX.read(await arq.arrayBuffer(), {type:"array"});
       linhas = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1, defval:""});
     } else {
