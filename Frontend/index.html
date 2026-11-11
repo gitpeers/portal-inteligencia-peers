@@ -56,14 +56,6 @@ button,input,select,textarea{font-family:inherit}
 .cen-tab .c-base{color:#5b4636}
 .cen-tab th.c-pess{box-shadow:inset 0 -3px 0 var(--t3)}.cen-tab th.c-otim{box-shadow:inset 0 -3px 0 var(--t2)}
 .cen-tab th.c-base{box-shadow:inset 0 -3px 0 #8a6a4f}
-.cen-box{border:1px solid var(--grey-border);border-radius:var(--r-md);padding:11px 13px;margin-bottom:9px}
-.cen-box h5{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;margin:0 0 4px}
-.cen-box .vl{font-size:1rem;font-weight:700;margin-right:8px}
-.cen-box p{font-size:.84rem;line-height:1.5;color:var(--text2);margin:4px 0 0}
-.cen-box small{display:block;color:var(--grey);font-size:.68rem;margin-top:5px}
-.cen-box.pess{border-left:4px solid var(--t3)}.cen-box.pess h5,.cen-box.pess .vl{color:var(--t3)}
-.cen-box.otim{border-left:4px solid var(--t2)}.cen-box.otim h5,.cen-box.otim .vl{color:var(--t2)}
-.cen-box.base{border-left:4px solid var(--navy)}.cen-box.base h5,.cen-box.base .vl{color:var(--navy)}
 .cen-fonte{font-size:.72rem;color:var(--grey)}
 .cen-oque{font-size:.88rem;line-height:1.55;color:var(--text2)}
 .cen-graf{width:100%;height:auto;display:block}
@@ -93,28 +85,54 @@ button,input,select,textarea{font-family:inherit}
 .cen-faixa .mk.hoje{top:17px;width:18px;height:18px;border-radius:50%;background:var(--neon);border:2px solid var(--navy);box-shadow:var(--shadow)}
 .cen-faixa .mk.marco{top:14px;width:0;height:24px;border-left:2px dotted var(--grey-dark)}
 .cen-faixa .pt.marco{top:40px}.cen-faixa .pt.marco .r{text-transform:none;letter-spacing:0;font-weight:500}
-.cen-cen{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
-.cen-cc{border:1px solid var(--grey-border);border-top:3px solid var(--navy);border-radius:var(--r-md);padding:10px 12px;text-align:left;background:#fff}
-.cen-cc .nm{display:block;font-size:.64rem;text-transform:uppercase;letter-spacing:.07em;font-weight:700;color:var(--grey)}
-.cen-cc b{display:block;font-size:1.25rem;font-weight:700;color:var(--navy);margin-top:2px;font-variant-numeric:tabular-nums}
-.cen-cc .fn{display:block;font-size:.68rem;color:var(--grey)}
-.cen-cc p{font-size:.76rem;line-height:1.5;color:var(--text2);margin:8px 0 0;padding-top:8px;border-top:1px solid var(--grey-light)}
-.cen-cc.pess{border-top-color:var(--t3)}.cen-cc.pess b{color:var(--t3)}
-.cen-cc.otim{border-top-color:var(--t2)}.cen-cc.otim b{color:var(--t2)}
-.cen-cc.base{border-top-color:#8a6a4f}.cen-cc.base b{color:#5b4636}
-.cen-duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
-.cen-c2{background:var(--serene-soft);border:1px solid var(--serene-mid);border-radius:var(--r-md);padding:13px 15px}
-.cen-c2.imp{background:var(--neon-soft);border-color:#e6efa0}
-.cen-c2 h5{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--grey-dark);margin:0 0 6px}
-.cen-c2 p{font-size:.84rem;line-height:1.55;color:var(--text2);margin:0}
-.cen-ver{margin-top:16px}
-.cen-ver summary{display:inline-block;cursor:pointer;list-style:none}
-.cen-ver summary::-webkit-details-marker{display:none}
-.cen-ver summary::after{content:" ›";display:inline-block;transition:transform var(--dur) var(--ease)}
-.cen-ver[open] summary::after{transform:rotate(90deg)}
-.cen-ver[open] summary{background:var(--navy);color:#fff;border-color:var(--navy)}
-.cen-vernota{font-size:.72rem;color:var(--grey);margin:10px 0 4px}
-@media (max-width:640px){.cen-cen,.cen-duo{grid-template-columns:1fr}}
+.cen-topo{display:flex;align-items:stretch;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.cen-hoje-b{flex:1;min-width:220px;background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border-radius:var(--r-md);padding:14px 18px}
+.cen-hoje-b small{font-size:.64rem;text-transform:uppercase;letter-spacing:.1em;color:var(--neon);font-weight:700}
+.cen-hoje-b .v{font-size:2.1rem;font-weight:600;line-height:1.1;margin:2px 0;font-variant-numeric:tabular-nums}
+.cen-hoje-b .m{font-size:.74rem;color:rgba(255,255,255,.75);line-height:1.45}
+.cen-hoje-b .cen-pior{color:#ff9a9e}.cen-hoje-b .cen-melhor{color:#7be3b8}
+.cen-btn-graf{align-self:center;border:1px solid var(--navy);background:#fff;color:var(--navy);font:inherit;font-size:.82rem;font-weight:600;border-radius:var(--r-sm);padding:10px 16px;cursor:pointer;
+  transition:background var(--dur) var(--ease),color var(--dur) var(--ease)}
+.cen-btn-graf span{display:inline-block;transition:transform var(--dur) var(--ease)}
+.cen-btn-graf:hover,.cen-btn-graf.on{background:var(--navy);color:#fff}
+.cen-btn-graf.on span{transform:rotate(90deg)}
+.cen-ver{border:1px solid var(--grey-border);border-radius:var(--r-md);padding:8px 14px 12px;margin-bottom:14px;background:#fff}
+.cen-ver[hidden],.cen-sc-painel[hidden]{display:none}
+.cen-vernota{font-size:.72rem;color:var(--grey);margin:4px 0 2px}
+.cen-expl{font-size:.82rem;line-height:1.55;color:var(--text2);background:var(--serene-soft);border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px}
+.cen-sec{border:1px solid var(--grey-border);border-radius:var(--r-md);padding:14px 18px 16px;margin-bottom:14px}
+.cen-sec h4{font-size:.68rem;text-transform:uppercase;letter-spacing:.09em;color:var(--grey);margin:0 0 4px}
+.cen-faixa{height:74px;margin:6px 30px 0}
+.cen-faixa .trilho{top:34px;height:10px;border-radius:5px}
+.cen-faixa .pt.hoje{top:0}.cen-faixa .pt.hoje .r{font-size:.66rem;background:var(--navy);color:var(--neon);padding:3px 8px;border-radius:10px;letter-spacing:.04em}
+.cen-faixa .mk.hoje{top:27px;width:22px;height:22px;z-index:3}
+.cen-faixa .sc{position:absolute;top:30px;width:18px;height:18px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px var(--grey-strong),var(--shadow);transform:translateX(-50%);padding:0;cursor:pointer;z-index:2;
+  transition:transform var(--dur) var(--ease)}
+.cen-faixa .sc:hover{transform:translateX(-50%) scale(1.25)}
+.cen-faixa .sc.pess,.leg.pess i{background:var(--t3)}.cen-faixa .sc.base,.leg.base i{background:#8a6a4f}.cen-faixa .sc.otim,.leg.otim i{background:var(--t2)}
+
+.cen-faixa [data-tip]:hover::after,.cen-faixa [data-tip]:focus-visible::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;
+  font-size:.7rem;font-weight:500;line-height:1;padding:7px 10px;border-radius:6px;white-space:nowrap;z-index:9;pointer-events:none;box-shadow:var(--shadow)}
+.cen-leg{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:6px}
+.leg{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--grey-border);background:#fff;border-radius:20px;padding:6px 13px;font:inherit;font-size:.78rem;color:var(--text2);cursor:pointer;
+  transition:border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.leg i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.leg b{font-variant-numeric:tabular-nums;color:var(--navy)}
+.leg:hover,.leg.on{border-color:var(--navy);background:var(--serene-soft)}
+.leg::after{content:"›";color:var(--grey);margin-left:2px;transition:transform var(--dur) var(--ease)}.leg.on::after{transform:rotate(90deg)}
+.cen-sc-painel{margin-top:10px;border-radius:var(--r-md);background:var(--serene-soft);padding:12px 16px}
+.cen-sc-cab{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.cen-sc-cab span{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.cen-sc-cab b{font-size:1.25rem;font-variant-numeric:tabular-nums}
+.cen-sc-cab small{font-size:.72rem;color:var(--grey)}
+.cen-sc-cab.pess span,.cen-sc-cab.pess b{color:var(--t3)}.cen-sc-cab.otim span,.cen-sc-cab.otim b{color:var(--t2)}.cen-sc-cab.base span,.cen-sc-cab.base b{color:#5b4636}
+.cen-sc-painel p{font-size:.84rem;line-height:1.55;color:var(--text2);margin:6px 0 0}
+.cen-duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cen-c2{background:var(--serene-soft);border:1px solid var(--serene);border-radius:var(--r-md);padding:15px 18px}
+.cen-c2 h5{display:flex;align-items:center;gap:8px;font-size:.7rem;text-transform:uppercase;letter-spacing:.09em;color:var(--navy);margin:0 0 8px}
+.cen-c2 h5 i{width:8px;height:8px;border-radius:50%;background:var(--neon);box-shadow:0 0 0 2px var(--navy);display:inline-block}
+.cen-c2 p{font-size:.86rem;line-height:1.6;color:var(--text2);margin:0}
+@media (max-width:640px){.cen-duo{grid-template-columns:1fr}.cen-faixa{margin:6px 14px 0}}
 .cen-focus{font-size:.7rem;color:var(--grey-dark);margin-top:8px}
 .cen-focus b{font-weight:700}
 .cen-semproj{font-size:.76rem;color:var(--grey);padding-top:20px}
@@ -3139,26 +3157,31 @@ function escalaCen(l){
   const inv = pe!=null && ot!=null && pe>ot;
   return v => { const t = (v-lo)/(hi-lo)*100; return (inv ? 100-t : t).toFixed(1)+"%"; };
 }
-// cartão de cada cenário: valor, fonte e o motivo da projeção
-function cartaoCen(l, k, nome){
-  const x = l[k] || {};
-  return '<div class="cen-cc '+k+'"><small class="nm">'+nome+'</small><b>'+fmtCen(x.valor, l)+'</b>' +
-    '<small class="fn">'+esc(x.fonte||'')+(x.data ? ' '+dataCen(x.data) : '')+'</small>' +
-    (x.motivo ? '<p>'+esc(x.motivo)+'</p>' : '') + '</div>';
-}
+const NOME_SC = {pess:"Pessimista", base:"Base 2027", otim:"Otimista"};
+const fonteSC = x => esc(x.fonte||'') + (x.data ? ' ' + dataCen(x.data) : '');
+// faixa do indicador: trilho do pessimista ao otimista, pontos de cada cenário (passe o mouse: valor; clique: o porquê) e legenda
 function faixaCen(l){
   if(l.semProjecao) return '<div class="cen-semproj">Indicador de expectativa, sem projeção para 2027.</div>';
-  const pe = l.pess && l.pess.valor, ot = l.otim && l.otim.valor, ba = l.base && l.base.valor, ho = l.hoje && l.hoje.valor;
+  const ho = l.hoje && l.hoje.valor;
   const x = escalaCen(l);
+  const sc = ["pess","base","otim"].filter(k=>l[k] && l[k].valor!=null);
+  const pe = l.pess && l.pess.valor, ot = l.otim && l.otim.valor;
   const trilho = pe!=null && ot!=null
     ? '<div class="trilho" style="left:'+x(pe)+';right:calc(100% - '+x(ot)+')"></div>'
     : '<div class="trilho" style="left:0;right:0;background:var(--grey-light)"></div>';
   const marco = l.marco ? '<div class="mk marco" style="left:'+x(l.marco.valor)+'"></div><div class="pt marco" style="left:'+x(l.marco.valor)+'"><div class="r">'+esc(l.marco.rotulo)+' '+fmtCen(l.marco.valor, l)+'</div></div>' : '';
-  return '<div class="cen-faixa">' + trilho + marco +
-      (ba!=null ? '<div class="mk base" style="left:'+x(ba)+'" title="Base 2027: '+fmtCen(ba, l)+'"></div>' : '') +
-      (ho!=null ? '<div class="mk hoje" style="left:'+x(ho)+'" title="Hoje: '+fmtCen(ho, l)+'"></div><div class="pt hoje" style="left:'+x(ho)+'"><div class="r">hoje</div></div>' : '') +
-    '</div>' +
-    '<div class="cen-cen">' + cartaoCen(l, 'pess', 'Pessimista') + cartaoCen(l, 'base', 'Base 2027') + cartaoCen(l, 'otim', 'Otimista') + '</div>' + focusCen(l);
+  const pontos = sc.map(k=>'<button type="button" class="sc '+k+'" style="left:'+x(l[k].valor)+'" data-sc="'+k+'" data-tip="'+NOME_SC[k]+': '+fmtCen(l[k].valor, l)+' · clique para ver mais" aria-label="'+NOME_SC[k]+'"></button>').join("");
+  const hojeMk = ho!=null ? '<div class="mk hoje" style="left:'+x(ho)+'" data-tip="Hoje: '+fmtCen(ho, l)+'"></div><div class="pt hoje" style="left:'+x(ho)+'"><div class="r">hoje · '+fmtCen(ho, l, l.sinalMais)+'</div></div>' : '';
+  const legenda = sc.map(k=>'<button type="button" class="leg '+k+'" data-sc="'+k+'"><i></i><span>'+NOME_SC[k]+'</span><b>'+fmtCen(l[k].valor, l)+'</b></button>').join("");
+  return '<div class="cen-faixa">' + trilho + marco + pontos + hojeMk + '</div>' +
+    '<div class="cen-leg">' + legenda + '</div>' +
+    '<div class="cen-sc-painel" id="cenPainel" hidden></div>' + focusCen(l);
+}
+// conteúdo do painel de um cenário: valor, fonte e motivo
+function painelSC(l, k){
+  const x = l[k] || {};
+  return '<div class="cen-sc-cab '+k+'"><span>'+NOME_SC[k]+'</span><b>'+fmtCen(x.valor, l)+'</b><small>'+fonteSC(x)+'</small></div>' +
+    '<p>'+(x.motivo ? esc(x.motivo) : 'Sem descrição publicada para este cenário.')+'</p>';
 }
 // versão compacta da faixa, para a tabela: trilho, traço da base e bolinha de hoje
 function miniFaixaCen(l){
@@ -3320,28 +3343,41 @@ function graficoCen(l, c){
     g += '<line x1="'+xa+'" x2="'+xa+'" y1="'+(H-mb)+'" y2="'+(H-mb+4)+'" stroke="var(--grey)"/><text x="'+xa+'" y="'+(H-6)+'" text-anchor="middle">'+a+'</text>';
   }
   g += '<text x="'+(W-mr+4)+'" y="'+(H-6)+'">'+dt(u[0])+'</text>';
-  return '<details class="cen-ver"><summary class="vbtn">Ver evolução do indicador</summary><p class="cen-vernota">Últimos 5 anos; as linhas tracejadas são os cenários de 2027.</p>' +
-    '<svg class="cen-graf" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Histórico de '+esc(l.indicador)+'">'+g+'</svg></details>';
+  return '<div class="cen-ver" id="cenGraf" hidden><p class="cen-vernota">Últimos 5 anos; as linhas tracejadas são os cenários de 2027.</p>' +
+    '<svg class="cen-graf" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Histórico de '+esc(l.indicador)+'">'+g+'</svg></div>';
 }
 function abrirCenario(id){
   const l = linhasCen(DADOS.cenario).find(x=>x.id===id);
   if(!l) return;
-  const ib = l.hoje.desdeEleicao;
+  const ib = l.hoje.desdeEleicao, graf = graficoCen(l, DADOS.cenario);
+  const oque = textoCen(l,'oque'), imp = textoCen(l,'impacto');
   const m = document.getElementById("mFicha");
   m.innerHTML = '<div class="modal-head"><div><h3>'+esc(l.indicador)+'</h3><p>'+esc(l.medida)+'</p></div>' +
     '<button class="modal-close" onclick="fecharModal(\'Ficha\')">Fechar</button></div>' +
     '<div class="modal-body">' +
-      '<div class="cen-mhoje"><div class="v">'+fmtCen(l.hoje.valor, l, l.sinalMais)+'</div>' +
-        '<div class="m">hoje · '+notaHojeCen(l)+(l.hoje.auto ? '' : ' · atualizado à mão')+
-        (ib!=null ? ' · Ibovespa '+(ib>0?'+':'−')+fmtN(Math.abs(ib),1)+'% desde a eleição' : '')+'</div>' +
-        (l.extra ? '<div class="m">'+esc(l.extra)+'</div>' : '') +
-        (l.hoje.explicacao ? '<div class="cen-oque" style="margin-top:8px">'+esc(l.hoje.explicacao)+'</div>' : '') + '</div>' +
-      (l.semProjecao ? '<div class="cen-faixa-w">'+faixaCen(l)+'</div>' : '<h4 class="cen-mh">Hoje e os cenários de 2027</h4><div class="cen-faixa-w">'+faixaCen(l)+'</div>') +
-      ((textoCen(l,'oque') || textoCen(l,'impacto')) ? '<div class="cen-duo">' +
-        (textoCen(l,'oque') ? '<div class="cen-c2"><h5>O que é</h5><p>'+esc(textoCen(l,'oque'))+'</p></div>' : '') +
-        (textoCen(l,'impacto') ? '<div class="cen-c2 imp"><h5>O que isso significa para as empresas</h5><p>'+esc(textoCen(l,'impacto'))+'</p></div>' : '') + '</div>' : '') +
-      graficoCen(l, DADOS.cenario) +
+      '<div class="cen-topo"><div class="cen-hoje-b"><small>Hoje</small><div class="v">'+fmtCen(l.hoje.valor, l, l.sinalMais)+'</div>' +
+        '<div class="m">'+notaHojeCen(l)+(l.hoje.auto ? '' : ' · atualizado à mão')+
+        (ib!=null ? ' · <b class="'+(ib<0?'cen-pior':'cen-melhor')+'">'+(ib>0?'+':'−')+fmtN(Math.abs(ib),1)+'% desde a eleição</b>' : '')+'</div>' +
+        (l.extra ? '<div class="m">'+esc(l.extra)+'</div>' : '') + '</div>' +
+        (graf ? '<button type="button" class="cen-btn-graf" id="cenBtnGraf" aria-expanded="false">Ver evolução do indicador <span>›</span></button>' : '') + '</div>' +
+      graf +
+      (l.hoje.explicacao ? '<div class="cen-expl">'+esc(l.hoje.explicacao)+'</div>' : '') +
+      (l.semProjecao ? '' : '<div class="cen-sec"><h4>Hoje e os cenários de 2027</h4>') + '<div class="cen-faixa-w">'+faixaCen(l)+'</div>' + (l.semProjecao ? '' : '</div>') +
+      ((oque || imp) ? '<div class="cen-duo">' +
+        (oque ? '<div class="cen-c2"><h5><i></i>O que é</h5><p>'+esc(oque)+'</p></div>' : '') +
+        (imp ? '<div class="cen-c2"><h5><i></i>O que isso significa para as empresas</h5><p>'+esc(imp)+'</p></div>' : '') + '</div>' : '') +
     '</div>';
+  const btn = m.querySelector("#cenBtnGraf"), pg = m.querySelector("#cenGraf");
+  if(btn) btn.addEventListener("click", ()=>{ pg.hidden = !pg.hidden; btn.setAttribute("aria-expanded", String(!pg.hidden)); btn.classList.toggle("on", !pg.hidden); });
+  const painel = m.querySelector("#cenPainel");
+  let aberto = null;
+  m.querySelectorAll("[data-sc]").forEach(el=>el.addEventListener("click", ()=>{
+    const k = el.dataset.sc;
+    aberto = aberto===k ? null : k;
+    painel.hidden = !aberto;
+    if(aberto) painel.innerHTML = painelSC(l, aberto);
+    m.querySelectorAll(".leg").forEach(b=>b.classList.toggle("on", b.dataset.sc===aberto));
+  }));
   abrirModal("Ficha");
 }
 
