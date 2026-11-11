@@ -763,7 +763,14 @@
   "susep",
   "cvm"
  ],
- "_excluir": "Notícias cujo título tem uma destas palavras não entram no Radar nem em Movimentos.",
+ "_so_brasil": "Fontes internacionais marcadas com \"so_brasil\": true em fontes_noticias.json. A notícia só entra se citar o Brasil ou a América Latina (termos_brasil), uma empresa brasileira conhecida lá fora (empresas_brasileiras) ou, quando for fusão ou aquisição (termos_fusao), um grande grupo global (grupos_globais). Termos em minúsculas e sem acento; empresas e grupos como escritos.",
+ "so_brasil": {
+  "termos_brasil": ["brasil", "brazil", "brasileiro", "brasileira", "brazilian", "brazil's", "america latina", "latin america", "latam", "sao paulo", "rio de janeiro", "pix", "drex", "b3"],
+  "empresas_brasileiras": ["Nubank", "Nu Holdings", "Itaú", "Itau", "Bradesco", "Banco do Brasil", "BTG Pactual", "XP Inc", "StoneCo", "PagBank", "PagSeguro", "Mercado Pago", "Mercado Libre", "Mercado Livre", "Ebanx", "EBANX", "dLocal", "Inter&Co", "C6 Bank", "Caixa Econômica", "Cielo", "Petrobras", "Vale S.A.", "Embraer", "JBS", "Natura", "Ambev", "WEG", "Totvs", "TOTVS", "Localiza", "Suzano", "Eletrobras", "Raízen", "Creditas", "PicPay"],
+  "termos_fusao": ["acquisition", "acquires", "acquire", "to buy", "buys", "merger", "merge", "takeover", "aquisicao", "adquire", "fusao", "compra"],
+  "grupos_globais": ["JPMorgan", "JP Morgan", "Goldman Sachs", "Morgan Stanley", "Citi", "Citigroup", "HSBC", "Santander", "BBVA", "UBS", "Bank of America", "Wells Fargo", "Deutsche Bank", "Barclays", "BNP Paribas", "Visa", "Mastercard", "American Express", "PayPal", "Stripe", "Adyen", "Fiserv", "FIS", "Global Payments", "Worldline", "Nubank", "Revolut", "BlackRock"]
+ },
+ "_excluir":"Notícias cujo título tem uma destas palavras não entram no Radar nem em Movimentos.",
  "excluir": [
   "deputado",
   "deputada",
