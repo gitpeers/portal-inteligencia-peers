@@ -32,23 +32,37 @@ button,input,select,textarea{font-family:inherit}
 
 
 
-/* ---- CENÁRIO 2027 ---- */
-.cen-mud{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.cen-mud .kbox .v{font-size:1.15rem}
-.cen-mud .de{font-size:.72rem;color:var(--grey);margin-top:2px}
-.cen-mud .dl{font-size:.72rem;font-weight:700;margin-top:4px}
+/* ---- CENÁRIO MACROECONÔMICO ---- */
 .cen-pior{color:var(--t3)}.cen-melhor{color:var(--t2)}.cen-igual{color:var(--grey)}
-.cen-etapa{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
-.cen-etapa .num{width:24px;height:24px;border-radius:50%;background:var(--navy);color:var(--neon);font-size:.78rem;font-weight:700;
-  display:inline-flex;align-items:center;justify-content:center;flex:none;transform:translateY(2px)}
-.cen-etapa b{font-size:1rem;font-weight:600}.cen-etapa span{font-size:.8rem;color:var(--grey)}
-.cen-lin{display:grid;grid-template-columns:minmax(150px,1.1fr) minmax(120px,.8fr) minmax(260px,2.2fr) minmax(200px,1.6fr);gap:18px;
-  padding:16px 0;border-top:1px solid var(--grey-light);align-items:start}
-.cen-lin:first-of-type{border-top:0}
-.cen-ind b{display:block;font-size:.9rem}.cen-ind span{font-size:.74rem;color:var(--grey)}
-.cen-hoje .v{font-size:1.35rem;font-weight:600;line-height:1.1}
-.cen-hoje .m{font-size:.7rem;color:var(--grey);margin-top:3px;line-height:1.4}
-.cen-hoje .x{font-size:.7rem;color:var(--grey-dark);margin-top:3px}
+.cen-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.cen-atual{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.cen-atual .kbox .v{font-size:1.4rem}
+.cen-card{padding:0;overflow:hidden}
+.cen-tab{width:100%;border-collapse:collapse;font-size:.84rem}
+.cen-tab th{font-size:.64rem;text-transform:uppercase;letter-spacing:.07em;color:var(--grey);font-weight:700;text-align:left;padding:10px 12px;
+  border-bottom:1px solid var(--grey-border);background:var(--serene-soft)}
+.cen-tab th.n,.cen-tab td.n{text-align:right;font-variant-numeric:tabular-nums}
+.cen-tab td{padding:8px 12px;border-top:1px solid var(--grey-light);vertical-align:middle}
+.cen-tab td b{display:block;font-size:.86rem;font-weight:600}
+.cen-tab td span{font-size:.7rem;color:var(--grey)}
+.cen-tab td.hj{font-weight:700;color:var(--navy)}
+.cen-grp td{background:var(--serene-soft);border-top:1px solid var(--grey-border);padding:7px 12px}
+.cen-grp .num{display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--navy);color:var(--neon);font-size:.7rem;font-weight:700;
+  align-items:center;justify-content:center;margin-right:8px}
+.cen-grp b{display:inline;font-size:.82rem}.cen-grp span:not(.num){margin-left:8px;font-size:.72rem;color:var(--grey)}
+.cen-row{cursor:pointer;transition:background var(--dur) var(--ease)}
+.cen-row:hover,.cen-row:focus-visible{background:var(--serene-soft);outline:none}
+.cen-row:focus-visible{box-shadow:inset 0 0 0 2px var(--navy)}
+.cen-go{color:var(--grey);width:24px;text-align:center;font-size:1.1rem}
+.cen-row:hover .cen-go{color:var(--navy)}
+.cen-nd{color:var(--grey)}
+.cen-pos{width:150px}.cen-th-pos{width:150px}
+.cen-mini{position:relative;height:18px;margin:0 6px}
+.cen-mini .trilho{position:absolute;top:6px;height:6px;border-radius:3px;
+  background:linear-gradient(90deg,var(--danger-soft),var(--grey-light) 50%,var(--ok-soft));border:1px solid var(--grey-border)}
+.cen-mini .mk{position:absolute;transform:translateX(-50%)}
+.cen-mini .mk.base{top:3px;width:2px;height:12px;background:var(--navy);border-radius:1px}
+.cen-mini .mk.hoje{top:3px;width:12px;height:12px;border-radius:50%;background:var(--neon);border:2px solid var(--navy)}
 .cen-faixa{position:relative;height:58px;margin:4px 6px 0}
 .cen-faixa .trilho{position:absolute;top:22px;height:8px;border-radius:4px;
   background:linear-gradient(90deg,var(--danger-soft),var(--grey-light) 50%,var(--ok-soft));border:1px solid var(--grey-border)}
@@ -60,7 +74,6 @@ button,input,select,textarea{font-family:inherit}
 .cen-faixa .mk.hoje{top:17px;width:18px;height:18px;border-radius:50%;background:var(--neon);border:2px solid var(--navy);box-shadow:var(--shadow)}
 .cen-faixa .mk.marco{top:14px;width:0;height:24px;border-left:2px dotted var(--grey-dark)}
 .cen-faixa .pt.marco{top:40px}.cen-faixa .pt.marco .r{text-transform:none;letter-spacing:0;font-weight:500}
-.cen-faixa .ext{position:absolute;top:40px;font-size:.7rem;color:var(--grey-dark);white-space:nowrap}
 .cen-cen{display:flex;justify-content:space-between;gap:8px;font-size:.72rem;color:var(--grey-dark);margin:6px 0 0;flex-wrap:wrap}
 .cen-cen div{flex:1;min-width:70px}.cen-cen div:nth-child(2){text-align:center}.cen-cen div:last-child{text-align:right}
 .cen-cen b{display:block;font-size:.84rem;color:var(--navy)}
@@ -68,8 +81,11 @@ button,input,select,textarea{font-family:inherit}
 .cen-focus{font-size:.7rem;color:var(--grey-dark);margin-top:8px}
 .cen-focus b{font-weight:700}
 .cen-semproj{font-size:.76rem;color:var(--grey);padding-top:20px}
-.cen-efeito{font-size:.82rem;line-height:1.5;color:var(--text2);border-left:3px solid var(--neon);padding-left:12px}
-@media (max-width:900px){.cen-lin{grid-template-columns:1fr 1fr}.cen-lin .cen-faixa-w,.cen-lin .cen-efeito{grid-column:1/-1}}
+.cen-mhoje{margin-bottom:14px}.cen-mhoje .v{font-size:1.8rem;font-weight:600;line-height:1.1}
+.cen-mhoje .m{font-size:.76rem;color:var(--grey);margin-top:4px}
+.cen-mh{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--grey);margin:18px 0 8px}
+.cen-efeito{font-size:.88rem;line-height:1.55;color:var(--text2);border-left:3px solid var(--neon);padding-left:12px}
+@media (max-width:760px){.cen-pos,.cen-th-pos{display:none}.cen-tab td,.cen-tab th{padding:8px 8px}}
 
 /* manchete clicável da Edição do dia e destaque da notícia ao chegar no Radar */
 .mh-link{all:unset;cursor:pointer;color:inherit;font:inherit}
@@ -1102,7 +1118,7 @@ async function carregarDados(){
     aprofundamento: Object.fromEntries(((porNome.aprofundamento || {}).pontes || []).map(p=>[p.segmento+"|"+p.indicador, p])),
     concorrencia: concorrencia.itens.filter(i=>!i.oculto),
     concorrentes,
-    cenario: porNome.cenario || null      // Cenário 2027 (PE): sem a seção, a aba não aparece
+    cenario: porNome.cenario || null      // Cenário macroeconômico (PE 2027): sem a seção, a aba não aparece
   };
   COTACOES = porNome.cotacoes || null;
   if(!carregarDados.relogio) carregarDados.relogio = setInterval(atualizarCotacoes, 5*60*1000);
@@ -1139,7 +1155,7 @@ const GRUPOS = [
     {id:"radar", desc:"o que foi noticiado, com o ângulo para a Peers"},
     {id:"indicadores", desc:"o setor em números, com a visão por player"},
     {id:"agenda", desc:"datas e eventos dos próximos 90 dias"},
-    {id:"cenario", desc:"a macro de 2027: hoje, os cenários e o que mudou desde a eleição"}]},
+    {id:"cenario", desc:"a macro do Brasil e do mundo: hoje, os cenários de 2027 e o efeito na empresa"}]},
   {id:"players", label:"Players e concorrência", desc:"empresas, decisões e concorrentes", abas:[
     {id:"financas", desc:"resultados das empresas e do ranking Valor 1000"},
     {id:"movimentos", desc:"aquisições, parcerias e trocas de comando"},
@@ -1156,7 +1172,7 @@ const ABAS = [
   {id:"movimentos", label:"Movimentos estratégicos"},
   {id:"concorrencia", label:"Concorrência"},
   {id:"agenda", label:"Agenda setorial"},
-  {id:"cenario", label:"Cenário 2027"},
+  {id:"cenario", label:"Cenário macroeconômico"},
   {id:"conexoes", label:"Relacionamentos"},
   {id:"oportunidades", label:"Oportunidades"},
   {id:"trimestral", label:"Análises trimestrais"}
@@ -3038,10 +3054,13 @@ function cabecaQuadro(id){
 
 
 /* =========================================================
-   CENÁRIO 2027 · slide 3 do PE 2027. Os cenários e os textos vêm da equipe (publicar_cenario.py); a coluna Hoje
+   CENÁRIO MACROECONÔMICO · slide 3 do PE 2027. Os cenários e os textos vêm da equipe (publicar_cenario.py); a coluna Hoje
    e o Focus são atualizados todo dia pela rotina (atualizar_cenario.py).
+   Cada linha pode trazer "regiao" ("brasil", padrão, ou "mundo") e "destaque": true (entra no Cenário atual).
    ========================================================= */
 const MESES_C = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+const estadoCenario = { regiao:"brasil" };
+const DESTAQUES_CEN = [/selic|juro/i, /c[âa]mbio|d[óo]lar/i, /ipca|infla/i, /pib/i, /ibovespa/i];
 function dataCen(d){
   if(!d) return "";
   if(/^\dT\d\d$/.test(d)) return d;
@@ -3056,19 +3075,24 @@ function fmtCen(v, l, sinal){
   const sg = v<0 ? "−" : ((sinal||l.sinalMais) && v>0 ? "+" : "");
   return l.unidade==="R$" ? "R$ "+s : l.unidade==="%" ? sg+s+"%" : sg+s;
 }
+const linhasCen = c => c.etapas.flatMap(e=>e.linhas);
+const regiaoCen = l => l.regiao || "brasil";
+// escala da faixa: o pessimista sempre à esquerda; se ele é o número maior (juro, inflação), o eixo inverte
+function escalaCen(l){
+  const pe = l.pess && l.pess.valor, ot = l.otim && l.otim.valor;
+  const vals = [pe, ot, l.base && l.base.valor, l.hoje && l.hoje.valor, l.marco && l.marco.valor].filter(v=>v!=null);
+  let lo = Math.min(...vals), hi = Math.max(...vals);
+  const pad = (hi-lo)*0.1 || Math.abs(hi)*0.1 || 1; lo -= pad; hi += pad;
+  const inv = pe!=null && ot!=null && pe>ot;
+  return v => { const t = (v-lo)/(hi-lo)*100; return (inv ? 100-t : t).toFixed(1)+"%"; };
+}
 function faixaCen(l){
   if(l.semProjecao) return '<div class="cen-semproj">Indicador de expectativa, sem projeção para 2027.</div>';
   const pe = l.pess && l.pess.valor, ot = l.otim && l.otim.valor, ba = l.base && l.base.valor, ho = l.hoje && l.hoje.valor;
-  const vals = [pe, ot, ba, ho, l.marco && l.marco.valor].filter(v=>v!=null);
-  let lo = Math.min(...vals), hi = Math.max(...vals);
-  const pad = (hi-lo)*0.1 || Math.abs(hi)*0.1 || 1; lo -= pad; hi += pad;
-  // o pessimista sempre à esquerda: se ele é o número maior (juro, inflação), o eixo inverte
-  const inv = pe!=null && ot!=null && pe>ot;
-  const x = v => { const t = (v-lo)/(hi-lo)*100; return (inv ? 100-t : t).toFixed(1)+"%"; };
+  const x = escalaCen(l);
   const trilho = pe!=null && ot!=null
     ? '<div class="trilho" style="left:'+x(pe)+';right:calc(100% - '+x(ot)+')"></div>'
     : '<div class="trilho" style="left:0;right:0;background:var(--grey-light)"></div>';
-  // rótulo "hoje" em cima; se colar no da base, a base fica só com o traço
   const marco = l.marco ? '<div class="mk marco" style="left:'+x(l.marco.valor)+'"></div><div class="pt marco" style="left:'+x(l.marco.valor)+'"><div class="r">'+esc(l.marco.rotulo)+' '+fmtCen(l.marco.valor, l)+'</div></div>' : '';
   return '<div class="cen-faixa">' + trilho + marco +
       (ba!=null ? '<div class="mk base" style="left:'+x(ba)+'" title="Base 2027: '+fmtCen(ba, l)+'"></div>' : '') +
@@ -3080,6 +3104,15 @@ function faixaCen(l){
       '<div><small>Otimista</small><b>'+fmtCen(ot, l)+'</b><small>'+esc((l.otim||{}).fonte||'')+'</small></div>' +
     '</div>' + focusCen(l);
 }
+// versão compacta da faixa, para a tabela: trilho, traço da base e bolinha de hoje
+function miniFaixaCen(l){
+  const pe = l.pess && l.pess.valor, ot = l.otim && l.otim.valor, ba = l.base && l.base.valor, ho = l.hoje && l.hoje.valor;
+  if(l.semProjecao || pe==null || ot==null || ho==null) return '<span class="cen-nd">—</span>';
+  const x = escalaCen(l);
+  return '<div class="cen-mini"><div class="trilho" style="left:'+x(pe)+';right:calc(100% - '+x(ot)+')"></div>' +
+    (ba!=null ? '<div class="mk base" style="left:'+x(ba)+'"></div>' : '') +
+    '<div class="mk hoje" style="left:'+x(ho)+'"></div></div>';
+}
 // Focus: quanto a mediana do mercado para 2027 andou desde a semana anterior à eleição
 function focusCen(l){
   const f = l.focusAgora;
@@ -3088,48 +3121,75 @@ function focusCen(l){
   const dif = Math.abs(d) < Math.pow(10, -c)/2 ? 'sem mudança' : (d>0?'+':'−')+fmtN(Math.abs(d), c)+(l.unidade==="%" ? ' p.p.' : '');
   return '<div class="cen-focus">Focus 2027: <b>'+fmtCen(f.pre, l)+' → '+fmtCen(f.valor, l)+'</b> desde a eleição ('+dif+')</div>';
 }
-// faixa do topo: o que o mercado mudou desde a eleição. "pior" depende do lado do pessimista na linha
-function mudancasCen(c){
-  const linhas = c.etapas.flatMap(e=>e.linhas);
-  const itens = linhas.filter(l=>l.focusAgora && l.focusAgora.pre!=null).map(l=>{
-    const f = l.focusAgora, d = f.valor-f.pre, c2 = l.casas==null ? 1 : l.casas;
-    const pessAlto = l.pess && l.otim ? l.pess.valor > l.otim.valor : null;
-    const cls = Math.abs(d) < Math.pow(10, -c2)/2 || pessAlto==null ? 'cen-igual' : ((d>0)===pessAlto ? 'cen-pior' : 'cen-melhor');
-    const dif = Math.abs(d) < Math.pow(10, -c2)/2 ? 'sem mudança' : (d>0?'+':'−')+fmtN(Math.abs(d), c2)+(l.unidade==="%" ? ' p.p.' : '');
-    return '<div class="kbox"><div class="l">'+esc(l.indicador)+'</div><div class="v">'+fmtCen(f.valor, l)+'</div>' +
-      '<div class="de">antes da eleição: '+fmtCen(f.pre, l)+'</div><div class="dl '+cls+'">'+dif+'</div></div>';
-  });
-  const ib = linhas.find(l=>l.hoje && l.hoje.desdeEleicao!=null);
-  if(ib) itens.push('<div class="kbox"><div class="l">'+esc(ib.indicador)+'</div><div class="v">'+fmtCen(ib.hoje.valor, ib)+'</div>' +
-    '<div class="de">antes da eleição: '+fmtCen(ib.hoje.preEleicao.valor, ib)+'</div><div class="dl '+(ib.hoje.desdeEleicao<0?'cen-pior':'cen-melhor')+'">'+(ib.hoje.desdeEleicao>0?'+':'−')+fmtN(Math.abs(ib.hoje.desdeEleicao), 1)+'%</div></div>');
-  if(!itens.length) return '';
-  const fd = (linhas.find(l=>l.focusAgora)||{}).focusAgora;
-  return '<div class="card"><div class="card-title"><span class="dot"></span>O que o mercado mudou desde a eleição' +
-    '<span class="hint">Focus 2027 de '+dataCen(c.focusPre)+' e de '+(fd ? dataCen(fd.data) : '')+'; Ibovespa no fechamento</span></div>' +
-    '<div class="cen-mud kgrid">'+itens.join("")+'</div>' +
-    '<p class="roda-fonte">Vermelho: andou na direção do cenário pessimista; verde: do otimista. Focus é a mediana das projeções do mercado coletadas pelo Banco Central, não uma previsão do BC.</p></div>';
+function notaHojeCen(l){
+  return esc(l.hoje.nota||'')+(l.hoje.data ? (l.hoje.nota ? ', ' : '')+dataCen(l.hoje.data) : '');
+}
+// Cenário atual: os indicadores de destaque (marcados com "destaque" ou, na falta, Selic, câmbio, inflação, PIB e Ibovespa)
+function destaquesCen(c){
+  const linhas = linhasCen(c).filter(l=>regiaoCen(l)===estadoCenario.regiao);
+  const marcados = linhas.filter(l=>l.destaque);
+  if(marcados.length) return marcados;
+  return DESTAQUES_CEN.map(re=>linhas.find(l=>re.test(l.indicador))).filter((l,i,a)=>l && a.indexOf(l)===i);
+}
+function cenarioAtualCen(c){
+  const d = destaquesCen(c);
+  if(!d.length) return '';
+  return '<div class="card"><div class="card-title"><span class="dot"></span>Cenário atual<span class="hint">valores de hoje; clique para ver os cenários de 2027</span></div>' +
+    '<div class="cen-atual">' + d.map(l=>{
+      const ib = l.hoje.desdeEleicao;
+      return '<div class="kbox clicavel" role="button" tabindex="0" data-cen="'+esc(l.id)+'"><div class="l">'+esc(l.indicador)+'</div>' +
+        '<div class="v">'+fmtCen(l.hoje.valor, l, l.sinalMais)+'</div>' +
+        '<div class="m">'+(ib!=null ? '<span class="'+(ib<0?'cen-pior':'cen-melhor')+'">'+(ib>0?'+':'−')+fmtN(Math.abs(ib),1)+'% desde a eleição</span> · ' : '')+notaHojeCen(l)+'</div></div>';
+    }).join("") + '</div></div>';
+}
+function tabelaCen(c){
+  const etapas = c.etapas.map(e=>({e, ls:e.linhas.filter(l=>regiaoCen(l)===estadoCenario.regiao)})).filter(x=>x.ls.length);
+  if(!etapas.length) return '<div class="card"><div class="vazio">'+(estadoCenario.regiao==="mundo"
+    ? 'A visão global do cenário macroeconômico ainda está em construção.' : 'Nenhum indicador nesta visão.')+'</div></div>';
+  return '<div class="card cen-card"><table class="cen-tab"><thead><tr>' +
+    '<th>Indicador</th><th class="n">Hoje</th><th class="n">Pessimista</th><th class="n">Base 2027</th><th class="n">Otimista</th><th class="cen-th-pos">Hoje na faixa</th><th></th></tr></thead><tbody>' +
+    etapas.map(({e, ls})=>
+      '<tr class="cen-grp"><td colspan="7"><span class="num">'+e.n+'</span><b>'+esc(e.nome)+'</b><span>'+esc(e.sub)+'</span></td></tr>' +
+      ls.map(l=>{
+        const sp = l.semProjecao;
+        const cel = k => sp ? '<span class="cen-nd">—</span>' : fmtCen((l[k]||{}).valor, l);
+        return '<tr class="cen-row" role="button" tabindex="0" data-cen="'+esc(l.id)+'">' +
+          '<td><b>'+esc(l.indicador)+'</b><span>'+esc(l.medida)+'</span></td>' +
+          '<td class="n hj">'+fmtCen(l.hoje.valor, l, l.sinalMais)+'</td>' +
+          '<td class="n">'+cel('pess')+'</td><td class="n">'+cel('base')+'</td><td class="n">'+cel('otim')+'</td>' +
+          '<td class="cen-pos">'+miniFaixaCen(l)+'</td><td class="cen-go">›</td></tr>';
+      }).join("")
+    ).join("") + '</tbody></table></div>';
 }
 function renderCenario(){
   const c = DADOS.cenario;
-  if(!c) return '<div class="sec-head"><h2>Cenário 2027</h2></div><div class="srcnote">O cenário ainda não foi publicado.</div>';
+  if(!c) return '<div class="sec-head"><h2>Cenário macroeconômico</h2></div><div class="srcnote">O cenário ainda não foi publicado.</div>';
   const at = c.atualizadoEm ? formatarData(c.atualizadoEm.slice(0,10)).slice(0,5)+' '+c.atualizadoEm.slice(11,16) : '';
-  return '<div class="sec-head"><h2>Cenário 2027</h2>' +
-    '<p>Do ajuste fiscal à bolsa: onde cada indicador está hoje, a faixa de cenários do planejamento estratégico para 2027 e o efeito na empresa. ' +
-    'A bolinha é o valor de hoje e o traço é o cenário base; o pessimista fica sempre à esquerda.</p></div>' +
-    mudancasCen(c) +
-    c.etapas.map(e=>'<div class="card">' +
-      '<div class="cen-etapa"><span class="num">'+e.n+'</span><b>'+esc(e.nome)+'</b><span>'+esc(e.sub)+'</span></div>' +
-      e.linhas.map(l=>'<div class="cen-lin">' +
-        '<div class="cen-ind"><b>'+esc(l.indicador)+'</b><span>'+esc(l.medida)+'</span></div>' +
-        '<div class="cen-hoje"><div class="v">'+fmtCen(l.hoje.valor, l, l.sinalMais)+'</div>' +
-          '<div class="m">'+esc(l.hoje.nota||'')+(l.hoje.data ? ', '+dataCen(l.hoje.data) : '')+(l.hoje.auto ? '' : ' · atualizado à mão')+'</div>' +
-          (l.extra ? '<div class="x">'+esc(l.extra)+'</div>' : '') + '</div>' +
-        '<div class="cen-faixa-w">'+faixaCen(l)+'</div>' +
-        '<div class="cen-efeito">'+esc(l.efeito)+'</div>' +
-      '</div>').join("") +
-    '</div>').join("") +
+  const reg = (id, nome) => '<button type="button" class="vbtn'+(estadoCenario.regiao===id?' active':'')+'" data-regcen="'+id+'">'+nome+'</button>';
+  return '<div class="sec-head cen-head"><div><h2>Cenário macroeconômico</h2>' +
+    '<p>Onde cada indicador está hoje e a faixa de cenários do planejamento estratégico para 2027. Clique em uma linha para ver o detalhe e o efeito na empresa.</p></div>' +
+    '<div class="vgroup">'+reg("brasil","Brasil")+reg("mundo","Mundo")+'</div></div>' +
+    cenarioAtualCen(c) + tabelaCen(c) +
     '<p class="roda-fonte">'+esc(c.notaCenarios||'')+' Cenários e efeitos: '+esc(c.origem||'')+', corte de '+formatarData(c.corte)+'. ' +
-    'Hoje e Focus: Banco Central (SGS e Focus), IBGE e Ibovespa, atualizados todo dia'+(at ? ' (última vez em '+at+')' : '')+'; confiança do consumidor (FGV) e da indústria (CNI) atualizadas à mão.</p>';
+    'Hoje e Focus: Banco Central (SGS e Focus), IBGE e Ibovespa, atualizados todo dia'+(at ? ' (última vez em '+at+')' : '')+'; confiança do consumidor (FGV) e da indústria (CNI) atualizadas à mão. ' +
+    'Na faixa, o pessimista fica sempre à esquerda; o traço é o cenário base e a bolinha é o valor de hoje.</p>';
+}
+function abrirCenario(id){
+  const l = linhasCen(DADOS.cenario).find(x=>x.id===id);
+  if(!l) return;
+  const ib = l.hoje.desdeEleicao;
+  const m = document.getElementById("mFicha");
+  m.innerHTML = '<div class="modal-head"><div><h3>'+esc(l.indicador)+'</h3><p>'+esc(l.medida)+'</p></div>' +
+    '<button class="modal-close" onclick="fecharModal(\'Ficha\')">Fechar</button></div>' +
+    '<div class="modal-body">' +
+      '<div class="cen-mhoje"><div class="v">'+fmtCen(l.hoje.valor, l, l.sinalMais)+'</div>' +
+        '<div class="m">hoje · '+notaHojeCen(l)+(l.hoje.auto ? '' : ' · atualizado à mão')+
+        (ib!=null ? ' · Ibovespa '+(ib>0?'+':'−')+fmtN(Math.abs(ib),1)+'% desde a eleição' : '')+'</div>' +
+        (l.extra ? '<div class="m">'+esc(l.extra)+'</div>' : '') + '</div>' +
+      '<div class="cen-faixa-w">'+faixaCen(l)+'</div>' +
+      (l.efeito ? '<h4 class="cen-mh">Efeito na empresa</h4><div class="cen-efeito">'+esc(l.efeito)+'</div>' : '') +
+    '</div>';
+  abrirModal("Ficha");
 }
 
 /* =========================================================
@@ -4670,6 +4730,11 @@ function ligarEventos(){
     alvo.classList.add("rcard-destaque"); setTimeout(()=>alvo.classList.remove("rcard-destaque"), 2200);
   }));
   document.querySelectorAll("[data-aprof]").forEach(el=>el.addEventListener("click", ()=>abrirAprofundamento(el.dataset.aprof)));
+  document.querySelectorAll("[data-regcen]").forEach(b=>b.addEventListener("click", ()=>{ estadoCenario.regiao = b.dataset.regcen; renderizar(); }));
+  document.querySelectorAll("[data-cen]").forEach(el=>{
+    el.addEventListener("click", ()=>abrirCenario(el.dataset.cen));
+    el.addEventListener("keydown", e=>{ if(e.key==="Enter" || e.key===" "){ e.preventDefault(); abrirCenario(el.dataset.cen); } });
+  });
 }
 
 function atualizarContador(){
