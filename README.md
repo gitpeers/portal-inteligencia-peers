@@ -36,6 +36,7 @@ Backend/
   publicar_cenario.py   publica a aba Cenário 2027 (Mercado) a partir do arquivo da equipe, guardado fora do repositório
   atualizar_cenario.py  rotina diária da aba Cenário 2027: coluna Hoje (BC, IBGE, Ibovespa) e Focus
   atualizar_cotacoes.py faixa de ações (Edição do dia, Finanças, Roda): a cada 15 min no pregão, pelo cotacoes.yml
+  relatorio_uso.py      uso do portal por semana (abas, briefings, perfis), só contagens; lê a tabela uso_portal
   arquivar_roda.py      todo dia, guarda 90 dias de notícias e movimentos das empresas da Roda (quadro No mercado)
   validar_fontes.py     testa se cada fonte de notícias tem feed ativo (rodar uma vez por mês)
   ia/                   rotina de IA: instruções (ROTINA.md) e scripts que preparam e aplicam as análises
@@ -44,6 +45,8 @@ Backend/
 Supabase/
   configuracao.sql      tabela, regras de acesso e trava do domínio (rodar uma vez no Supabase)
   comercial.sql         tabela fechada das conexões e lista de acesso comercial (rodar uma vez no Supabase)
+  seguranca.sql         fecha as funções do banco para quem não fez login (rodar uma vez no Supabase)
+  uso.sql               registro de uso (aba, evento, perfil, sessão sorteada; sem e-mail), só gravação (rodar uma vez)
 .github/workflows/portal.yml  o agendamento (baixar, atualizar, devolver ao Supabase) e a publicação da página
 ```
 
