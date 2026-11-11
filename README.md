@@ -138,7 +138,7 @@ python enviar_dados.py --todos
 Para corrigir uma seção à mão (ex.: Valor 1000): `baixar_dados.py`, editar o arquivo em `Frontend/dados` e
 `python enviar_dados.py valor1000`.
 
-**Aba Análises trimestrais.** Abre em tela cheia o dashboard do projeto de resultados trimestrais (pasta
+**Aba Resultados trimestrais** (menu Players e concorrência, logo após Finanças; antes "Análises trimestrais"). Abre em tela cheia o dashboard do projeto de resultados trimestrais (pasta
 02. Workspace / Resultados 3T26), guardado na linha `trimestral` da tabela secoes, e não no repositório. Só é baixado
 quando alguém abre a aba; os scripts do robô não o leem. Quem publica é a tarefa agendada "Portal Peers - Publicar
 análises trimestrais", no computador do Kayo: a cada 15 minutos, se o projeto está na branch main e o
@@ -193,7 +193,7 @@ duas colunas a mais na planilha baixada. Vai, por cliente: status, número de pr
 líder de conta, N1 e MD do último projeto. Para publicar uma versão nova da planilha, na pasta Backend, com as duas
 variáveis definidas: `python publicar_clientes.py "<pasta Base de clientes>"`.
 
-**Aba Oportunidades** (só para quem tem `ve_clientes`). Cruza a base de clientes com as notícias dos últimos 30 dias
+**Menu Comercial** agrupa Relacionamentos, Oportunidades e Roda gigante; cada item aparece só para quem tem a respectiva permissão (um único item liberado vira botão direto). **Aba Oportunidades** (só para quem tem `ve_clientes`). Cruza a base de clientes com as notícias dos últimos 30 dias
 (Radar e Movimentos) e o Mapa de Conexões, em duas sub-abas. *Reativar contas*: ex-clientes com notícia nova e decisor
 conhecido, com prioridade de 1 a 3 (projeto terminado há até 6 meses, mais de uma notícia, 10 ou mais decisores),
 "quem chama" pela regra da planilha de relacionamentos e o contato mais sênior dessa pessoa. *Expandir contas*: a
