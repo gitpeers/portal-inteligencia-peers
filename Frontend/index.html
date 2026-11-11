@@ -826,6 +826,13 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 .sel-limpar{background:none;border:none;color:var(--grey-dark);font-size:.76rem;text-decoration:underline;cursor:pointer;margin-left:auto}
 @media (prefers-reduced-motion: reduce){.sel-drawer{transition:none}}
 
+.op-acoes{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.op-acoes .op-subs{margin-bottom:0}
+.op-baixar{border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:var(--r-sm);padding:8px 14px;font:inherit;
+  font-size:.76rem;font-weight:600;cursor:pointer;transition:var(--dur) var(--ease)}
+.op-baixar:hover{background:var(--navy);color:#fff}
+.op-baixar[disabled]{opacity:.6;cursor:wait}
+
 /* ---- RESUMO FALADO ---- */
 .sec-head-row{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
 .btn-audio{background:var(--neon);color:var(--navy);border:none;border-radius:var(--r-sm);padding:11px 20px;
@@ -2225,6 +2232,8 @@ function renderOportunidades(){
   const kpi = (cls, rot, val, sub)=>'<div class="kpi '+cls+'"><div class="kpi-label">'+rot+'</div><div class="kpi-value">'+val+'</div><div class="kpi-sub">'+sub+'</div></div>';
   const subsHtml = '<div class="op-subs">' + [["reativar","Reativar contas",o.reativar.length],["expandir","Expandir contas",o.expandir.length]]
       .map(([id, t, q])=>'<button type="button" data-opv="'+id+'" class="'+(v===id?'on':'')+'">'+t+'<b>'+q+'</b></button>').join("") + '</div>';
+  const acoesHtml = '<div class="op-acoes">' + subsHtml +
+    (o.reativar.length || o.expandir.length ? '<button type="button" class="op-baixar" id="opBaixar" title="Reativar e Expandir contas, com quem chama e o contato de cada uma">Baixar Excel</button>' : '') + '</div>';
   if(v==="roda" && temRoda()){
     return '<div class="sec-head"><h2>Roda gigante</h2><p>As empresas da roda, com o que saiu no portal nos últimos '+DIAS_OPORT+' dias, onde a Peers pode entrar e como cada uma anda frente ao setor. Visível só para quem tem acesso à base de clientes.</p></div>' +
       faixaDaAba() + renderRoda();
@@ -2235,12 +2244,145 @@ function renderOportunidades(){
       kpi("b", "Expandir contas", o.expandir.length, "notícia abre offering nova") +
       kpi("c", "Clientes no noticiário", o.citados, "de "+CLIENTES.peers.length+", nos últimos "+DIAS_OPORT+" dias") +
       kpi("d", "Decisores conhecidos", o.decisores, "nesses clientes") + '</div>' +
-    subsHtml +
+    acoesHtml +
     '<p class="op-regra">' + (v==="reativar"
       ? 'Ex-clientes: o último projeto já terminou, saiu notícia nos últimos '+DIAS_OPORT+' dias e alguém da Peers conhece decisores lá. Prioridade (●●●): projeto terminado há até 6 meses, mais de uma notícia e 10 ou mais decisores conhecidos. "Quem chama" segue a regra da planilha de relacionamentos.'
       : 'Clientes e ex-clientes: a notícia aponta para uma offering que a Peers ainda não fez ali, pela carteira de projetos. Clientes ativos primeiro.') + '</p>' +
     (lista.length ? '<div class="op-grid">' + lista.map((x, k)=>v==="reativar" ? cartaoReativar(x, k) : cartaoExpandir(x, k)).join("") + '</div>'
       : '<div class="card"><div class="vazio">Nenhuma oportunidade nos últimos '+DIAS_OPORT+' dias.</div></div>');
+}
+/* Excel de Oportunidades: as duas listas (Reativar e Expandir) com o porquê, quem chama e o contato, mais as premissas.
+   Mesmo visual da planilha de relacionamentos (faixa azul-marinho com a logo, linha verde-limão, cabeçalho fixo). */
+async function baixarExcelOport(botao){
+  const txt = botao.textContent;
+  botao.disabled = true; botao.textContent = "Gerando…";
+  try{
+    await carregarExcelJS();
+    const o = oportunidades(), NAVY = "FF011334", LIMA = "FFE1FF00", hoje = new Date().toLocaleDateString("pt-BR");
+    registrarUso("planilha_oportunidades", o.reativar.length+"+"+o.expandir.length);
+    const wb = new ExcelJS.Workbook();
+    const fina = {bottom:{style:"thin", color:{argb:"FFDDE3EA"}}};
+    const logo = await (async()=>{
+      const el = document.querySelector(".peers-logo img");
+      if(!el) return null;
+      return new Promise(ok=>{
+        const img = new Image();
+        img.onload = ()=>{ try{
+          const cv = document.createElement("canvas"); cv.width = img.naturalWidth; cv.height = img.naturalHeight;
+          const cx = cv.getContext("2d"); cx.drawImage(img, 0, 0);
+          const px = cx.getImageData(0, 0, cv.width, cv.height);
+          for(let k=0; k<px.data.length; k+=4){ px.data[k] = px.data[k+1] = px.data[k+2] = 255; }
+          cx.putImageData(px, 0, 0);
+          ok({id: wb.addImage({base64:cv.toDataURL("image/png"), extension:"png"}), prop: img.naturalWidth/img.naturalHeight});
+        }catch(e){ ok(null); } };
+        img.onerror = ()=>ok(null);
+        img.src = el.src;
+      });
+    })();
+    const faixa = (ws, ncols, t1, t2, t4)=>{
+      ws.properties.tabColor = {argb:NAVY};
+      const pinta = (l, cor)=>{ for(let j=1; j<=ncols; j++) ws.getCell(l, j).fill = {type:"pattern", pattern:"solid", fgColor:{argb:cor}}; };
+      [1,2,3].forEach(l=>pinta(l, NAVY)); pinta(4, LIMA);
+      ws.getRow(1).height = 32; ws.getRow(2).height = 24; ws.getRow(3).height = 20; ws.getRow(4).height = 20;
+      if(logo) ws.addImage(logo.id, {tl:{col:0.06, row:0.12}, ext:{width:Math.round(30*logo.prop), height:30}});
+      else { ws.getCell("A1").value = "PEERS"; ws.getCell("A1").font = {size:16, bold:true, color:{argb:LIMA}}; }
+      ws.getCell("A2").value = t1; ws.getCell("A2").font = {size:16, bold:true, color:{argb:"FFFFFFFF"}};
+      ws.getCell("A3").value = t2; ws.getCell("A3").font = {size:9.5, color:{argb:"FFC8D2E0"}};
+      ws.getCell("A4").value = t4; ws.getCell("A4").font = {size:9, italic:true, color:{argb:NAVY}};
+      [1,2,3,4].forEach(l=>{ for(let j=1; j<=ncols; j++) ws.getCell(l, j).alignment = {vertical:"middle"}; });
+    };
+    const tabela = (nome, t1, t2, cols, linhas)=>{
+      const ws = wb.addWorksheet(nome, {views:[{state:"frozen", ySplit:5, xSplit:1, showGridLines:false}]});
+      faixa(ws, cols.length, t1, t2, "Confidencial · uso interno da Peers (clientes e conexões pessoais dos executivos, LGPD) · gerado em "+hoje+" no Portal de Inteligência");
+      const r = ws.getRow(5);
+      cols.forEach(([t, w], j)=>{ const c = r.getCell(j+1); c.value = t; c.font = {bold:true, color:{argb:"FFFFFFFF"}};
+        c.fill = {type:"pattern", pattern:"solid", fgColor:{argb:NAVY}}; c.alignment = {vertical:"middle", wrapText:true};
+        c.border = {bottom:{style:"medium", color:{argb:LIMA}}}; ws.getColumn(j+1).width = w; });
+      r.height = 34;
+      linhas.forEach((vals, i)=>{
+        const lin = ws.getRow(6+i);
+        vals.forEach((v, j)=>{
+          const c = lin.getCell(j+1);
+          if(v && typeof v==="object" && v.url){ c.value = {text:v.texto, hyperlink:v.url}; c.font = {color:{argb:"FF2F63B0"}, underline:true}; }
+          else c.value = v==null ? "" : v;
+          c.alignment = {vertical:"top", wrapText:true}; c.border = fina;
+        });
+        lin.getCell(1).font = {bold:true, color:{argb:NAVY}};
+      });
+      if(linhas.length) ws.autoFilter = {from:{row:5, column:1}, to:{row:5+linhas.length, column:cols.length}};
+      return ws;
+    };
+    const ex = i => i===undefined ? null : CONEXOES.execs[i];
+    const quem = x => { const e = ex(x.quem); return e ? e.nome : "Ninguém com decisor conhecido"; };
+    const segunda = x => { const e = ex(x.rel.ordem[1]); return e ? e.nome+" ("+e.nivel+")" : ""; };
+    const lk = l => l && l.url ? {texto:l.nome, url:l.url} : (l ? l.nome : "");
+    const nt = n => n.url ? {texto:n.titulo, url:n.url} : n.titulo;
+    const grupoAtivo = c => (c.grupo||[]).filter(g=>g.ativo).map(g=>g.nome).join(", ");
+
+    tabela("Reativar contas", "Oportunidades · Reativar contas",
+      "Ex-clientes com notícia nos últimos "+DIAS_OPORT+" dias e alguém da Peers que conhece decisores lá · "+o.reativar.length+" contas",
+      [["Cliente",26],["Prioridade",11],["Situação",16],["Último projeto",28],["Offering do último",18],["Fim",9],["Projetos",9],["Grupo segue cliente",22],
+       ["Por que agora (notícia)",46],["Data",11],["Por que importa",46],["Outras notícias",10],["Quem chama",26],["Nível",7],["Decisores que conhece",11],
+       ["Contato mais sênior",24],["Cargo do contato",30],["Segunda opção",26],["Decisores conhecidos",11],["Executivos Peers",10],["Líder na época",22],["MD na época",22]],
+      o.reativar.map(x=>{ const c = x.c, n = x.nts[0], e = ex(x.quem);
+        return [c.nome, "●".repeat(x.calor)+"○".repeat(3-x.calor), tempoFim(x), c.ultimo||"", c.offering||"", c.fim||"", c.projetos, grupoAtivo(c),
+          nt(n), formatarData(n.data), n.leitura||"", x.nts.length-1 || "", quem(x), e ? e.nivel : "", e ? x.rel.cont.get(x.quem) : "",
+          lk(x.contato), x.contato ? x.contato.cargo : "", segunda(x), x.rel.dec.length, x.rel.cont.size,
+          c.lider ? nomePessoa(c.lider) : "", c.md ? nomePessoa(c.md) : ""]; }));
+
+    tabela("Expandir contas", "Oportunidades · Expandir contas",
+      "Clientes e ex-clientes: a notícia aponta para uma offering que a Peers ainda não fez ali · "+o.expandir.length+" contas",
+      [["Cliente",26],["Situação",16],["Já fez",30],["Abre",26],["Notícia",46],["Data",11],["Ângulo Peers da notícia",46],["Quem chama",26],["Nível",7],
+       ["Decisores que conhece",11],["Contato mais sênior",24],["Cargo do contato",30],["Segunda opção",26],["Decisores conhecidos",11],["MD da conta",22]],
+      o.expandir.map(x=>{ const c = x.c, n = x.nts.find(t=>x.abre.includes(t.off)) || x.nts[0], e = ex(x.quem);
+        return [c.nome, c.ativo ? "Cliente ativo" : c.rotulo, c.offPortal.join(", "), x.abre.join(", "), nt(n), formatarData(n.data), n.angulo||"",
+          quem(x), e ? e.nivel : "", e ? x.rel.cont.get(x.quem) : "", lk(x.contato), x.contato ? x.contato.cargo : "", segunda(x),
+          x.rel.dec.length, c.md ? nomePessoa(c.md) : ""]; }));
+
+    const pr = wb.addWorksheet("Premissas", {views:[{showGridLines:false}]});
+    faixa(pr, 2, "Premissas", "Como as listas são montadas", "Confidencial · uso interno da Peers");
+    pr.getColumn(1).width = 28; pr.getColumn(2).width = 110;
+    const blocos = [
+      ["Fontes", [
+        ["Base de clientes da Peers", "Carteira de projetos de "+CLIENTES.geradoEm+" (clientes ativos, ex-clientes, último projeto, offering, líder e MD)."],
+        ["Notícias", "Radar e Movimentos do portal nos últimos "+DIAS_OPORT+" dias, até "+formatarData(HOJE)+"."],
+        ["Conexões", "Mapa de Conexões "+CONEXOES.versao+" ("+CONEXOES.geradoEm+"): conexões de 1º grau no LinkedIn dos executivos da Peers, só decisores."]]],
+      ["Reativar contas", [
+        ["Quem entra", "Ex-clientes (o último projeto já terminou) com notícia no período e pelo menos um decisor conhecido por alguém da Peers."],
+        ["Prioridade", "●●● soma três sinais: projeto terminado há até 6 meses, mais de uma notícia e 10 ou mais decisores conhecidos."],
+        ["Ordem", "Prioridade, depois o projeto mais recente, depois mais decisores conhecidos."]]],
+      ["Expandir contas", [
+        ["Quem entra", "Clientes e ex-clientes em que a notícia aponta para uma offering que a Peers ainda não fez ali, pela carteira de projetos."],
+        ["Ordem", "Clientes ativos primeiro, depois mais decisores conhecidos."]]],
+      ["Quem chama", [
+        ["Regra", "A mesma da planilha de relacionamentos: quem conhece mais decisores lá; um N2 só aparece primeiro se nenhum N0 ou N1 tiver contato."],
+        ["Contato mais sênior", "O decisor de maior senioridade que essa pessoa conhece lá."],
+        ["Limite", "Conexão no LinkedIn não mostra se há relação de fato. O cargo é o do momento da extração."]]],
+      ["Uso dos dados", [
+        ["Confidencialidade", "Tem clientes e projetos da Peers e nomes de conexões pessoais dos executivos (dado pessoal, LGPD). Uso interno: não enviar para fora da empresa."]]]];
+    let p = 6;
+    blocos.forEach(([tit, itens])=>{
+      const t = pr.getRow(p); t.values = [tit]; t.height = 22;
+      [1,2].forEach(j=>{ t.getCell(j).fill = {type:"pattern", pattern:"solid", fgColor:{argb:NAVY}}; t.getCell(j).font = {size:12, bold:true, color:{argb:"FFFFFFFF"}}; });
+      itens.forEach(([k, v])=>{ p++; const lin = pr.getRow(p); lin.values = [k, v]; lin.getCell(1).font = {bold:true};
+        [1,2].forEach(j=>{ lin.getCell(j).alignment = {wrapText:true, vertical:"top"}; lin.getCell(j).border = fina; });
+        lin.height = 15 * Math.max(1, Math.ceil(v.length/105)); });
+      p += 2;
+    });
+
+    const blob = new Blob([await wb.xlsx.writeBuffer()], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "Oportunidades Peers - "+hoje.replace(/\//g,"-")+".xlsx";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 10000);
+    botao.textContent = "Excel baixado";
+    setTimeout(()=>{ botao.textContent = txt; botao.disabled = false; }, 2500);
+  }catch(err){
+    console.error(err);
+    botao.textContent = "Não deu para gerar: tente de novo";
+    botao.disabled = false;
+  }
 }
 // Rascunho de mensagem para quem chama: a notícia, o histórico da Peers no cliente e o contato que essa pessoa tem lá
 function copiarOport(k, botao){
@@ -2263,6 +2405,8 @@ function ligarOportunidades(){
   document.querySelectorAll("[data-rodaproj]").forEach(b=>b.addEventListener("click", ()=>abrirProjetosRoda(b.dataset.rodaproj)));
   document.querySelectorAll("[data-opcopiar]").forEach(b=>b.addEventListener("click", ()=>copiarOport(+b.dataset.opcopiar, b)));
   document.querySelectorAll("[data-opconx]").forEach(b=>b.addEventListener("click", ()=>irConexoes(+b.dataset.opconx)));
+  const ob = document.getElementById("opBaixar");
+  if(ob) ob.addEventListener("click", ()=>baixarExcelOport(ob));
 }
 
 /* =========================================================
