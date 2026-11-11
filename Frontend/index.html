@@ -85,23 +85,21 @@ button,input,select,textarea{font-family:inherit}
 .cen-faixa .mk.hoje{top:17px;width:18px;height:18px;border-radius:50%;background:var(--neon);border:2px solid var(--navy);box-shadow:var(--shadow)}
 .cen-faixa .mk.marco{top:14px;width:0;height:24px;border-left:2px dotted var(--grey-dark)}
 .cen-faixa .pt.marco{top:40px}.cen-faixa .pt.marco .r{text-transform:none;letter-spacing:0;font-weight:500}
-.cen-topo{display:flex;align-items:stretch;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}
-.cen-hoje-b{flex:1;min-width:220px;background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border-radius:var(--r-md);padding:14px 18px}
-.cen-hoje-b small{font-size:.64rem;text-transform:uppercase;letter-spacing:.1em;color:var(--neon);font-weight:700}
-.cen-hoje-b .v{font-size:2.1rem;font-weight:600;line-height:1.1;margin:2px 0;font-variant-numeric:tabular-nums}
-.cen-hoje-b .m{font-size:.74rem;color:rgba(255,255,255,.75);line-height:1.45}
-.cen-hoje-b .cen-pior{color:#ff9a9e}.cen-hoje-b .cen-melhor{color:#7be3b8}
-.cen-btn-graf{align-self:center;border:1px solid var(--navy);background:#fff;color:var(--navy);font:inherit;font-size:.82rem;font-weight:600;border-radius:var(--r-sm);padding:10px 16px;cursor:pointer;
+.cen-topo{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding-bottom:16px;margin-bottom:18px;border-bottom:1px solid var(--grey-light)}
+.cen-hoje-b{flex:1;min-width:220px}
+.cen-hoje-b small{font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:var(--grey);font-weight:700}
+.cen-hoje-b .v{font-size:2.3rem;font-weight:300;line-height:1.05;margin:2px 0 4px;color:var(--navy);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.cen-hoje-b .m{font-size:.74rem;color:var(--grey);line-height:1.45}
+.cen-btn-graf{align-self:center;border:1px solid var(--grey-strong);background:#fff;color:var(--navy);font:inherit;font-size:.82rem;font-weight:600;border-radius:var(--r-sm);padding:10px 16px;cursor:pointer;
   transition:background var(--dur) var(--ease),color var(--dur) var(--ease)}
 .cen-btn-graf span{display:inline-block;transition:transform var(--dur) var(--ease)}
 .cen-btn-graf:hover,.cen-btn-graf.on{background:var(--navy);color:#fff}
 .cen-btn-graf.on span{transform:rotate(90deg)}
-.cen-ver{border:1px solid var(--grey-border);border-radius:var(--r-md);padding:8px 14px 12px;margin-bottom:14px;background:#fff}
+.cen-ver{padding:0 0 10px;margin-bottom:18px;border-bottom:1px solid var(--grey-light)}
 .cen-ver[hidden],.cen-sc-painel[hidden]{display:none}
 .cen-vernota{font-size:.72rem;color:var(--grey);margin:4px 0 2px}
-.cen-expl{font-size:.82rem;line-height:1.55;color:var(--text2);background:var(--serene-soft);border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px}
-.cen-sec{border:1px solid var(--grey-border);border-radius:var(--r-md);padding:14px 18px 16px;margin-bottom:14px}
-.cen-sec h4{font-size:.68rem;text-transform:uppercase;letter-spacing:.09em;color:var(--grey);margin:0 0 4px}
+.cen-expl{font-size:.82rem;line-height:1.55;color:var(--text2);background:#f7f9fb;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px}
+.cen-sec{margin-bottom:22px}
 .cen-faixa{height:74px;margin:6px 30px 0}
 .cen-faixa .trilho{top:34px;height:10px;border-radius:5px}
 .cen-faixa .pt.hoje{top:0}.cen-faixa .pt.hoje .r{font-size:.66rem;background:var(--navy);color:var(--neon);padding:3px 8px;border-radius:10px;letter-spacing:.04em}
@@ -120,7 +118,7 @@ button,input,select,textarea{font-family:inherit}
 .leg b{font-variant-numeric:tabular-nums;color:var(--navy)}
 .leg:hover,.leg.on{border-color:var(--navy);background:var(--serene-soft)}
 .leg::after{content:"›";color:var(--grey);margin-left:2px;transition:transform var(--dur) var(--ease)}.leg.on::after{transform:rotate(90deg)}
-.cen-sc-painel{margin-top:10px;border-radius:var(--r-md);background:var(--serene-soft);padding:12px 16px}
+.cen-sc-painel{margin-top:12px;border-radius:var(--r-md);background:#f7f9fb;border-left:3px solid var(--grey-strong);padding:12px 16px}
 .cen-sc-cab{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .cen-sc-cab span{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
 .cen-sc-cab b{font-size:1.25rem;font-variant-numeric:tabular-nums}
@@ -128,10 +126,24 @@ button,input,select,textarea{font-family:inherit}
 .cen-sc-cab.pess span,.cen-sc-cab.pess b{color:var(--t3)}.cen-sc-cab.otim span,.cen-sc-cab.otim b{color:var(--t2)}.cen-sc-cab.base span,.cen-sc-cab.base b{color:#5b4636}
 .cen-sc-painel p{font-size:.84rem;line-height:1.55;color:var(--text2);margin:6px 0 0}
 .cen-duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.cen-c2{background:var(--serene-soft);border:1px solid var(--serene);border-radius:var(--r-md);padding:15px 18px}
-.cen-c2 h5{display:flex;align-items:center;gap:8px;font-size:.7rem;text-transform:uppercase;letter-spacing:.09em;color:var(--navy);margin:0 0 8px}
-.cen-c2 h5 i{width:8px;height:8px;border-radius:50%;background:var(--neon);box-shadow:0 0 0 2px var(--navy);display:inline-block}
+.cen-c2{background:#f7f9fb;border-radius:var(--r-md);padding:16px 20px}
+.cen-c2 h5{display:flex;align-items:center;gap:8px;font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:var(--grey);margin:0 0 8px}
+.cen-c2 h5 i{width:6px;height:6px;border-radius:50%;background:var(--navy);display:inline-block}
 .cen-c2 p{font-size:.86rem;line-height:1.6;color:var(--text2);margin:0}
+.cen-head2{background:#fff;padding:26px 32px 4px;align-items:flex-start;border-top:4px solid transparent;border-image:linear-gradient(90deg,var(--navy),var(--neon)) 1}
+.cen-head2 small{display:block;font-size:.64rem;text-transform:uppercase;letter-spacing:.14em;color:var(--grey);font-weight:700;margin-bottom:6px}
+.cen-head2 h3{color:var(--navy);font-size:1.7rem;font-weight:300;letter-spacing:-.02em;line-height:1.1}
+.cen-head2 .modal-close{border:0;background:var(--grey-light);color:var(--grey-dark);width:32px;height:32px;padding:0;border-radius:50%;font-size:.85rem;line-height:1}
+.cen-head2 .modal-close:hover{background:var(--navy);color:#fff;border-color:transparent}
+.cen-body{padding:14px 32px 32px}
+.cen-btn-graf{border:0;background:none;padding:6px 0;color:var(--navy);font-weight:600;font-size:.84rem;border-bottom:1px solid var(--grey-strong);border-radius:0}
+.cen-btn-graf:hover,.cen-btn-graf.on{background:none;color:var(--navy);border-bottom-color:var(--navy)}
+.cen-topo{border-bottom:0;padding-bottom:6px}
+.cen-duo{gap:16px;margin-top:6px}
+.cen-c2{background:linear-gradient(160deg,#f6f9fc,#fff 70%);border:1px solid var(--grey-light);border-radius:16px;padding:24px 26px;box-shadow:0 6px 20px -14px rgba(1,19,52,.35)}
+.cen-c2 h5{font-size:.7rem;font-weight:700;color:var(--navy);letter-spacing:.1em;margin-bottom:12px}
+.cen-c2 h5 i{width:22px;height:3px;border-radius:2px;background:var(--neon);box-shadow:none}
+.cen-c2 p{font-size:.96rem;line-height:1.7}
 @media (max-width:640px){.cen-duo{grid-template-columns:1fr}.cen-faixa{margin:6px 14px 0}}
 .cen-focus{font-size:.7rem;color:var(--grey-dark);margin-top:8px}
 .cen-focus b{font-weight:700}
@@ -3352,9 +3364,9 @@ function abrirCenario(id){
   const ib = l.hoje.desdeEleicao, graf = graficoCen(l, DADOS.cenario);
   const oque = textoCen(l,'oque'), imp = textoCen(l,'impacto');
   const m = document.getElementById("mFicha");
-  m.innerHTML = '<div class="modal-head"><div><h3>'+esc(l.indicador)+'</h3><p>'+esc(l.medida)+'</p></div>' +
-    '<button class="modal-close" onclick="fecharModal(\'Ficha\')">Fechar</button></div>' +
-    '<div class="modal-body">' +
+  m.innerHTML = '<div class="modal-head cen-head2"><div><small>'+esc(l.medida)+'</small><h3>'+esc(l.indicador)+'</h3></div>' +
+    '<button class="modal-close" onclick="fecharModal('Ficha')" aria-label="Fechar">✕</button></div>' +
+    '<div class="modal-body cen-body">' +
       '<div class="cen-topo"><div class="cen-hoje-b"><small>Hoje</small><div class="v">'+fmtCen(l.hoje.valor, l, l.sinalMais)+'</div>' +
         '<div class="m">'+notaHojeCen(l)+(l.hoje.auto ? '' : ' · atualizado à mão')+
         (ib!=null ? ' · <b class="'+(ib<0?'cen-pior':'cen-melhor')+'">'+(ib>0?'+':'−')+fmtN(Math.abs(ib),1)+'% desde a eleição</b>' : '')+'</div>' +
