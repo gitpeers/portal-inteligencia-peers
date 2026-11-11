@@ -802,6 +802,30 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 #btnBriefing .cnt{background:var(--neon);color:var(--navy);border-radius:var(--pill);min-width:24px;height:24px;
   display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;padding:0 7px;font-variant-numeric:tabular-nums}
 
+#btnBriefing.vazio{background:var(--navy2);opacity:.85}
+#btnBriefing.vazio .cnt{background:rgba(255,255,255,.18);color:#fff}
+
+/* ---- MINHA SELEÇÃO (painel lateral) ---- */
+.sel-drawer{position:fixed;top:0;right:0;bottom:0;width:min(420px,100vw);background:#fff;z-index:901;display:flex;
+  flex-direction:column;box-shadow:-18px 0 50px rgba(1,19,52,.25);transform:translateX(105%);transition:transform .25s var(--ease);visibility:hidden}
+.sel-drawer.open{transform:none;visibility:visible}
+.sel-head{background:var(--navy);padding:18px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex:none}
+.sel-head h3{color:#fff;font-size:1.05rem;font-weight:500}
+.sel-head p{color:#aab4c5;font-size:.74rem;margin-top:3px;line-height:1.4}
+.sel-lista{flex:1;overflow-y:auto;padding:6px 20px 16px}
+.sel-grupo{font-size:.66rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--grey-dark);margin:16px 0 6px}
+.sel-it{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line, #e6e9ef)}
+.sel-it b{display:block;font-size:.8rem;font-weight:600;color:var(--navy);line-height:1.35}
+.sel-it small{display:block;font-size:.7rem;color:var(--grey-dark);margin-top:2px}
+.sel-tirar{flex:none;border:1px solid var(--line, #d9dee7);background:#fff;color:var(--grey-dark);border-radius:var(--pill);
+  width:28px;height:28px;cursor:pointer;font-size:.8rem;line-height:1}
+.sel-tirar:hover{border-color:#c0392b;color:#c0392b}
+.sel-vazio{font-size:.8rem;color:var(--grey-dark);line-height:1.5;margin-top:18px}
+.sel-pe{flex:none;display:flex;gap:10px;align-items:center;padding:14px 20px;border-top:1px solid var(--line, #e6e9ef);background:#fafbfc}
+.sel-pe .btn[disabled]{opacity:.45;cursor:not-allowed}
+.sel-limpar{background:none;border:none;color:var(--grey-dark);font-size:.76rem;text-decoration:underline;cursor:pointer;margin-left:auto}
+@media (prefers-reduced-motion: reduce){.sel-drawer{transition:none}}
+
 /* ---- RESUMO FALADO ---- */
 .sec-head-row{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
 .btn-audio{background:var(--neon);color:var(--navy);border:none;border-radius:var(--r-sm);padding:11px 20px;
@@ -961,7 +985,19 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 <!-- Análises trimestrais: fica fora do #conteudo para o dashboard não ser recarregado a cada troca de aba -->
 <div id="trimestral" hidden><div class="tri-msg" id="triMsg">Carregando…</div></div>
 
-<button id="btnBriefing" onclick="abrirBriefing()">Gerar briefing <span class="cnt" id="cntBriefing">0</span></button>
+<button id="btnBriefing" class="vazio" onclick="abrirSelecao()" aria-haspopup="dialog">Minha seleção <span class="cnt" id="cntBriefing">0</span></button>
+<div class="modal-bg" id="bgSelecao" onclick="fecharModal('Selecao')"></div>
+<aside class="sel-drawer" id="mSelecao" role="dialog" aria-modal="true" aria-label="Minha seleção">
+  <div class="sel-head">
+    <div><h3>Minha seleção</h3><p>O que você marcou para o briefing. Fica guardado neste navegador até você tirar.</p></div>
+    <button class="modal-close" onclick="fecharModal('Selecao')">Fechar</button>
+  </div>
+  <div class="sel-lista" id="selLista"></div>
+  <div class="sel-pe">
+    <button class="btn" id="selGerar" onclick="fecharModal('Selecao'); abrirBriefing()">Gerar briefing</button>
+    <button class="sel-limpar" id="selLimpar" onclick="limparSelecao()">Limpar seleção</button>
+  </div>
+</aside>
 
 <div class="modal-bg" id="bgFicha" onclick="fecharModal('Ficha')"></div>
 <div class="modal" id="mFicha"></div>
@@ -1443,6 +1479,7 @@ function voltarAoLugar(){
 
 function init(){
   voltarAoLugar();
+  restaurarSelecao();
   montarFiltros();
 
   document.querySelectorAll(".vbtn[data-v]").forEach(b=>{
@@ -1842,6 +1879,7 @@ async function baixarPlanilhaConx(botao){
     const ordF = ["Forte","Médio","Fraco","Nenhum"];
     const rels = [...estadoConx.sel].map(i=>relacaoEmpresa(CONEXOES.empresas[i]))
       .sort((a,b)=>ordF.indexOf(a.forca)-ordF.indexOf(b.forca) || b.dec.length-a.dec.length || a.e.nome.localeCompare(b.e.nome));
+    registrarUso("planilha_relacionamentos", estadoConx.sel.size+" empresas");
     const wb = new ExcelJS.Workbook();
     const ov = wb.addWorksheet("Relacionamentos Peers", {views:[{state:"frozen", ySplit:5, xSplit:1, showGridLines:false}]});
     const ct = wb.addWorksheet("Contatos Peers", {views:[{state:"frozen", ySplit:5, xSplit:2, showGridLines:false}], properties:{outlineProperties:{summaryBelow:false}}});
@@ -2938,6 +2976,7 @@ async function abrirTrimestral(){
 function renderizar(){
   sincronizarFiltros();
   guardarLugar();
+  registrarAba();
   document.getElementById("chipRestrito").innerHTML =
     estado.modoVisualizacao==="comercial"
       ? '<span class="chip-restrito">Área comercial restrita ativa</span>' : '';
@@ -4571,6 +4610,7 @@ async function briefingConcorrentes(dias){
   const iso = d=>d.toISOString().slice(0,10), br = s=>formatarData(s);
   const itens = DADOS.concorrencia.filter(i=>diasEntre(i.data) >= -DIAS).sort((a,b)=>b.data.localeCompare(a.data));
   if(!itens.length){ alert("Não há movimentos de concorrentes nos últimos "+DIAS+" dias."); return; }
+  registrarUso("briefing_concorrentes", DIAS+" dias");
   const aba = window.open("", "_blank");       // aberta já no clique, para o navegador não bloquear; recebe o PDF depois
   if(aba) aba.document.write('<p style="font-family:Arial;padding:24px">Gerando o briefing…</p>');
   try{
@@ -4948,7 +4988,96 @@ function ligarEventos(){
 }
 
 function atualizarContador(){
-  document.getElementById("cntBriefing").textContent = estado.selecionados.size;
+  const n = estado.selecionados.size, b = document.getElementById("btnBriefing");
+  document.getElementById("cntBriefing").textContent = n;
+  if(b) b.classList.toggle("vazio", !n);
+  salvarSelecao();
+  if(document.getElementById("mSelecao").classList.contains("open")) renderSelecao();
+}
+
+/* =========================================================
+   MINHA SELEÇÃO · o que a pessoa marcou para o briefing, com a lista,
+   o botão de tirar cada item e a seleção guardada no navegador
+   ========================================================= */
+const SEL_TIPOS = [["radar","Radar"], ["trimestral","Finanças · companhias abertas"], ["financas","Finanças · maiores empresas"],
+  ["indicador","Indicadores"], ["movimento","Movimentos"], ["agenda","Agenda"]];
+const chaveSelecao = () => "portal_peers_selecao_" + (USUARIO_EMAIL || "").toLowerCase();
+// {titulo, sub} do item marcado, ou null se ele saiu do portal (notícia vencida, evento passado)
+function itemSelecionado(tipo, id){
+  const d = s => s ? formatarData(s) : "";
+  if(tipo==="radar"){ const i = (DADOS.radar||[]).find(r=>r.id===id); return i && {titulo:i.manchete, sub:[rotuloInd(i), d(i.data)].filter(Boolean).join(" · ")}; }
+  if(tipo==="trimestral"){ const e = (DADOS.trimestral||[]).find(x=>x.id===id); return e && {titulo:e.nome, sub:[e.industria, e.divisao].filter(Boolean).join(" · ")}; }
+  if(tipo==="financas"){ for(const p of DADOS.players||[]){ const s = p.segmentos.find(x=>x.id===id); if(s) return {titulo:s.nomeExibicao, sub:[s.industria, s.divisao].filter(Boolean).join(" · ")}; } return null; }
+  if(tipo==="indicador"){ const s = (DADOS.indicadores||[]).find(x=>x.id===id); return s && {titulo:rotuloSegmento(s), sub:s.indicadores.length+(s.indicadores.length===1?" indicador":" indicadores")}; }
+  if(tipo==="movimento"){ const m = (DADOS.movimentos||[]).find(x=>x.id===id); return m && {titulo:m.player+" · "+m.tipo, sub:[m.tese, d(m.data)].filter(Boolean).join(" · ")}; }
+  if(tipo==="agenda"){ const a = (DADOS.agenda||[]).find(x=>x.id===id); return a && {titulo:a.titulo || a.nome || a.evento || "Evento", sub:d(a.data)}; }
+  return null;
+}
+function salvarSelecao(){
+  try{ if(USUARIO_EMAIL) localStorage.setItem(chaveSelecao(), JSON.stringify([...estado.selecionados])); }catch(e){ /* sem armazenamento */ }
+}
+function restaurarSelecao(){
+  try{
+    const salvo = JSON.parse(localStorage.getItem(chaveSelecao()) || "[]");
+    salvo.forEach(k=>{ const [t, ...r] = String(k).split(":"); if(itemSelecionado(t, r.join(":"))) estado.selecionados.add(k); });
+  }catch(e){ /* sem armazenamento ou valor antigo */ }
+  atualizarContador();
+}
+function abrirSelecao(){
+  renderSelecao();
+  abrirModal("Selecao");
+  const f = document.querySelector("#mSelecao .modal-close"); if(f) f.focus();
+}
+function renderSelecao(){
+  const chaves = [...estado.selecionados];
+  const grupos = SEL_TIPOS.map(([t, rot])=>[rot, chaves.filter(k=>k.startsWith(t+":")).map(k=>({k, it:itemSelecionado(t, k.slice(t.length+1))})).filter(x=>x.it)])
+    .filter(([, l])=>l.length);
+  document.getElementById("selLista").innerHTML = grupos.length
+    ? grupos.map(([rot, l])=>'<div class="sel-grupo">'+esc(rot)+' · '+l.length+'</div>' + l.map(x=>
+        '<div class="sel-it"><div><b>'+esc(x.it.titulo)+'</b>'+(x.it.sub ? '<small>'+esc(x.it.sub)+'</small>' : '')+'</div>' +
+        '<button type="button" class="sel-tirar" data-tirar="'+esc(x.k)+'" title="Tirar da seleção" aria-label="Tirar '+esc(x.it.titulo)+' da seleção">✕</button></div>').join("")).join("")
+    : '<div class="sel-vazio">Nada marcado ainda.<br>Nos cartões do Radar, de Indicadores, Finanças, Movimentos e Agenda, marque <b>incluir no briefing</b>: o item aparece aqui, e o briefing junta todos num texto só.</div>';
+  document.getElementById("selGerar").disabled = !grupos.length;
+  document.getElementById("selLimpar").hidden = !grupos.length;
+  document.querySelectorAll("#selLista [data-tirar]").forEach(b=>b.addEventListener("click", ()=>tirarDaSelecao(b.dataset.tirar)));
+}
+function tirarDaSelecao(k){
+  estado.selecionados.delete(k);
+  const [t, ...r] = k.split(":"), id = r.join(":");
+  document.querySelectorAll('.chk').forEach(c=>{ if(c.dataset.tipo===t && c.dataset.id===id) c.checked = false; });
+  atualizarContador();
+  renderSelecao();
+}
+function limparSelecao(){
+  if(!estado.selecionados.size || !confirm("Tirar os "+estado.selecionados.size+" itens da seleção?")) return;
+  estado.selecionados.clear();
+  document.querySelectorAll('.chk').forEach(c=>{ c.checked = false; });
+  atualizarContador();
+  renderSelecao();
+}
+
+/* =========================================================
+   REGISTRO DE USO · que abas são abertas e quantos briefings saem, para decidir
+   o que muda no portal. Grava aba, evento, perfil e um número de sessão sorteado
+   a cada visita; não grava e-mail nem nome (Supabase/uso.sql)
+   ========================================================= */
+const USO = {sessao: Math.random().toString(36).slice(2, 12) + Date.now().toString(36), ultimo: ""};
+function perfilUso(){
+  if(!CONEXOES) return "geral";
+  return (CONEXOES.perfil || "comercial") + (CLIENTES.peers && CLIENTES.peers.length ? "+clientes" : "");
+}
+function registrarUso(evento, detalhe){
+  try{
+    if(!sb || !USUARIO_EMAIL) return;
+    sb.from("uso_portal").insert({evento, aba: estado.aba, detalhe: detalhe==null ? null : String(detalhe).slice(0, 80),
+      perfil: perfilUso(), sessao: USO.sessao}).then(()=>{}, ()=>{});
+  }catch(e){ /* sem a tabela ou sem rede: o portal segue */ }
+}
+function registrarAba(){
+  const lugar = estado.aba + (["oportunidades","roda"].includes(estado.aba) ? ":"+estadoOport.visao : "");
+  if(lugar===USO.ultimo) return;
+  USO.ultimo = lugar;
+  registrarUso("aba", lugar.includes(":") ? lugar.split(":")[1] : null);
 }
 
 /* =========================================================
@@ -5638,6 +5767,7 @@ function abrirConta(){
 }
 function montarConta(){
   const nome = document.getElementById("inpConta").value.trim();
+  registrarUso("briefing_conta");
   const k = chaveNome(nome);
   const ta = document.getElementById("txtConta");
   if(!k){ ta.value = "Digite o nome de uma empresa."; return; }
@@ -5713,7 +5843,7 @@ function fecharModal(nome){
   document.getElementById("m"+nome).classList.remove("open");
 }
 document.addEventListener("keydown", e=>{
-  if(e.key==="Escape"){ fecharModal("Ficha"); fecharModal("Briefing"); fecharModal("Audio"); fecharModal("Conta"); }
+  if(e.key==="Escape"){ fecharModal("Ficha"); fecharModal("Briefing"); fecharModal("Audio"); fecharModal("Conta"); fecharModal("Selecao"); }
 });
 
 /* =========================================================
@@ -5814,6 +5944,7 @@ function abrirBriefing(){
   document.getElementById("txtBriefing").value = L.join("\n");
   document.getElementById("msgCopiado").style.display = "none";
   abrirModal("Briefing");
+  registrarUso("briefing", estado.selecionados.size+" itens");
 }
 
 function copiarBriefing(){
