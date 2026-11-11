@@ -31,6 +31,21 @@ def sgs(codigo):
     return float(d["valor"]), min(f"{ano}-{mes}-{dia}", agora().date().isoformat())
 
 
+def sgs_historico(codigo, diaria, sinal=1):
+    """Último ano (série diária, pontos semanais) ou últimos 36 meses (mensal): [[data, valor]], para o gráfico."""
+    n = 260 if diaria else 36
+    dados = baixar_json(f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.{codigo}/dados/ultimos/{n}?formato=json")
+    hoje = agora().date().isoformat()
+    pts = []
+    for d in dados:
+        dia, mes, ano = d["data"].split("/")
+        if f"{ano}-{mes}-{dia}" <= hoje and d["valor"] not in (None, ""):
+            pts.append([f"{ano}-{mes}-{dia}", float(d["valor"]) * sinal])
+    if diaria:      # um ponto por semana, mantendo sempre o último
+        pts = pts[::-5][::-1]
+    return pts
+
+
 def sidra(consulta):
     linhas = baixar_json("https://apisidra.ibge.gov.br/values" + consulta.replace("{p}", "last%201"))[1:]
     p = linhas[-1]["D3C"]          # período, ex. 202602 = 2º trimestre de 2026
@@ -38,8 +53,8 @@ def sidra(consulta):
 
 
 def ibov():
-    """Fechamentos diários do Ibovespa no último trimestre: [(data, valor)]."""
-    r = baixar_json("https://query1.finance.yahoo.com/v8/finance/chart/%5EBVSP?range=3mo&interval=1d")["chart"]["result"][0]
+    """Fechamentos diários do Ibovespa no último ano: [(data, valor)]."""
+    r = baixar_json("https://query1.finance.yahoo.com/v8/finance/chart/%5EBVSP?range=1y&interval=1d")["chart"]["result"][0]
     br = timezone(timedelta(hours=-3))
     return [(datetime.fromtimestamp(t, br).date().isoformat(), c)
             for t, c in zip(r["timestamp"], r["indicators"]["quote"][0]["close"]) if c]
@@ -74,11 +89,16 @@ def atualizar(c):
             if "sgs" in a:
                 v, d = sgs(a["sgs"])
                 l["hoje"]["valor"], l["hoje"]["data"] = v * a.get("sinal", 1), d if a.get("freq") == "diaria" else d[:7]
+                try:
+                    l["historico"] = sgs_historico(a["sgs"], a.get("freq") == "diaria", a.get("sinal", 1))
+                except Exception as e:      # sem o histórico, o gráfico some mas o número de hoje fica
+                    log(f"cenario: {l['id']} sem histórico ({e})")
             elif "sidra" in a:
                 l["hoje"]["valor"], l["hoje"]["data"] = sidra(a["sidra"])
             elif a.get("ibov"):
                 s = ibov()
                 l["hoje"]["valor"], l["hoje"]["data"] = round(s[-1][1]), s[-1][0]
+                l["historico"] = [[d, round(v)] for d, v in s[::-3][::-1]] if len(s) > 60 else [[d, round(v)] for d, v in s]
                 pre = [x for x in s if x[0] < c["eleicao"]]
                 if pre:
                     l["hoje"]["desdeEleicao"] = round((s[-1][1] / pre[-1][1] - 1) * 100, 2)
