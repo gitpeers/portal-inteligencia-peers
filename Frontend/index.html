@@ -3365,7 +3365,7 @@ function abrirCenario(id){
   const oque = textoCen(l,'oque'), imp = textoCen(l,'impacto');
   const m = document.getElementById("mFicha");
   m.innerHTML = '<div class="modal-head cen-head2"><div><small>'+esc(l.medida)+'</small><h3>'+esc(l.indicador)+'</h3></div>' +
-    '<button class="modal-close" onclick="fecharModal('Ficha')" aria-label="Fechar">✕</button></div>' +
+    '<button class="modal-close" onclick="fecharModal(\'Ficha\')" aria-label="Fechar">✕</button></div>' +
     '<div class="modal-body cen-body">' +
       '<div class="cen-topo"><div class="cen-hoje-b"><small>Hoje</small><div class="v">'+fmtCen(l.hoje.valor, l, l.sinalMais)+'</div>' +
         '<div class="m">'+notaHojeCen(l)+(l.hoje.auto ? '' : ' · atualizado à mão')+
