@@ -878,6 +878,40 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 .ajuda dd{margin:0;padding:7px 0;border-bottom:1px solid var(--grey-light, #eef0f4);color:var(--text2, #334)}
 @media (max-width:600px){.ajuda dl{grid-template-columns:1fr}.ajuda dt{border-bottom:none;padding-bottom:0}}
 
+/* ---- BUSCA POR EMPRESA E FICHA ---- */
+.busca-topo{position:relative}
+.busca-topo input{width:230px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:var(--pill);
+  padding:8px 14px 8px 32px;font:inherit;font-size:.78rem;outline:none;transition:var(--dur) var(--ease)}
+.busca-topo input::placeholder{color:rgba(255,255,255,.65)}
+.busca-topo input:focus{background:#fff;color:var(--navy);width:280px}
+.busca-topo input:focus::placeholder{color:var(--grey-dark)}
+.busca-topo .lupa{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.8rem;opacity:.75;pointer-events:none}
+.busca-lista{position:absolute;top:calc(100% + 6px);right:0;width:340px;max-height:360px;overflow-y:auto;background:#fff;border-radius:var(--r-md);
+  box-shadow:0 18px 44px rgba(1,19,52,.28);z-index:950;padding:6px 0;display:none}
+.busca-lista.open{display:block}
+.busca-lista button{display:block;width:100%;text-align:left;background:none;border:none;padding:8px 14px;font:inherit;font-size:.8rem;color:var(--navy);cursor:pointer}
+.busca-lista button small{display:block;font-size:.68rem;color:var(--grey-dark);margin-top:1px}
+.busca-lista button:hover,.busca-lista button.sel{background:var(--serene-soft, #eef3f9)}
+.busca-lista .vazio{padding:10px 14px;font-size:.76rem;color:var(--grey-dark)}
+.ficha-emp .fe-cab{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.ficha-emp .fe-cab p{font-size:.78rem;color:var(--grey-dark);margin-top:3px}
+.ficha-emp .fe-acoes{display:flex;gap:8px;flex-wrap:wrap}
+.ficha-emp .fe-acoes button{border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:var(--r-sm);padding:7px 12px;font:inherit;font-size:.76rem;font-weight:600;cursor:pointer}
+.ficha-emp .fe-acoes button.pri{background:var(--navy);color:#fff}
+.ficha-emp .fe-grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.ficha-emp .fe-bloco{border:1px solid var(--grey-border);border-radius:var(--r-md);padding:12px 14px}
+.ficha-emp .fe-bloco h5{font-size:.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--navy);margin:0 0 8px}
+.ficha-emp .fe-bloco h5 span{font-weight:400;color:var(--grey-dark);letter-spacing:0;text-transform:none;margin-left:6px}
+.ficha-emp .fe-it{font-size:.79rem;line-height:1.45;padding:6px 0;border-top:1px solid var(--grey-light, #eef0f4)}
+.ficha-emp .fe-it:first-of-type{border-top:none}
+.ficha-emp .fe-it small{color:var(--grey-dark)}
+.ficha-emp .fe-num{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.ficha-emp .fe-num div{background:#f7f9fb;border-radius:var(--r-sm);padding:8px 10px}
+.ficha-emp .fe-num b{display:block;font-size:1rem;color:var(--navy);font-variant-numeric:tabular-nums}
+.ficha-emp .fe-num small{font-size:.66rem;color:var(--grey-dark);text-transform:uppercase;letter-spacing:.05em}
+.ficha-emp .fe-vazio{font-size:.77rem;color:var(--grey-dark)}
+@media (max-width:760px){.busca-topo input,.busca-topo input:focus{width:150px}.busca-lista{width:min(340px,92vw)}}
+
 /* ---- RESUMO FALADO ---- */
 .sec-head-row{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
 .btn-audio{background:var(--neon);color:var(--navy);border:none;border-radius:var(--r-sm);padding:11px 20px;
@@ -993,6 +1027,11 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
   </div>
   <div class="header-acoes">
     <span class="header-badge">Edição <b>05/10/2026</b></span>
+    <div class="busca-topo" role="search">
+      <span class="lupa" aria-hidden="true">🔍</span>
+      <input type="search" id="buscaEmpresa" placeholder="Buscar empresa" autocomplete="off" aria-label="Buscar empresa" aria-controls="buscaLista">
+      <div class="busca-lista" id="buscaLista" role="listbox"></div>
+    </div>
     <div class="menu-topo">
       <button type="button" id="btnBriefTopo" class="btn-brief" aria-haspopup="true" aria-expanded="false">Gerar briefing <span aria-hidden="true">▾</span></button>
       <div class="menu-topo-lista" role="menu">
@@ -1082,6 +1121,14 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
   </div>
 </div>
 
+<div class="modal-bg" id="bgEmpresa" onclick="fecharModal('Empresa')"></div>
+<div class="modal" id="mEmpresa" role="dialog" aria-modal="true" aria-label="Ficha da empresa">
+  <div class="modal-head">
+    <div><h3 id="feTitulo">Ficha da empresa</h3><p>Tudo o que o portal tem sobre a empresa, num lugar só</p></div>
+    <button class="modal-close" onclick="fecharModal('Empresa')">Fechar</button>
+  </div>
+  <div class="modal-body ficha-emp" id="feCorpo" style="overflow-y:auto"></div>
+</div>
 <div class="modal-bg" id="bgAjuda" onclick="fecharModal('Ajuda')"></div>
 <div class="modal" id="mAjuda" role="dialog" aria-modal="true" aria-label="Como usar o portal">
   <div class="modal-head">
@@ -1541,6 +1588,7 @@ function voltarAoLugar(){
 
 function init(){
   iniciarVisita();
+  ligarBuscaEmpresa();
   voltarAoLugar();
   restaurarSelecao();
   montarFiltros();
@@ -3390,6 +3438,132 @@ function abrirAjuda(){
     '<h4>Dúvida ou sugestão</h4><p>Fale com o time de R&amp;I.</p>';
   abrirModal("Ajuda");
   registrarUso("ajuda");
+}
+
+/* =========================================================
+   BUSCA POR EMPRESA E FICHA DA EMPRESA
+   O índice junta as empresas de Finanças (companhias abertas e Valor 1000), dos Movimentos e, para quem tem acesso,
+   da base de clientes, da Roda e do Mapa de Conexões (só as de porte relevante). A ficha usa a mesma regra de citação
+   do Briefing de conta.
+   ========================================================= */
+function indiceEmpresas(){
+  if(indiceEmpresas.cache) return indiceEmpresas.cache;
+  const m = new Map();
+  const add = (nome, fonte, setor)=>{
+    const k = chaveNome(nome); if(!k) return;
+    const x = m.get(k) || {k, nome, fontes:new Set(), setor:""};
+    x.fontes.add(fonte); if(!x.setor && setor) x.setor = setor;
+    if(fonte==="tri" || fonte==="v1000") x.nome = x.nome.length <= nome.length ? x.nome : nome;
+    m.set(k, x);
+  };
+  DADOS.trimestral.forEach(e=>add(e.nome, "tri", e.industria+" · "+e.divisao));
+  DADOS.players.forEach(p=>add(p.nome, "v1000", p.segmentos[0] ? p.segmentos[0].industria+" · "+p.segmentos[0].divisao : ""));
+  DADOS.movimentos.forEach(x=>add(x.player, "mov", rotuloInd(x)));
+  if(CLIENTES.peers && CLIENTES.peers.length) CLIENTES.peers.forEach(c=>add(c.nome, "cli", ""));
+  if(typeof temRoda==="function" && temRoda()) RODA.players.forEach(p=>add(p.nome, "roda", ""));
+  if(CONEXOES) CONEXOES.empresas.forEach(e=>{ if(e.rel) add(e.nome, "conx", e.industria); });
+  return indiceEmpresas.cache = [...m.values()];
+}
+function buscarEmpresas(q){
+  const t = normTxt(q).trim();
+  if(t.length < 2) return [];
+  const peso = x=>(x.fontes.has("tri")||x.fontes.has("v1000") ? 4 : 0) + (x.fontes.has("cli") ? 3 : 0) + (x.fontes.has("roda") ? 2 : 0) + x.fontes.size;
+  return indiceEmpresas().map(x=>{ const n = x.n || (x.n = normTxt(x.nome).trim());
+      const pos = n.startsWith(t) ? 0 : n.includes(" "+t) ? 1 : n.includes(t) ? 2 : -1; return {x, pos}; })
+    .filter(r=>r.pos>=0).sort((a,b)=>a.pos-b.pos || peso(b.x)-peso(a.x) || a.x.nome.length-b.x.nome.length).slice(0, 8).map(r=>r.x);
+}
+function ligarBuscaEmpresa(){
+  const inp = document.getElementById("buscaEmpresa"), lista = document.getElementById("buscaLista");
+  if(!inp || ligarBuscaEmpresa.ok) return;
+  ligarBuscaEmpresa.ok = true;
+  let achados = [], sel = 0;
+  const ROT = {tri:"companhia aberta", v1000:"Valor 1000", mov:"movimentos", cli:"cliente Peers", roda:"Roda gigante", conx:"conexões"};
+  const desenhar = ()=>{
+    achados = buscarEmpresas(inp.value); sel = 0;
+    if(normTxt(inp.value).trim().length < 2){ lista.classList.remove("open"); return; }
+    lista.innerHTML = achados.length ? achados.map((x, i)=>'<button type="button" role="option" data-i="'+i+'" class="'+(i===sel?'sel':'')+'">'+esc(x.nome) +
+        '<small>'+esc([x.setor, [...x.fontes].filter(f=>f!=="conx" && f!=="mov").map(f=>ROT[f]).join(" · ")].filter(Boolean).join(" · ") || "no noticiário do portal")+'</small></button>').join("")
+      : '<div class="vazio">Nenhuma empresa com esse nome no portal.</div>';
+    lista.classList.add("open");
+    lista.querySelectorAll("[data-i]").forEach(b=>b.addEventListener("mousedown", ev=>{ ev.preventDefault(); escolher(+b.dataset.i); }));
+  };
+  const escolher = i=>{ const x = achados[i]; if(!x) return; lista.classList.remove("open"); inp.value = ""; inp.blur(); abrirFichaEmpresa(x.nome); };
+  inp.addEventListener("input", desenhar);
+  inp.addEventListener("focus", ()=>{ if(inp.value) desenhar(); });
+  inp.addEventListener("blur", ()=>setTimeout(()=>lista.classList.remove("open"), 120));
+  inp.addEventListener("keydown", e=>{
+    if(e.key==="ArrowDown" || e.key==="ArrowUp"){ e.preventDefault(); if(!achados.length) return;
+      sel = (sel + (e.key==="ArrowDown" ? 1 : achados.length-1)) % achados.length;
+      lista.querySelectorAll("[data-i]").forEach((b, i)=>b.classList.toggle("sel", i===sel)); }
+    else if(e.key==="Enter"){ e.preventDefault(); escolher(sel); }
+    else if(e.key==="Escape"){ lista.classList.remove("open"); inp.blur(); }
+  });
+}
+function abrirFichaEmpresa(nome){
+  const k = chaveNome(nome);
+  if(!k) return;
+  const cita = texto=>normTxt(texto).includes(" "+k+" ");
+  const tri = DADOS.trimestral.find(e=>chaveNome(e.nome)===k);
+  const v1k = DADOS.players.find(p=>chaveNome(p.nome)===k);
+  const seg = v1k ? v1k.segmentos[0] : null;
+  const radar = DADOS.radar.filter(i=>cita(textoRadar(i))).sort((a,b)=>b.data.localeCompare(a.data));
+  const movs = DADOS.movimentos.filter(m=>chaveNome(m.player)===k || cita(textoMov(m))).sort((a,b)=>b.data.localeCompare(a.data));
+  const conc = (DADOS.concorrencia||[]).filter(c=>cita((c.fato||"")+" "+(c.manchete||""))).sort((a,b)=>b.data.localeCompare(a.data));
+  const agenda = DADOS.agenda.filter(a=>diasEntre(a.data)>=0 && cita([a.titulo, a.detalhe].join(" "))).sort((a,b)=>a.data.localeCompare(b.data));
+  const cli = CLIENTES.peers && CLIENTES.peers.length ? CLIENTES.peers.find(c=>c.chave===k) : null;
+  const emp = CONEXOES ? CONEXOES.empresas.filter(e=>chaveNome(e.nome)===k).sort((a,b)=>b.leads.length-a.leads.length)[0] : null;
+  const roda = typeof temRoda==="function" && temRoda() ? rodaDados().find(d=>d.chaves.includes(k)) : null;
+  const cot = typeof COTACOES!=="undefined" && COTACOES && tri && cotacaoViva(tri.id) ? COTACOES.acoes[tri.id] : null;
+  const setor = tri ? tri.industria+" · "+tri.divisao : seg ? seg.industria+" · "+seg.divisao : "";
+  const nomeEx = (tri && tri.nome) || (v1k && v1k.nome) || (cli && cli.nome) || nome;
+  const item = (t, url, sub)=>'<div class="fe-it">'+(url ? '<a href="'+escUrl(url)+'" target="_blank" rel="noopener">'+esc(t)+'</a>' : esc(t))+(sub ? ' <small>· '+sub+'</small>' : '')+'</div>';
+  const bloco = (tit, n, html, vazio)=>'<div class="fe-bloco"><h5>'+tit+(n!==null ? '<span>'+n+'</span>' : '')+'</h5>'+(html || '<div class="fe-vazio">'+vazio+'</div>')+'</div>';
+  const num = (rot, v)=>'<div><small>'+rot+'</small><b>'+v+'</b></div>';
+  let numeros = '';
+  if(tri && tri.m){
+    const m = tri.m;
+    numeros = '<div class="fe-num">' + (tri.banco
+      ? num('Margem financeira', 'R$ '+mil(m.margemFinanceira)+' mi') + num('Lucro líquido', 'R$ '+mil(m.lucroLiquido)+' mi') + num('ROE', pct(m.roe))
+      : num('Receita', 'R$ '+mil(m.receita)+' mi') + num('Crescimento a/a', pct(m.cresc, true)) + num('Margem EBITDA', pct(m.margemEbitda)) + num('Margem líquida', pct(m.margemLiquida))) +
+      '</div><div class="fe-vazio" style="margin-top:6px">'+esc(tri.fonte.periodo)+' · '+esc(tri.fonte.nome)+'</div>';
+  } else if(seg){
+    const f = seg.financeiro;
+    numeros = '<div class="fe-num">' + num('Receita líquida', 'R$ '+fmtN(f.receitaLiquida)+' mi') + num('Crescimento', fmtPct(f.crescimentoAnual, true)) +
+      num('Margem EBITDA', fmtPct(f.margemEbitda)) + (seg.valor && seg.valor.pos ? num('Valor 1000', 'nº '+seg.valor.pos) : '') + '</div>' +
+      '<div class="fe-vazio" style="margin-top:6px">Valor 1000 · ano 2025</div>';
+  }
+  const acoes = [
+    ['pri', 'feConta', 'Briefing de conta'],
+    tri ? ['', 'feTri', 'Ficha financeira completa'] : seg ? ['', 'feV1k', 'Ficha financeira completa'] : null,
+    emp ? ['', 'feConx', 'Ver conexões'] : null,
+    roda ? ['', 'feRoda', 'Abrir na Roda gigante'] : null].filter(Boolean);
+  const top = emp ? execsMaisConectados(emp, 3) : [];
+  document.getElementById("feTitulo").textContent = nomeEx;
+  document.getElementById("feCorpo").innerHTML =
+    '<div class="fe-cab"><div>' + (cli ? tagDoCliente(cli) : '') +
+      '<p>'+esc([setor, cot ? cot.t+' '+fmtVarCot(cot.v)+' hoje' : ''].filter(Boolean).join(" · ") || 'Sem dados financeiros no portal')+'</p></div>' +
+      '<div class="fe-acoes">'+acoes.map(([c, id, t])=>'<button type="button" class="'+c+'" id="'+id+'">'+t+'</button>').join("")+'</div></div>' +
+    '<div class="fe-grade">' +
+      bloco('Números', null, numeros, 'Fora das companhias abertas e do Valor 1000.') +
+      (cli || emp ? bloco('Na Peers', null,
+        (cli ? '<div class="fe-it">'+cli.projetos+(cli.projetos===1?' projeto':' projetos')+(cli.offerings.length ? ' em '+esc(cli.offerings.join(", ")) : '') +
+          (cli.ultimo ? '<br><small>Último: '+esc(cli.ultimo)+(cli.fim ? ', fim '+esc(cli.fim) : '')+'</small>' : '') +
+          (cli.md ? '<br><small>MD: '+esc(nomePessoa(cli.md))+'</small>' : '')+'</div>' : '') +
+        (emp ? '<div class="fe-it">'+emp.leads.length+(emp.leads.length===1?' contato':' contatos')+' de 1º grau'+(emp.bando ? ', '+emp.bando+' em bando' : '') +
+          (top.length ? '<br><small>Quem mais conhece: '+top.map(x=>esc(nomeCurto(x.nome))+' ('+esc(x.nivel)+', '+x.q+')').join(", ")+'</small>' : '')+'</div>' : ''), '') : '') +
+      bloco('Notícias no Radar', radar.length, radar.slice(0, 6).map(i=>item(i.manchete, i.url, formatarData(i.data).slice(0,5))).join(""), 'Nenhuma notícia no Radar cita a empresa.') +
+      bloco('Movimentos', movs.length, movs.slice(0, 5).map(m=>item(m.tipo+': '+m.tese, m.url, formatarData(m.data).slice(0,5))).join(""), 'Nenhum movimento registrado.') +
+      (conc.length ? bloco('Concorrentes na empresa', conc.length, conc.slice(0, 4).map(c=>item((c.nome ? c.nome+': ' : '')+(c.fato||c.manchete), c.url, formatarData(c.data).slice(0,5))).join(""), '') : '') +
+      (agenda.length ? bloco('Próximas datas', agenda.length, agenda.slice(0, 4).map(a=>item(a.titulo, a.url, formatarData(a.data).slice(0,5))).join(""), '') : '') +
+    '</div>';
+  const bt = (id, fn)=>{ const b = document.getElementById(id); if(b) b.addEventListener("click", fn); };
+  bt("feConta", ()=>{ fecharModal("Empresa"); abrirConta(); document.getElementById("inpConta").value = nomeEx; montarConta(); });
+  bt("feTri", ()=>{ fecharModal("Empresa"); abrirFichaTrimestral(tri.id); });
+  bt("feV1k", ()=>{ fecharModal("Empresa"); abrirFicha(v1k.id, seg.id); });
+  bt("feConx", ()=>{ fecharModal("Empresa"); irConexoes(emp.i); });
+  bt("feRoda", ()=>{ fecharModal("Empresa"); estadoRoda.player = roda.nome; estado.aba = "roda"; montarAbas(); renderizar(); window.scrollTo({top:0}); });
+  abrirModal("Empresa");
+  registrarUso("ficha_empresa", [tri||seg ? "fin" : "", cli ? "cli" : "", roda ? "roda" : ""].filter(Boolean).join("+") || "so_noticias");
 }
 
 /* =========================================================
@@ -6161,7 +6335,7 @@ function fecharModal(nome){
   document.getElementById("m"+nome).classList.remove("open");
 }
 document.addEventListener("keydown", e=>{
-  if(e.key==="Escape"){ fecharModal("Ficha"); fecharModal("Briefing"); fecharModal("Audio"); fecharModal("Conta"); fecharModal("Selecao"); fecharModal("Ajuda"); }
+  if(e.key==="Escape"){ fecharModal("Ficha"); fecharModal("Briefing"); fecharModal("Audio"); fecharModal("Conta"); fecharModal("Selecao"); fecharModal("Ajuda"); fecharModal("Empresa"); }
 });
 
 /* =========================================================
