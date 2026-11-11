@@ -37,6 +37,7 @@ button,input,select,textarea{font-family:inherit}
 .cen-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
 .cen-atual{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
 .cen-atual .kbox .v{font-size:1.4rem}
+.cen-def{font-size:.72rem;line-height:1.4;color:var(--grey-dark);margin-top:6px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .cen-card{padding:0;overflow:hidden}
 .cen-tab{width:100%;border-collapse:collapse;font-size:.84rem}
 .cen-tab th{font-size:.64rem;text-transform:uppercase;letter-spacing:.07em;color:var(--grey);font-weight:700;text-align:left;padding:10px 12px;
@@ -47,12 +48,14 @@ button,input,select,textarea{font-family:inherit}
 .cen-tab td span{font-size:.7rem;color:var(--grey)}
 .cen-tab td{padding:6px 12px}
 .cen-tab td.n{font-size:.92rem;font-weight:600}
-.cen-tab .c-hoje{background:rgba(0,0,0,.035);color:var(--navy);font-weight:700;border-left:1px solid var(--grey-border)}
-.cen-tab td.c-hoje{font-size:1rem}
+.cen-tab .c-hoje{background:var(--serene);color:var(--navy);font-weight:700}
+.cen-tab th.c-hoje{box-shadow:inset 0 -3px 0 var(--navy)}
+.cen-tab td.c-hoje{font-size:1.1rem;border-top-color:rgba(255,255,255,.7)}
+.cen-row:hover td.c-hoje{background:#c9dee6}
 .cen-tab .c-pess{color:var(--t3)}.cen-tab .c-otim{color:var(--t2)}
-.cen-tab .c-base{color:var(--navy);background:var(--serene-soft)}
+.cen-tab .c-base{color:#5b4636}
 .cen-tab th.c-pess{box-shadow:inset 0 -3px 0 var(--t3)}.cen-tab th.c-otim{box-shadow:inset 0 -3px 0 var(--t2)}
-.cen-tab th.c-base{box-shadow:inset 0 -3px 0 var(--navy)}.cen-tab th.c-hoje{box-shadow:inset 0 -3px 0 var(--neon)}
+.cen-tab th.c-base{box-shadow:inset 0 -3px 0 #8a6a4f}
 .cen-box{border:1px solid var(--grey-border);border-radius:var(--r-md);padding:11px 13px;margin-bottom:9px}
 .cen-box h5{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;margin:0 0 4px}
 .cen-box .vl{font-size:1rem;font-weight:700;margin-right:8px}
@@ -3163,6 +3166,65 @@ function destaquesCen(c){
   if(marcados.length) return marcados;
   return DESTAQUES_CEN.map(re=>linhas.find(l=>re.test(l.indicador))).filter((l,i,a)=>l && a.indexOf(l)===i);
 }
+// Definição e implicação de cada indicador: valem para qualquer cenário. O que a equipe publicar na linha (oque, impacto) prevalece.
+const DEFINICOES_CEN = [
+ {
+  "casa": "fiscal|primário",
+  "oque": "Resultado do governo central antes de pagar os juros da dívida: receitas menos despesas. Negativo é déficit e faz a dívida crescer mais rápido. É o termômetro da confiança fiscal.",
+  "impacto": "Sem âncora fiscal, o mercado cobra mais prêmio de risco, e isso encarece juros e dólar para todo mundo. Para as empresas, significa crédito mais caro, planejamento de investimento e de preços mais incerto e decisões públicas (concessões, compras, reformas) mais lentas ou sujeitas a contingenciamento."
+ },
+ {
+  "casa": "selic",
+  "oque": "Taxa básica de juros da economia, definida pelo Copom. Remunera a renda fixa e serve de referência para todos os empréstimos. O valor de fim de 2027 é onde ela deve estar ao término do ano.",
+  "impacto": "Juro alto por mais tempo encarece empréstimos e financiamentos, aumenta o custo da dívida das empresas e faz o consumidor parcelar menos e comprar menos. Também desestimula investimentos novos, porque a renda fixa passa a render mais do que muitos projetos. Quando o juro cai, acontece o contrário."
+ },
+ {
+  "casa": "c[âa]mbio|d[óo]lar",
+  "oque": "Preço do dólar em reais. Reflete juros, risco fiscal e fluxo de capital estrangeiro.",
+  "impacto": "Dólar alto encarece insumos, máquinas e peças importadas e as dívidas em moeda estrangeira, e pressiona a inflação. Favorece quem exporta, mas dificulta o planejamento de preços e de margem de quem compra ou se financia em dólar."
+ },
+ {
+  "casa": "ipca|infla",
+  "oque": "Variação dos preços ao consumidor, medida pelo IBGE. A meta é 3% ao ano, com tolerância de 1,5 ponto, o que dá um teto de 4,5%.",
+  "impacto": "Inflação alta corrói o poder de compra, eleva o custo de insumos e salários e faz o Banco Central manter os juros altos por mais tempo. As empresas precisam repassar preços sem perder volume de vendas, e quem não consegue repassar perde margem."
+ },
+ {
+  "casa": "pib|atividade",
+  "oque": "Quanto a economia brasileira cresce acima da inflação, medido pelo IBGE. Resume o tamanho da demanda que as empresas vão encontrar.",
+  "impacto": "Crescimento fraco significa vendas e receita subindo menos, mais pressão sobre margem e mais inadimplência. Crescimento forte abre espaço para expansão, contratação e investimento. Com juros altos, o crédito e o investimento perdem fôlego e o PIB tende a desacelerar."
+ },
+ {
+  "casa": "desemprego",
+  "oque": "Taxa de desocupação medida pela PNAD do IBGE. É o último indicador a piorar num ciclo de juros altos.",
+  "impacto": "Desemprego baixo sustenta renda e consumo, mas pressiona salários e dificulta contratar e reter gente. Quando sobe, a demanda cai e a inadimplência aumenta. Como é um indicador que reage com atraso, o emprego resistente hoje pode esconder um enfraquecimento à frente."
+ },
+ {
+  "casa": "cr[ée]dito|inadimpl",
+  "oque": "Parcela do crédito livre, sem direcionamento, com atraso acima de 90 dias. Sobe quando o endividamento e os juros pesam sobre a renda.",
+  "impacto": "Mais atraso nos pagamentos faz os bancos fecharem a torneira e cobrarem mais caro, o que encarece o crédito também para quem paga em dia. Empresas que vendem a prazo sofrem mais calote e precisam rever critérios de risco e cobrança."
+ },
+ {
+  "casa": "consumidor",
+  "oque": "Índice da FGV Ibre que mede como as famílias veem a situação atual e o futuro. 100 é o ponto neutro; abaixo disso predomina o pessimismo.",
+  "impacto": "Antecipa o consumo. Confiança baixa significa famílias adiando compras de bens duráveis e de maior valor, o que atinge varejo, bens de consumo e crédito ao consumidor. É um indicador de expectativa, sem projeção para 2027."
+ },
+ {
+  "casa": "ind[úu]stria",
+  "oque": "Índice de Confiança do Empresário Industrial (ICEI) da CNI, de 0 a 100. 50 é o ponto neutro; abaixo disso falta confiança.",
+  "impacto": "Antecipa investimento e produção. Confiança baixa significa expansão, contratações e compra de máquinas adiadas, o que atinge fornecedores e prestadores da cadeia industrial. É um indicador de expectativa, sem projeção para 2027."
+ },
+ {
+  "casa": "ibovespa|bolsa",
+  "oque": "Principal índice da B3, com as ações mais negociadas. Cai quando juros e risco fiscal sobem, porque a renda fixa fica mais atraente e os lucros esperados diminuem.",
+  "impacto": "Bolsa em queda encarece a captação de capital: emissões de ações e IPOs ficam inviáveis e o custo de capital sobe. Por outro lado, empresas com caixa compram ativos mais baratos, e as pressionadas saem do jogo. Também afeta a riqueza e a disposição de gastar dos investidores."
+ }
+];
+function textoCen(l, k){
+  if(l[k]) return l[k];
+  const d = DEFINICOES_CEN.find(x=>new RegExp(x.casa, 'i').test(l.indicador));
+  return d ? d[k] : '';
+}
+const primeiraFraseCen = t => (t.match(/^.*?[.!?](\s|$)/) || [t])[0].trim();
 function cenarioAtualCen(c){
   const d = destaquesCen(c);
   if(!d.length) return '';
@@ -3171,6 +3233,7 @@ function cenarioAtualCen(c){
       const ib = l.hoje.desdeEleicao;
       return '<div class="kbox clicavel" role="button" tabindex="0" data-cen="'+esc(l.id)+'"><div class="l">'+esc(l.indicador)+'</div>' +
         '<div class="v">'+fmtCen(l.hoje.valor, l, l.sinalMais)+'</div>' +
+        (textoCen(l,'oque') ? '<div class="cen-def">'+esc(primeiraFraseCen(textoCen(l,'oque')))+'</div>' : '') +
         '<div class="m">'+(ib!=null ? '<span class="'+(ib<0?'cen-pior':'cen-melhor')+'">'+(ib>0?'+':'−')+fmtN(Math.abs(ib),1)+'% desde a eleição</span> · ' : '')+notaHojeCen(l)+'</div></div>';
     }).join("") + '</div></div>';
 }
@@ -3236,8 +3299,13 @@ function graficoCen(l, c){
   const u = h[h.length-1];
   g += '<circle cx="'+X(u[0])+'" cy="'+Y(u[1])+'" r="4.5" fill="var(--neon)" stroke="var(--navy)" stroke-width="2"/>';
   g += h.map(p=>'<circle cx="'+X(p[0]).toFixed(1)+'" cy="'+Y(p[1]).toFixed(1)+'" r="6" fill="transparent"><title>'+dt(p[0])+': '+fm(p[1])+'</title></circle>').join("");
-  g += '<text x="'+ml+'" y="'+(H-6)+'">'+dt(h[0][0])+'</text><text x="'+(W-mr)+'" y="'+(H-6)+'" text-anchor="end">'+dt(u[0])+'</text>';
-  return '<h4 class="cen-mh">Como chegamos até aqui</h4><svg class="cen-graf" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Histórico de '+esc(l.indicador)+'">'+g+'</svg>';
+  const a0 = +h[0][0].slice(0,4), a1 = +u[0].slice(0,4);
+  for(let a=a0+1; a<=a1; a++){
+    const xa = X(a+"-01-01");
+    g += '<line x1="'+xa+'" x2="'+xa+'" y1="'+(H-mb)+'" y2="'+(H-mb+4)+'" stroke="var(--grey)"/><text x="'+xa+'" y="'+(H-6)+'" text-anchor="middle">'+a+'</text>';
+  }
+  g += '<text x="'+(W-mr+4)+'" y="'+(H-6)+'">'+dt(u[0])+'</text>';
+  return '<h4 class="cen-mh">Evolução até aqui (últimos 5 anos)</h4><svg class="cen-graf" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Histórico de '+esc(l.indicador)+'">'+g+'</svg>';
 }
 function abrirCenario(id){
   const l = linhasCen(DADOS.cenario).find(x=>x.id===id);
@@ -3252,8 +3320,8 @@ function abrirCenario(id){
         (ib!=null ? ' · Ibovespa '+(ib>0?'+':'−')+fmtN(Math.abs(ib),1)+'% desde a eleição' : '')+'</div>' +
         (l.extra ? '<div class="m">'+esc(l.extra)+'</div>' : '') +
         (l.hoje.explicacao ? '<div class="cen-oque" style="margin-top:8px">'+esc(l.hoje.explicacao)+'</div>' : '') + '</div>' +
-      (l.oque ? '<h4 class="cen-mh">O que é</h4><div class="cen-oque">'+esc(l.oque)+'</div>' : '') +
-      (l.impacto ? '<h4 class="cen-mh">O que isso significa para as empresas</h4><div class="cen-oque">'+esc(l.impacto)+'</div>' : '') +
+      (textoCen(l,'oque') ? '<h4 class="cen-mh">O que é</h4><div class="cen-oque">'+esc(textoCen(l,'oque'))+'</div>' : '') +
+      (textoCen(l,'impacto') ? '<h4 class="cen-mh">O que isso significa para as empresas</h4><div class="cen-oque">'+esc(textoCen(l,'impacto'))+'</div>' : '') +
       '<h4 class="cen-mh">Hoje e os cenários de 2027</h4><div class="cen-faixa-w">'+faixaCen(l)+'</div>' +
       (l.semProjecao ? '' : motivosCen(l)) +
       graficoCen(l, DADOS.cenario) +
