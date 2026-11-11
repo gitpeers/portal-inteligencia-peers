@@ -32,10 +32,10 @@ def sgs(codigo):
 
 
 def sgs_historico(codigo, diaria, sinal=1):
-    """Último ano (série diária, pontos semanais) ou últimos 36 meses (mensal): [[data, valor]], para o gráfico."""
-    n = 260 if diaria else 36
-    dados = baixar_json(f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.{codigo}/dados/ultimos/{n}?formato=json")
+    """Últimos 5 anos e meio (série diária, um ponto por semana, ou mensal): [[data, valor]], para o gráfico."""
     hoje = agora().date().isoformat()
+    ini = f"01/01/{int(hoje[:4]) - 6}"      # a API limita 'ultimos/N' a poucos pontos; por período não há esse limite
+    dados = baixar_json(f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.{codigo}/dados?formato=json&dataInicial={ini}")
     pts = []
     for d in dados:
         dia, mes, ano = d["data"].split("/")
@@ -43,6 +43,22 @@ def sgs_historico(codigo, diaria, sinal=1):
             pts.append([f"{ano}-{mes}-{dia}", float(d["valor"]) * sinal])
     if diaria:      # um ponto por semana, mantendo sempre o último
         pts = pts[::-5][::-1]
+    pts = [p for p in pts if p[0] >= f"{int(hoje[:4]) - 6}{hoje[4:]}"]
+    return pts
+
+
+def sidra_historico(consulta):
+    """Últimos 5 anos e meio de uma série do SIDRA (trimestral ou mensal): [[data, valor]]."""
+    linhas = baixar_json("https://apisidra.ibge.gov.br/values" + consulta.replace("{p}", "last%2080"))[1:]
+    hoje = agora().date().isoformat()
+    corte = f"{int(hoje[:4]) - 6}{hoje[4:]}"
+    pts = []
+    for x in linhas:
+        p = x["D3C"]                       # AAAAMM; 01 a 04 = trimestre, acima disso = mês
+        m = int(p[4:6])
+        data = f"{p[:4]}-{(m * 3 if m <= 4 else m):02d}-15"
+        if data >= corte and x["V"] not in (None, "", "-", "..."):
+            pts.append([data, float(x["V"])])
     return pts
 
 
@@ -53,8 +69,8 @@ def sidra(consulta):
 
 
 def ibov():
-    """Fechamentos diários do Ibovespa no último ano: [(data, valor)]."""
-    r = baixar_json("https://query1.finance.yahoo.com/v8/finance/chart/%5EBVSP?range=1y&interval=1d")["chart"]["result"][0]
+    """Fechamentos diários do Ibovespa nos últimos 5 anos: [(data, valor)]."""
+    r = baixar_json("https://query1.finance.yahoo.com/v8/finance/chart/%5EBVSP?range=5y&interval=1d")["chart"]["result"][0]
     br = timezone(timedelta(hours=-3))
     return [(datetime.fromtimestamp(t, br).date().isoformat(), c)
             for t, c in zip(r["timestamp"], r["indicators"]["quote"][0]["close"]) if c]
@@ -95,10 +111,15 @@ def atualizar(c):
                     log(f"cenario: {l['id']} sem histórico ({e})")
             elif "sidra" in a:
                 l["hoje"]["valor"], l["hoje"]["data"] = sidra(a["sidra"])
+                try:
+                    l["historico"] = sidra_historico(a["sidra"])
+                except Exception as e:
+                    log(f"cenario: {l['id']} sem histórico ({e})")
             elif a.get("ibov"):
                 s = ibov()
                 l["hoje"]["valor"], l["hoje"]["data"] = round(s[-1][1]), s[-1][0]
-                l["historico"] = [[d, round(v)] for d, v in s[::-3][::-1]] if len(s) > 60 else [[d, round(v)] for d, v in s]
+                passo = max(1, len(s) // 260)       # ~260 pontos no gráfico de 5 anos
+                l["historico"] = [[d, round(v)] for d, v in s[::-passo][::-1]]
                 pre = [x for x in s if x[0] < c["eleicao"]]
                 if pre:
                     l["hoje"]["desdeEleicao"] = round((s[-1][1] / pre[-1][1] - 1) * 100, 2)
