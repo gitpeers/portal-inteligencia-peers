@@ -1917,8 +1917,12 @@ function caixaSel(i){
 }
 function barraSelecao(){
   const n = estadoConx.sel.size, nomes = [...estadoConx.sel].map(i=>CONEXOES.empresas[i].nome);
-  const todas = estadoConx.naLista.length && estadoConx.naLista.length <= 300 && estadoConx.naLista.some(i=>!estadoConx.sel.has(i))
-    ? '<button type="button" class="sec" id="conxMarcarTodas">Marcar as '+estadoConx.naLista.length+' da lista</button>' : '';
+  const nl = estadoConx.naLista.length, total = CONEXOES.empresas.length;
+  const semFiltro = !estadoConx.busca && estadoConx.industria==="todas" && estadoConx.cliente==="todas" && !estado.industrias.size && estadoConx.comoExec==="";
+  const todas = (nl && estadoConx.naLista.some(i=>!estadoConx.sel.has(i))
+      ? '<button type="button" class="sec" id="conxMarcarTodas">'+(nl===1 ? 'Marcar a empresa da lista' : 'Marcar todas as '+nl.toLocaleString("pt-BR")+' da lista')+'</button>' : '') +
+    (semFiltro && n < total
+      ? '<button type="button" class="sec" id="conxMarcarBase" title="Inclui as empresas menores, que só aparecem na busca">Base inteira ('+total.toLocaleString("pt-BR")+' empresas)</button>' : '');
   return n
     ? '<span><b>'+n+(n===1?' empresa marcada':' empresas marcadas')+'</b> · '+esc(nomes.slice(0, 4).join(", "))+(n>4?' e mais '+(n-4):'')+'</span>' +
       '<span class="conx-sel-bts">'+todas+'<button type="button" class="pri" id="conxBaixar">Baixar planilha (Excel)</button>' +
@@ -1938,6 +1942,7 @@ function ligarSelecao(){
   const bt = (id, f)=>{ const b = document.getElementById(id); if(b) b.addEventListener("click", f); };
   bt("conxLimpar", ()=>{ estadoConx.sel.clear(); atualizarSelecao(); });
   bt("conxMarcarTodas", ()=>{ estadoConx.naLista.forEach(i=>estadoConx.sel.add(i)); atualizarSelecao(); });
+  bt("conxMarcarBase", ()=>{ CONEXOES.empresas.forEach(e=>estadoConx.sel.add(e.i)); atualizarSelecao(); });
   bt("conxBaixar", ev=>baixarPlanilhaConx(ev.currentTarget));
 }
 
@@ -1983,8 +1988,10 @@ function relacaoEmpresa(e){
 }
 
 async function baixarPlanilhaConx(botao){
-  const txt = botao.textContent;
-  botao.disabled = true; botao.textContent = "Gerando…";
+  const txt = botao.textContent, grande = estadoConx.sel.size > 300;
+  if(grande && !confirm("A planilha de "+estadoConx.sel.size.toLocaleString("pt-BR")+" empresas é grande: pode levar até um minuto para ficar pronta, e a página fica parada enquanto isso. Continuar?")) return;
+  botao.disabled = true; botao.textContent = grande ? "Gerando… pode levar até um minuto" : "Gerando…";
+  await new Promise(ok=>setTimeout(ok, 50));   // deixa o texto do botão aparecer antes do trabalho pesado
   try{
     await carregarExcelJS();
     const execs = CONEXOES.execs, NAVY = "FF011334";   // Peers Neue Blue (Peers Design System)
