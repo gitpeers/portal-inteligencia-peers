@@ -833,6 +833,51 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
 .op-baixar:hover{background:var(--navy);color:#fff}
 .op-baixar[disabled]{opacity:.6;cursor:wait}
 
+/* ---- DESDE A SUA ÚLTIMA VISITA ---- */
+.visita{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;background:var(--serene-soft, #eef3f9);border-left:4px solid var(--neon-strong, #c8e000);
+  border-radius:var(--r-md);padding:11px 16px;margin:0 0 18px;font-size:.8rem;color:var(--navy)}
+.visita .v-rot{font-weight:700}
+.visita .v-rot small{display:block;font-weight:400;font-size:.7rem;color:var(--grey-dark)}
+.visita button{border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:var(--pill);padding:5px 12px;font:inherit;
+  font-size:.76rem;cursor:pointer;transition:var(--dur) var(--ease)}
+.visita button b{font-variant-numeric:tabular-nums;margin-right:4px}
+.visita button:hover{background:var(--navy);color:#fff}
+.visita .v-nada{color:var(--grey-dark)}
+.badge.b-visita{background:var(--neon);color:var(--navy);font-weight:700}
+
+/* ---- RODA GIGANTE: GRADE DE CARTÕES ---- */
+.roda-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin:0 0 22px}
+.roda-cart{background:#fff;border:1px solid var(--grey-border);border-radius:var(--r-md);padding:14px 16px;text-align:left;font:inherit;
+  color:var(--navy);cursor:pointer;display:flex;flex-direction:column;gap:7px;box-shadow:var(--shadow);transition:var(--dur) var(--ease);border-top:4px solid var(--grey-border)}
+.roda-cart:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.roda-cart.verde{border-top-color:#0b7a55}.roda-cart.amarelo{border-top-color:#e0a020}.roda-cart.vermelho{border-top-color:#c4343a}
+.roda-cart .rc-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.roda-cart h4{font-size:.95rem;font-weight:700;margin:0}
+.roda-cart .rc-num{font-size:.72rem;color:var(--grey-dark)}
+.roda-cart .rc-num b{color:var(--navy);font-variant-numeric:tabular-nums}
+.roda-cart .rc-tit{font-size:.78rem;line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.roda-cart .rc-tit small{color:var(--grey-dark)}
+.roda-cart .rc-pe{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;font-size:.7rem;color:var(--grey-dark)}
+.roda-cart .rc-cot.sobe{color:#0b7a55;font-weight:700}.roda-cart .rc-cot.cai{color:#c4343a;font-weight:700}
+.roda-cart .rc-ver{color:var(--navy);font-weight:700;white-space:nowrap}
+.roda-cart .rc-cli > *{margin-left:0}
+
+/* ---- COMO USAR ---- */
+.btn-ajuda{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;font:inherit;
+  font-size:.95rem;font-weight:700;cursor:pointer;transition:var(--dur) var(--ease)}
+.btn-ajuda:hover{background:rgba(255,255,255,.12)}
+.ajuda h4{font-size:.74rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--navy);margin:20px 0 8px;padding-bottom:6px;border-bottom:2px solid var(--neon)}
+.ajuda h4:first-child{margin-top:0}
+.ajuda p{font-size:.84rem;line-height:1.55;color:var(--text2, #334)}
+.ajuda .caminhos{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.ajuda .caminho{border:1px solid var(--grey-border);border-radius:var(--r-md);padding:10px 12px;font-size:.8rem;line-height:1.45}
+.ajuda .caminho b{display:block;color:var(--navy);margin-bottom:3px}
+.ajuda .caminho span{color:var(--grey-dark)}
+.ajuda dl{display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:0;font-size:.82rem;line-height:1.5}
+.ajuda dt{font-weight:700;color:var(--navy);padding:7px 10px 7px 0;border-bottom:1px solid var(--grey-light, #eef0f4)}
+.ajuda dd{margin:0;padding:7px 0;border-bottom:1px solid var(--grey-light, #eef0f4);color:var(--text2, #334)}
+@media (max-width:600px){.ajuda dl{grid-template-columns:1fr}.ajuda dt{border-bottom:none;padding-bottom:0}}
+
 /* ---- RESUMO FALADO ---- */
 .sec-head-row{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
 .btn-audio{background:var(--neon);color:var(--navy);border:none;border-radius:var(--r-sm);padding:11px 20px;
@@ -955,10 +1000,12 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
         <button type="button" role="menuitem" onclick="fecharMenusTopo(); irBriefingConcorrentes()">Briefing de concorrentes<small>PDF com os movimentos do período escolhido</small></button>
       </div>
     </div>
+    <button type="button" class="btn-ajuda" onclick="abrirAjuda()" title="Como usar o portal" aria-label="Como usar o portal">?</button>
     <div class="menu-topo">
       <button type="button" id="btnUsuario" class="avatar-topo" aria-haspopup="true" aria-expanded="false" title="Sua conta"></button>
       <div class="menu-topo-lista" role="menu">
         <div class="menu-topo-email" id="usuarioEmail"></div>
+        <button type="button" role="menuitem" onclick="fecharMenusTopo(); abrirAjuda()">Como usar o portal</button>
         <button type="button" role="menuitem" onclick="sair()">Sair</button>
       </div>
     </div>
@@ -980,9 +1027,9 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
     </div>
     <span id="chipRestrito"></span>
     <div class="vgroup">
-      <span class="flt-label">Visualizar como</span>
+      <span class="flt-label" title="Consultor: a leitura do setor. Comercial: acrescenta a oportunidade comercial de cada notícia e permite destacar a sua lista de clientes">Modo de leitura</span>
       <button class="vbtn active" data-v="consultor">Consultor</button>
-      <button class="vbtn" data-v="comercial">Time comercial</button>
+      <button class="vbtn" data-v="comercial">Comercial</button>
     </div>
   </div>
   <div class="filters-chips" id="fChips"></div>
@@ -1035,6 +1082,14 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
   </div>
 </div>
 
+<div class="modal-bg" id="bgAjuda" onclick="fecharModal('Ajuda')"></div>
+<div class="modal" id="mAjuda" role="dialog" aria-modal="true" aria-label="Como usar o portal">
+  <div class="modal-head">
+    <div><h3>Como usar o portal</h3><p>Os caminhos mais rápidos e o que quer dizer cada termo</p></div>
+    <button class="modal-close" onclick="fecharModal('Ajuda')">Fechar</button>
+  </div>
+  <div class="modal-body ajuda" id="ajudaCorpo" style="overflow-y:auto"></div>
+</div>
 <div class="modal-bg" id="bgBriefing" onclick="fecharModal('Briefing')"></div>
 <div class="modal" id="mBriefing">
   <div class="modal-head">
@@ -1485,6 +1540,7 @@ function voltarAoLugar(){
 }
 
 function init(){
+  iniciarVisita();
   voltarAoLugar();
   restaurarSelecao();
   montarFiltros();
@@ -1494,6 +1550,7 @@ function init(){
       document.querySelectorAll(".vbtn[data-v]").forEach(x=>x.classList.remove("active"));
       b.classList.add("active");
       estado.modoVisualizacao = b.dataset.v;
+      registrarUso("modo_leitura", b.dataset.v);
       renderizar();
     });
   });
@@ -2988,11 +3045,32 @@ function renderRoda(){
       dados.map(d=>{ const [fl, tip] = farolRoda(d); return '<button type="button" class="roda-chip '+(unico&&sel[0]===d?'on':'')+'" data-roda="'+esc(d.nome)+'" title="'+esc(tip)+'">'+esc(d.nome)+'<i class="fl '+fl+'"></i></button>'; }).join("") + '</div>';
   if(unico) // visão de uma empresa: informações, mercado e setor, notícias e movimentos, onde a Peers já entrou e oportunidades
     return chips + frescorRoda(d1) + blocoInfoRoda(d1) + blocoMercadoRoda(d1) + blocoNoMercadoRoda(d1) + '<div class="roda-2 roda-2b"><div class="roda-stack">' + blocoEntrouUnico(d1) + blocoOportUnico(d1) + '</div>' + setorTab + '</div>';
-  return chips +
+  return chips + gradeRoda(dados) +
     (sem.length ? '<div class="roda-aviso"><b>Sem nada no portal nos últimos '+DIAS_OPORT+' dias:</b> '+sem.join(", ")+'. Pode ser silêncio real ou falta de fonte no Radar para essas empresas.' +
       (RODA.pesquisa ? ' Na ficha de cada uma, o quadro <b>No mercado</b> traz o que achamos no RI, no Valor 1000 e na mídia.' : '')+'</div>' : '') +
     (agenda.length ? '<p class="op-regra"><b>Próximas datas:</b> '+agenda.map(a=>esc(a.titulo)+' ('+formatarData(a.data).slice(0,5)+')').join(' · ')+'</p>' : '') +
     caixas + concHtml + oport + entramos + setorTab;
+}
+
+// "Todos" da Roda: um cartão por empresa, na ordem da lista do ritual; o cartão abre a visão da empresa
+function gradeRoda(dados){
+  const pl = (n, um, varios)=>'<b>'+n+'</b> '+(n===1 ? um : varios);
+  return '<div class="roda-grade">' + dados.map(d=>{
+    const [fl, tip] = farolRoda(d);
+    const ult = d.noticias.concat(d.movimentos).sort((a,b)=>b.tit-a.tit || b.data.localeCompare(a.data))[0];
+    const prox = d.agenda.slice().sort((a,b)=>a.data.localeCompare(b.data))[0];
+    const c = typeof COTACOES!=="undefined" && COTACOES && d.tri && cotacaoViva(d.tri.id) ? COTACOES.acoes[d.tri.id] : null;
+    return '<button type="button" class="roda-cart '+fl+'" data-roda="'+esc(d.nome)+'" title="'+esc(tip)+'">' +
+      '<div class="rc-top"><h4>'+esc(d.nome)+'</h4><i class="fl '+fl+'"></i></div>' +
+      (d.cliente ? '<div class="rc-cli">'+tagDoCliente(d.cliente)+'</div>' : '') +
+      '<div class="rc-num">'+pl(d.noticias.length, 'notícia', 'notícias')+' · '+pl(d.movimentos.length, 'movimento', 'movimentos') +
+        (d.conc.length ? ' · '+pl(d.conc.length, 'de concorrente', 'de concorrentes') : '')+'</div>' +
+      '<div class="rc-tit">'+(ult ? esc(ult.titulo)+' <small>· '+formatarData(ult.data).slice(0,5)+'</small>' : '<small>Nada no portal nos últimos '+DIAS_OPORT+' dias.</small>')+'</div>' +
+      '<div class="rc-pe"><span>'+(prox ? 'Próxima data: '+formatarData(prox.data).slice(0,5) : '') +
+        (c ? (prox ? ' · ' : '')+'<span class="rc-cot '+(c.v>0.004?'sobe':c.v<-0.004?'cai':'')+'">'+esc(c.t)+' '+fmtVarCot(c.v)+'</span>' : '')+'</span>' +
+        '<span class="rc-ver">Abrir ›</span></div>' +
+    '</button>';
+  }).join("") + '</div>';
 }
 
 function irConexoes(i){
@@ -3220,6 +3298,101 @@ function faixaDaAba(){
 }
 
 /* =========================================================
+   DESDE A SUA ÚLTIMA VISITA · o que entrou no portal desde a visita anterior, neste navegador.
+   Guarda os ids vistos de cada aba; uma visita nova começa depois de 30 minutos sem abrir o portal.
+   ========================================================= */
+const VISITA = {primeira:false, baseEm:0, novos:{radar:new Set(), movimento:new Set(), concorrencia:new Set(), agenda:new Set()}};
+const VISITA_PAUSA = 30*60*1000;
+function idsDaVisita(){
+  return {radar:(DADOS.radar||[]).map(r=>r.id), movimento:(DADOS.movimentos||[]).map(m=>m.id),
+    concorrencia:(DADOS.concorrencia||[]).map(c=>c.id), agenda:(DADOS.agenda||[]).filter(e=>diasEntre(e.data)>=0).map(e=>e.id)};
+}
+function iniciarVisita(){
+  const k = "portal_peers_visita_" + (USUARIO_EMAIL || "").toLowerCase(), agora = Date.now(), atual = idsDaVisita();
+  let s = null;
+  VISITA.primeira = false;
+  try{ s = JSON.parse(localStorage.getItem(k) || "null"); }catch(e){ s = null; }
+  if(!s || !s.ids){ VISITA.primeira = true; s = {base:atual, baseEm:agora}; }
+  else if(agora - (s.em||0) > VISITA_PAUSA){ s.base = s.ids; s.baseEm = s.em; }   // visita nova: a anterior vira a base
+  s.ids = atual; s.em = agora;
+  VISITA.baseEm = s.baseEm;
+  Object.keys(VISITA.novos).forEach(t=>{
+    const antes = new Set((s.base||{})[t] || atual[t]);   // aba que não existia na visita anterior: nada conta como novo
+    VISITA.novos[t] = new Set(atual[t].filter(id=>!antes.has(id)));
+  });
+  try{ localStorage.setItem(k, JSON.stringify(s)); }catch(e){ /* sem armazenamento: só não lembra */ }
+}
+function seloVisita(tipo, id){
+  return VISITA.novos[tipo] && VISITA.novos[tipo].has(id) ? ' <span class="badge b-visita" title="Entrou depois da sua última visita">Novo para você</span>' : '';
+}
+function quandoVisita(ms){
+  const d = new Date(ms), hoje = new Date(), ontem = new Date(Date.now()-864e5);
+  const hm = d.toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"});
+  const mesmo = (a, b)=>a.toDateString()===b.toDateString();
+  return mesmo(d, hoje) ? "hoje às "+hm : mesmo(d, ontem) ? "ontem às "+hm : d.toLocaleDateString("pt-BR", {day:"2-digit", month:"2-digit"})+" às "+hm;
+}
+function faixaVisita(){
+  if(VISITA.primeira) return '<div class="visita"><span class="v-rot">Desde a sua última visita<small>Na próxima vez que você abrir o portal, aqui aparece o que entrou desde agora.</small></span></div>';
+  const n = (lista, t)=>lista.filter(x=>VISITA.novos[t].has(x.id)).length;
+  const itens = [
+    ["radar", "Radar", n(DADOS.radar.filter(passaFiltro), "radar"), "notícia no Radar", "notícias no Radar"],
+    ["movimentos", "Movimentos", n(DADOS.movimentos.filter(passaFiltro), "movimento"), "movimento", "movimentos"],
+    ["concorrencia", "Concorrência", n(DADOS.concorrencia||[], "concorrencia"), "na Concorrência", "na Concorrência"],
+    ["agenda", "Agenda", n(DADOS.agenda.filter(passaFiltro), "agenda"), "data na Agenda", "datas na Agenda"]].filter(x=>x[2]);
+  return '<div class="visita"><span class="v-rot">Desde a sua última visita<small>'+esc(quandoVisita(VISITA.baseEm))+(estado.industrias.size ? ' · no seu recorte' : '')+'</small></span>' +
+    (itens.length ? itens.map(([aba, rot, q, um, varios])=>'<button type="button" data-ir="'+aba+'" title="Abrir '+rot+': os novos têm o selo Novo para você"><b>'+q+'</b>'+(q===1 ? um : varios)+'</button>').join("")
+      : '<span class="v-nada">Nada novo desde então'+(estado.industrias.size ? ' no seu recorte' : '')+'.</span>') + '</div>';
+}
+
+/* =========================================================
+   COMO USAR O PORTAL · caminhos rápidos, glossário e de onde vêm os dados.
+   A parte comercial só aparece para quem tem acesso comercial.
+   ========================================================= */
+function abrirAjuda(){
+  const com = !!CONEXOES, cli = typeof temOportunidades==="function" && temOportunidades();
+  const caminho = (t, c)=>'<div class="caminho"><b>'+t+'</b><span>'+c+'</span></div>';
+  const termo = (t, d)=>'<dt>'+t+'</dt><dd>'+d+'</dd>';
+  document.getElementById("ajudaCorpo").innerHTML =
+    '<h4>Para que serve</h4><p>O portal reúne o que a R&amp;I acompanha todos os dias: notícias das indústrias com o ângulo para a Peers, números das empresas, ' +
+      'indicadores do setor, a agenda, o cenário macroeconômico e o que as consultorias concorrentes estão fazendo.' +
+      (com ? ' Para o time comercial, mostra também quem da Peers conhece alguém em cada empresa.' : '') + '</p>' +
+    '<h4>Caminhos rápidos</h4><div class="caminhos">' +
+      caminho('O que mudou desde a última vez', 'Edição do dia: a faixa "Desde a sua última visita" leva a cada aba, onde o que é novo tem o selo <i>Novo para você</i>.') +
+      caminho('Preparar uma reunião com uma empresa', '<i>Gerar briefing ▾ › Briefing de conta</i>: um texto com tudo o que o portal tem sobre ela. Os números estão em <i>Players › Finanças</i>.') +
+      caminho('Montar um briefing com o que você escolheu', 'Marque <i>incluir no briefing</i> nos cartões. O botão <i>Minha seleção</i>, no canto, junta os itens e gera o texto.') +
+      caminho('Acompanhar a concorrência', '<i>Players › Concorrência</i>, e <i>Gerar briefing ▾ › Briefing de concorrentes</i> para o PDF do período.') +
+      (cli ? caminho('Achar a próxima conversa', '<i>Comercial › Oportunidades</i>: ex-clientes para reativar e clientes para expandir, com quem chama. Há um Excel para baixar.') : '') +
+      (com ? caminho('Saber quem conhece quem', '<i>Comercial › Relacionamentos</i>: busque a empresa e veja quem da Peers tem conexão lá.') : '') +
+    '</div>' +
+    '<h4>Glossário</h4><dl>' +
+      termo('Recorte', 'Os filtros do topo (indústria, offering, tema). Valem para todas as abas que trazem notícias e dados; sem nada marcado, é tudo.') +
+      termo('Offering', 'A linha de serviço da Peers que o fato abre, como Strategy + M&amp;A ou Digital Products + Platforms.') +
+      termo('Players', 'As empresas das indústrias que acompanhamos (clientes e potenciais clientes). Concorrentes são as consultorias, em Concorrência.') +
+      termo('Ângulo Peers', 'A leitura da R&amp;I: que conversa a notícia abre para a Peers e com qual offering.') +
+      termo('Por que importa', 'O que o fato muda para a empresa ou para o setor.') +
+      termo('So what', 'A conclusão de um conjunto de dados: o que ele significa para a conversa com o cliente.') +
+      termo('Novo hoje · Novo para você', '<i>Novo hoje</i>: entrou na edição de hoje. <i>Novo para você</i>: entrou depois da sua última visita, neste navegador.') +
+      termo('Gerado por IA · Coleta automática', 'Os itens com IA trazem resumo e Ângulo Peers escritos por IA na rotina diária da R&amp;I; os de coleta automática vêm direto da fonte, achados por palavras-chave.') +
+      termo('Valor 1000 · Companhias abertas', 'As duas bases de Finanças: o ranking anual das 1.000 maiores empresas do Brasil e os resultados trimestrais das empresas listadas (CVM e releases).') +
+      termo('Modo de leitura', '<i>Consultor</i> é a leitura do setor. <i>Comercial</i> acrescenta a oportunidade comercial de cada notícia e deixa você destacar a sua lista de clientes, que fica só no seu navegador.') +
+      (com ? termo('Decisor', 'Conexão com cargo de coordenador para cima (coordenador, gerente, diretor, VP, C-Level).') +
+             termo('Em bando', 'Um contato que 2 ou mais executivos da Peers conhecem: dá para combinar a abordagem.') +
+             termo('N0 · N1 · N2', 'Os níveis dos executivos da Peers, do mais alto (N0) para o N2.') +
+             termo('Mapa de Conexões', 'A base com as conexões de 1º grau no LinkedIn dos executivos da Peers, só decisores e sem e-mail.') : '') +
+      (cli ? termo('Reativar · Expandir', '<i>Reativar</i>: ex-cliente com notícia nova e alguém que conhece decisores lá. <i>Expandir</i>: a notícia abre uma offering que a Peers ainda não fez ali.') +
+             termo('MD', 'O managing director responsável pela conta na base de clientes.') +
+             termo('Roda gigante', 'O ritual quinzenal em que cada rodada discute uma empresa da lista fixa. A aba traz tudo o que o portal tem sobre cada uma.') +
+             termo('Farol', 'Na Roda: verde é sinal forte (um movimento ou 2 ou mais notícias com a empresa na manchete), amarelo é sinal fraco, vermelho é sem sinal no portal nos últimos 30 dias.') : '') +
+    '</dl>' +
+    '<h4>De onde vêm os dados</h4><p>O robô do portal roda todo dia de manhã: notícias, movimentos e concorrência entram diariamente, e os indicadores seguem a cadência de cada fonte (mensal, trimestral). ' +
+      'A faixa de ações usa cotações com cerca de 15 minutos de atraso, renovadas a cada 15 minutos no pregão. Cada aba mostra a fonte e a data de cada item: ' +
+      'antes de levar um número para o cliente, confira na fonte.' + (com ? ' O Mapa de Conexões é renovado quando chegam redes novas dos executivos.' : '') + '</p>' +
+    '<h4>Dúvida ou sugestão</h4><p>Fale com o time de R&amp;I.</p>';
+  abrirModal("Ajuda");
+  registrarUso("ajuda");
+}
+
+/* =========================================================
    HOME — EDIÇÃO DO DIA
    ========================================================= */
 // Mostra tantas manchetes quanto cabem ao lado de Movimentos + Agenda, para os dois lados terminarem juntos.
@@ -3277,6 +3450,7 @@ function renderHome(){
       ? '<button class="btn-audio" onclick="abrirAudio()">▶ Ouvir o resumo <small>' + rotuloDuracao(durSeg) + '</small></button>'
       : '') +
   '</div>' +
+  faixaVisita() +
   faixaDaAba() +
   '<div class="kpi-strip">' + kpis.map(k=>
     '<div class="kpi '+k.cls+'"><div class="kpi-label">'+k.l+'</div>' +
@@ -3610,7 +3784,7 @@ function renderCardRadar(item){
   '<div class="rcard '+(item.relevancia==='alta'?'alta':'')+'" id="radar-'+esc(item.id)+'">' +
     '<div class="rcard-top">' +
       '<label class="cbx"><input type="checkbox" class="chk" data-tipo="radar" data-id="'+item.id+'" '+(marcado?'checked':'')+'> incluir no briefing</label>' +
-      '<span>'+seloEdicao(item.data)+(item.ia===false ? ' <span class="selo-ia">Coleta automática</span>' : ' <span class="selo-ia">Gerado por IA</span>')+'</span>' +
+      '<span>'+seloEdicao(item.data)+seloVisita("radar", item.id)+(item.ia===false ? ' <span class="selo-ia">Coleta automática</span>' : ' <span class="selo-ia">Gerado por IA</span>')+'</span>' +
     '</div>' +
     '<h3>'+esc(item.manchete)+'</h3>' +
     '<p class="resumo">'+esc(item.resumo)+'</p>' +
@@ -4515,7 +4689,7 @@ function renderMovimentos(){
 
 function itemMovimento(m){
   return '<div class="tl-item">' +
-    '<div class="tl-head"><span class="tl-data">'+formatarData(m.data)+'</span>' +
+    '<div class="tl-head"><span class="tl-data">'+formatarData(m.data)+'</span>' + seloVisita("movimento", m.id) +
     '<span class="badge bp">'+m.tipo+'</span>' +
     '<span class="badge bg-n">'+esc(rotuloInd(m))+'</span>' +
     (m.ia ? '<span class="selo-ia">Gerado por IA</span>' : '') + '</div>' +
@@ -4929,7 +5103,7 @@ async function briefingConcorrentes(dias){
 function itemConcorrencia(i){
   const semAnalise = !i.ia;
   return '<div class="tl-item conc">' +
-    '<div class="tl-head"><span class="tl-data">'+formatarData(i.data)+'</span>' +
+    '<div class="tl-head"><span class="tl-data">'+formatarData(i.data)+'</span>' + seloVisita("concorrencia", i.id) +
       '<span class="badge bp">'+esc(i.tipo)+'</span>' +
       (i.selo ? '<span class="badge '+(SELO_CLASSE[i.selo]||'bg-n')+'">'+esc(i.selo)+'</span>' : '') +
       (i.offering ? '<span class="badge b1">'+esc(i.offering)+'</span>' : '') +
@@ -5038,7 +5212,7 @@ function renderAgenda(){
         '<div class="edate">'+parte[2]+'<small>'+MESES[parseInt(parte[1],10)-1]+'</small></div>' +
         '<div style="flex:1">' +
           '<span class="badge '+cls(e.tipo)+'">'+e.tipo+'</span>' +
-          (d>=0 && d<=30 ? ' <span class="badge bg-n">em '+d+' dias</span>' : '') +
+          (d>=0 && d<=30 ? ' <span class="badge bg-n">em '+d+' dias</span>' : '') + seloVisita("agenda", e.id) +
           '<h4>'+esc(e.titulo)+'</h4>' +
           '<p>'+esc(e.local)+' · '+esc(rotuloInd(e))+' · '+e.offering+'</p>' +
           '<p style="margin-top:4px;color:#334">'+esc(e.detalhe)+(e.url ? ' · '+linkFonte('fonte', e.url) : '')+'</p>' +
@@ -5987,7 +6161,7 @@ function fecharModal(nome){
   document.getElementById("m"+nome).classList.remove("open");
 }
 document.addEventListener("keydown", e=>{
-  if(e.key==="Escape"){ fecharModal("Ficha"); fecharModal("Briefing"); fecharModal("Audio"); fecharModal("Conta"); fecharModal("Selecao"); }
+  if(e.key==="Escape"){ fecharModal("Ficha"); fecharModal("Briefing"); fecharModal("Audio"); fecharModal("Conta"); fecharModal("Selecao"); fecharModal("Ajuda"); }
 });
 
 /* =========================================================
