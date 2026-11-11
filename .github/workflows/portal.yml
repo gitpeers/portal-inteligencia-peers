@@ -10,7 +10,7 @@ name: Atualizar e publicar o portal
 
 on:
   schedule:
-    - cron: "0 9 * * *"          # 9h UTC = 6h em Brasília
+    - cron: "17 8 * * *"         # 8h17 UTC = 5h17 em Brasília (fora da hora cheia, que o GitHub atrasa; a IA começa às 7h05)
   workflow_dispatch:
     inputs:
       forcar:

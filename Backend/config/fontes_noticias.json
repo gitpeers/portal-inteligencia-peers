@@ -1,5 +1,5 @@
 {
- "_como_usar": "Feeds RSS lidos a cada atualização do Radar e de Movimentos. Fontes setoriais têm 'padrao' = [indústria, divisão]: a notícia fica na indústria da fonte, e as palavras-chave só escolhem a divisão. Fontes gerais têm 'padrao': null: a notícia só entra se as palavras-chave identificarem a indústria com clareza. Para incluir uma fonte, acrescente um item; para tirar, apague o item.",
+ "_como_usar": "Feeds RSS lidos a cada atualização do Radar e de Movimentos. Fontes setoriais têm 'padrao' = [indústria, divisão]: a notícia fica na indústria da fonte, e as palavras-chave só escolhem a divisão. Fontes gerais têm 'padrao': null: a notícia só entra se as palavras-chave identificarem a indústria com clareza. Fontes internacionais podem ter 'so_brasil': true: aí a notícia só entra se tiver ligação com o Brasil (regra 'so_brasil' em classificacao.json). Para incluir uma fonte, acrescente um item; para tirar, apague o item.",
  "fontes": [
   {
    "nome": "Finsiders Brasil",
@@ -20,7 +20,8 @@
    "padrao": [
     "Financial Services",
     "Banking"
-   ]
+   ],
+   "so_brasil": true
   },
   {
    "nome": "Banco Central (notas e normas)",

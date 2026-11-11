@@ -136,10 +136,29 @@ def melhor(titulo, resumo, dicionario):
 PONTUACAO_MINIMA_GERAL = 2   # fontes gerais: a palavra-chave precisa estar no título ou aparecer 2 vezes no resumo
 
 
+def _cita(nomes, texto):
+    """Algum nome escrito como na lista (maiúsculas contam), como palavra inteira."""
+    return any(re.search(r"(?<![\w-])" + re.escape(n) + r"(?![\w-])", texto) for n in nomes)
+
+
+def ligada_ao_brasil(noticia, cfg):
+    """Fontes internacionais ("so_brasil"): só entra o que cita o Brasil ou a América Latina, uma empresa brasileira
+    conhecida lá fora ou, em fusão e aquisição, um grande grupo global (ver "so_brasil" em classificacao.json)."""
+    regra = cfg["so_brasil"]
+    bruto = noticia["titulo"] + " " + (noticia["resumo"] or "")
+    norm = normalizar(bruto)
+    if any(_padrao(p).search(norm) for p in regra["termos_brasil"]) or _cita(regra["empresas_brasileiras"], bruto):
+        return True
+    fusao = any(_padrao(p).search(norm) for p in regra["termos_fusao"])
+    return fusao and _cita(regra["grupos_globais"], bruto)
+
+
 def classificar(noticia, fonte, cfg):
     t, r = normalizar(noticia["titulo"]), normalizar(noticia["resumo"])
     if any(_padrao(p).search(t) for p in cfg["excluir"]):
         return None  # política partidária, crime, esporte etc.
+    if fonte.get("so_brasil") and not ligada_ao_brasil(noticia, cfg):
+        return None  # fonte internacional: notícia sem ligação com o Brasil fica de fora
     if fonte["padrao"]:
         # fonte setorial: a indústria é a da fonte; as palavras-chave só escolhem a divisão dentro dela
         industria = fonte["padrao"][0]
