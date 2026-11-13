@@ -1,6 +1,6 @@
 {
  "trimestre": "3T26",
- "atualizadoEm": "2026-11-06",
+ "atualizadoEm": "2026-11-13",
  "releases": [
   {
    "id": "itau",
@@ -36,15 +36,17 @@
    "id": "gpa",
    "nome": "GPA",
    "cnpj": "47.508.411/0001-56",
-   "data": null,
-   "link": null
+   "data": "2026-11-04",
+   "assunto": "Release 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1584154&numSequencia=1108860&numVersao=1"
   },
   {
    "id": "assai",
    "nome": "Assaí",
    "cnpj": "06.057.223/0001-71",
-   "data": null,
-   "link": null
+   "data": "2026-11-05",
+   "assunto": "Release de Resultados 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1585096&numSequencia=1109802&numVersao=1"
   },
   {
    "id": "grupo-mateus",
@@ -64,29 +66,33 @@
    "id": "pague-menos",
    "nome": "Pague Menos",
    "cnpj": "06.626.253/0001-51",
-   "data": null,
-   "link": null
+   "data": "2026-11-04",
+   "assunto": "Release 3T26 (versão em português)",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1583957&numSequencia=1108663&numVersao=1"
   },
   {
    "id": "panvel",
    "nome": "Panvel",
    "cnpj": "92.665.611/0001-77",
-   "data": null,
-   "link": null
+   "data": "2026-11-05",
+   "assunto": "Divulgação de Resultados 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1585086&numSequencia=1109792&numVersao=1"
   },
   {
    "id": "renner",
    "nome": "Renner",
    "cnpj": "92.754.738/0001-62",
-   "data": null,
-   "link": null
+   "data": "2026-11-05",
+   "assunto": "Release 3T26 - Português e Inglês",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1584882&numSequencia=1109588&numVersao=1"
   },
   {
    "id": "cea",
    "nome": "C&A",
    "cnpj": "45.242.914/0001-05",
-   "data": null,
-   "link": null
+   "data": "2026-11-04",
+   "assunto": "Release 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1584195&numSequencia=1108901&numVersao=1"
   },
   {
    "id": "riachuelo",
@@ -127,8 +133,9 @@
    "id": "anima",
    "nome": "Ânima",
    "cnpj": "09.288.252/0001-32",
-   "data": null,
-   "link": null
+   "data": "2026-11-05",
+   "assunto": "Release de Resultados 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1584881&numSequencia=1109587&numVersao=1"
   },
   {
    "id": "ambev",
@@ -220,8 +227,9 @@
    "id": "fleury",
    "nome": "Fleury",
    "cnpj": "60.840.055/0001-31",
-   "data": null,
-   "link": null
+   "data": "2026-11-05",
+   "assunto": "Press-release 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1584824&numSequencia=1109530&numVersao=1"
   },
   {
    "id": "hapvida",
@@ -255,8 +263,9 @@
    "id": "dasa",
    "nome": "Dasa",
    "cnpj": "61.486.650/0001-83",
-   "data": null,
-   "link": null
+   "data": "2026-11-05",
+   "assunto": "Release de Resultados 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1585176&numSequencia=1109882&numVersao=1"
   }
  ]
 }
