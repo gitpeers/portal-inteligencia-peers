@@ -1065,11 +1065,6 @@ select.flt:focus,input.flt:focus{border-color:var(--blue);box-shadow:var(--focus
       <button class="vbtn" data-base="valor" title="Ranking anual das 1.000 maiores empresas do Brasil">Maiores empresas · Valor 1000</button>
     </div>
     <span id="chipRestrito"></span>
-    <div class="vgroup">
-      <span class="flt-label" title="Consultor: a leitura do setor. Comercial: acrescenta a oportunidade comercial de cada notícia e permite destacar a sua lista de clientes">Modo de leitura</span>
-      <button class="vbtn active" data-v="consultor">Consultor</button>
-      <button class="vbtn" data-v="comercial">Comercial</button>
-    </div>
   </div>
   <div class="filters-chips" id="fChips"></div>
 </div>
@@ -1324,7 +1319,7 @@ async function carregarDados(){
     trimestral: empresasTrimestrais(),
     indicadores: INDICADORES_SETORIAIS,
     // itens que a rotina de IA descartou (sem relação com negócios) ficam guardados nos dados, mas não aparecem
-    radar: radar.filter(i=>!i.oculto), movimentos: movimentos.filter(m=>!m.oculto), agenda,
+    radar: radar.filter(i=>!i.oculto && !i.acompanhada), movimentos: movimentos.filter(m=>!m.oculto), agenda,
     analises: {financas: analises.financas || {}, indicadores: analises.indicadores || {}, concorrencia: analises.concorrencia || null,
                concorrenciaBriefing: analises.concorrenciaBriefing || null,     // síntese da IA para o Briefing de Concorrentes
                aprofundamento: analises.aprofundamento || {}, sowhat: analises.sowhat || {}},
@@ -1683,18 +1678,9 @@ function normConx(s){
 function nomeCurto(n){ const p = String(n||"").split(/\s+/).filter(Boolean); return p.length>1 ? p[0]+" "+p[p.length-1] : (p[0]||""); }
 
 async function carregarConexoes(){
-  try{
-    const {data, error} = await sb.from("conexoes").select("conteudo").eq("nome", "mapa").maybeSingle();
-    if(error || !data || !data.conteudo) return null;     // sem acesso, ou a tabela ainda não existe
-    const {data: acesso} = await sb.from("acesso_comercial").select("perfil").maybeSingle();   // só a própria linha
-    // a base de clientes da Peers (Backend/publicar_clientes.py) fica na mesma tabela protegida
-    const {data: cli} = await sb.from("conexoes").select("conteudo").eq("nome", "clientes").maybeSingle();
-    if(cli && cli.conteudo) carregarClientesPeers(cli.conteudo);
-    // a lista de empresas da Roda gigante (Backend/publicar_roda.py), na mesma tabela protegida
-    const {data: rd} = await sb.from("conexoes").select("conteudo").eq("nome", "roda").maybeSingle();
-    RODA = rd && rd.conteudo ? rd.conteudo : null;
-    return prepararConexoes(data.conteudo, (acesso && acesso.perfil) || "marketing");
-  }catch(e){ return null; }
+  // A parte comercial (Mapa de Conexões, clientes, Roda gigante) saiu do portal ao vivo em 16/11/2026 e passou a
+  // existir só no Peers Deck. Aqui não se consulta mais o banco: sem dados, as abas e os quadros não aparecem.
+  return null;
 }
 
 // perfil "marketing": vê a visão geral e pode "ver como" qualquer executivo. Perfil "executivo": vê a visão geral e
@@ -3429,7 +3415,6 @@ function abrirAjuda(){
       termo('Novo hoje · Novo para você', '<i>Novo hoje</i>: entrou na edição de hoje. <i>Novo para você</i>: entrou depois da sua última visita, neste navegador.') +
       termo('Gerado por IA · Coleta automática', 'Os itens com IA trazem resumo e Ângulo Peers escritos por IA na rotina diária da R&amp;I; os de coleta automática vêm direto da fonte, achados por palavras-chave.') +
       termo('Valor 1000 · Companhias abertas', 'As duas bases de Finanças: o ranking anual das 1.000 maiores empresas do Brasil e os resultados trimestrais das empresas listadas (CVM e releases).') +
-      termo('Modo de leitura', '<i>Consultor</i> é a leitura do setor. <i>Comercial</i> acrescenta a oportunidade comercial de cada notícia e deixa você destacar a sua lista de clientes, que fica só no seu navegador.') +
       (com ? termo('Decisor', 'Conexão com cargo de coordenador para cima (coordenador, gerente, diretor, VP, C-Level).') +
              termo('Em bando', 'Um contato que 2 ou mais executivos da Peers conhecem: dá para combinar a abordagem.') +
              termo('N0 · N1 · N2', 'Os níveis dos executivos da Peers, do mais alto (N0) para o N2.') +

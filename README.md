@@ -30,22 +30,17 @@ Backend/
   enviar_dados.py       devolve os arquivos de Frontend/dados ao Supabase, depois dos scripts
   supabase_api.py       acesso à tabela secoes do Supabase (usado pelos dois acima)
   publicar_trimestral.py  envia o dashboard de resultados trimestrais para a aba Análises trimestrais
-  publicar_conexoes.py  envia o Mapa de Conexões para a aba Relacionamentos (só a lista de acesso comercial)
-  publicar_clientes.py  envia a base de clientes da Peers para o Time comercial e as Conexões (só a lista de acesso)
-  publicar_roda.py      envia a lista de empresas da Roda gigante para a sub-aba de Oportunidades (só a lista de acesso)
   publicar_cenario.py   publica a aba Cenário 2027 (Mercado) a partir do arquivo da equipe, guardado fora do repositório
   atualizar_cenario.py  rotina diária da aba Cenário 2027: coluna Hoje (BC, IBGE, Ibovespa) e Focus
   atualizar_cotacoes.py faixa de ações (Edição do dia, Finanças, Roda): a cada 15 min no pregão, pela tarefa agendada
                         "Portal Peers - Cotações" no computador do Kayo; o cotacoes.yml do GitHub fica de reserva (o cron dele atrasa)
   relatorio_uso.py      uso do portal por semana (abas, briefings, perfis), só contagens; lê a tabela uso_portal
-  arquivar_roda.py      todo dia, guarda 90 dias de notícias e movimentos das empresas da Roda (quadro No mercado)
   validar_fontes.py     testa se cada fonte de notícias tem feed ativo (rodar uma vez por mês)
   ia/                   rotina de IA: instruções (ROTINA.md) e scripts que preparam e aplicam as análises
   comum.py              funções compartilhadas
   config/               o que a R&I pode ajustar sem mexer no código (ver abaixo)
 Supabase/
   configuracao.sql      tabela, regras de acesso e trava do domínio (rodar uma vez no Supabase)
-  comercial.sql         tabela fechada das conexões e lista de acesso comercial (rodar uma vez no Supabase)
   seguranca.sql         fecha as funções do banco para quem não fez login (rodar uma vez no Supabase)
   uso.sql               registro de uso (aba, evento, perfil, sessão sorteada; sem e-mail), só gravação (rodar uma vez)
 .github/workflows/portal.yml  o agendamento (baixar, atualizar, devolver ao Supabase) e a publicação da página
@@ -170,91 +165,8 @@ uma tarefa agendada no computador do Kayo ("Portal Peers - Sincronizar GitHub", 
 - O GitHub pausa agendamentos de repositórios sem atividade por 60 dias. Os envios automáticos de dados contam
   como atividade; se a pausa acontecer, reative em Actions.
 
-**Aba Relacionamentos (visão comercial; antes "Conexões por empresa").** Mostra, por empresa, quem da Peers conhece alguém lá (Mapa de Conexões,
-conexões de 1º grau no LinkedIn), com o link do perfil, os leads em bando e as notícias e movimentos da empresa no
-portal; também põe o quadro "Quem da Peers chega a..." no Radar, em Movimentos e na ficha da empresa. Os dados ficam na
-tabela `conexoes`, que só entrega a quem está em `acesso_comercial` (Supabase/comercial.sql); para os demais a aba não
-aparece. Para dar ou tirar acesso: Supabase > Table Editor > acesso_comercial (e-mail em minúsculas). O perfil
-`marketing` vê a visão geral e pode "ver como" qualquer executivo; o perfil `executivo` vê a visão geral e só a
-própria carteira (o executivo cujo nome bate com o e-mail). Na lista de empresas, a caixinha ao lado do nome marca a
-empresa para a planilha de relacionamentos: "Baixar planilha (Excel)" gera no navegador (ExcelJS) o mesmo formato da
-planilha feita para a BytePlus (visão geral com quem procurar primeiro, contatos com o LinkedIn e premissas). A lista
-mostra as empresas-alvo e as de fora do alvo com porte relevante (coluna `porte_relevante` da base: receita a partir de
-R$ 300 mi ou 500 funcionários, pelo Valor 1000, pela CVM ou por estimativa, ver a aba `porte_empresas`); as menores e
-as sem dado de porte só aparecem na busca. Vai para o portal
-só executivo, lead (nome, cargo, senioridade, LinkedIn), empresa e indústria: sem e-mail, rede interna, classificações
-comerciais nem funil. Para publicar a base mais recente (base_conexoes_peers_v<N>.xlsx, na pasta Extração de Leads), na
-pasta Backend, com as duas variáveis definidas: `python publicar_conexoes.py "<pasta Extração de Leads>"`.
+## Parte comercial
 
-**Base de clientes da Peers.** A carteira de projetos ("base clientes.xlsx", fora desta pasta, em 00. Apoio > Base de
-clientes) vai para a mesma tabela `conexoes`, na linha `clientes`, e chega só a quem tem `ve_clientes` marcado em
-`acesso_comercial` (no começo, quem tem o perfil marketing; ver Supabase/comercial.sql). Quem não tem continua vendo o
-Mapa normalmente, e o Time comercial volta ao modo de carregar a própria lista. Com
-ela, o modo Time comercial marca sozinho os clientes citados no Radar, em Movimentos e em Finanças (sem precisar
-carregar lista; quem quiser ainda soma a própria lista de prospects, que fica só no navegador), e a aba Conexões mostra
-em cada empresa se é cliente ativo ou ex-cliente, o último projeto e os responsáveis, com um filtro "Cliente Peers" e
-duas colunas a mais na planilha baixada. Vai, por cliente: status, número de projetos, último projeto, offerings e
-líder de conta, N1 e MD do último projeto. Para publicar uma versão nova da planilha, na pasta Backend, com as duas
-variáveis definidas: `python publicar_clientes.py "<pasta Base de clientes>"`.
-
-**Menu Comercial** agrupa Relacionamentos, Oportunidades e Roda gigante; cada item aparece só para quem tem a respectiva permissão (um único item liberado vira botão direto). **Aba Oportunidades** (só para quem tem `ve_clientes`). Cruza a base de clientes com as notícias dos últimos 30 dias
-(Radar e Movimentos) e o Mapa de Conexões, em duas sub-abas. *Reativar contas*: ex-clientes com notícia nova e decisor
-conhecido, com prioridade de 1 a 3 (projeto terminado há até 6 meses, mais de uma notícia, 10 ou mais decisores),
-"quem chama" pela regra da planilha de relacionamentos e o contato mais sênior dessa pessoa. *Expandir contas*: a
-notícia aponta para uma offering que a Peers ainda não fez no cliente; a comparação usa a tradução das offerings da
-carteira para as do portal, em `OFFERING_PORTAL` (publicar_clientes.py). O nome do cliente só conta escrito com
-maiúscula na notícia. Por enquanto, o texto do cartão é o Ângulo Peers da notícia; a leitura comercial escrita pela
-rotina de IA é o próximo passo.
-
-**Roda gigante** (sub-aba de Oportunidades, mesma regra de acesso: `ve_clientes`). A Roda gigante é um ritual quinzenal da
-Peers: a cada rodada se discute uma empresa de uma lista fixa. A sub-aba reúne, para essas empresas, o que o portal já
-tem, na janela de 30 dias (`DIAS_OPORT`), sem rotina nova e sem digitar nada. O case apresentado no ritual não entra no
-portal. A lista de empresas fica na tabela protegida `conexoes`, linha `roda`, e **nunca neste repositório**, porque as
-empresas são confidenciais. Sem essa linha, a sub-aba não aparece.
-
-- **Filtro no topo**: um nome por empresa, cada um com um **farol** dos últimos 30 dias (verde: um movimento ou 2 ou mais
-  notícias com a empresa na manchete; amarelo: 1 notícia, citação só no corpo do texto ou data na Agenda em até 14 dias;
-  vermelho: nada no portal). Sem números: empresa sem notícia também é uma conta a trabalhar, e a página vem completa.
-- **Visão de uma empresa**, de cima para baixo:
-  1. *Informações da empresa*: finanças em uma linha (resultado trimestral das companhias abertas, ou Valor 1000 quando não há)
-     e, numa coluna ao lado, a relação com a Peers (situação, projetos, último projeto, líder, MD).
-  2. *Mercado da empresa* e *O setor*, em texto corrido com o essencial em negrito e uma caixa **"O que isso indica"**. No
-     mercado, o texto e a conclusão são montados por regra, sem IA (posição frente à mediana da divisão, o que o tipo de
-     movimento sugere, a oportunidade mais forte para a Peers e o alerta de concorrente). No setor, vêm das leituras de IA
-     dos indicadores (`analises.json`: situação atual, impacto e oportunidade) e das notícias de alta relevância do Radar
-     do setor nos últimos 60 dias, regulação primeiro. A mini parte **Concorrentes na empresa** fica dentro do mercado:
-     notícias de consultorias concorrentes que citam a empresa desde o início da coleta (citação não prova projeto).
-  3. *Notícias do Radar* e *Movimentos estratégicos*, em caixas de altura fixa com rolagem e um "So what geral" por regra.
-     Sem nenhum dos dois, as caixas dão lugar a uma faixa de aviso. A empresa só conta com o nome em maiúscula; quando
-     aparece só no resumo, o item leva a marca "citação no texto".
-  4. *Onde a Peers já entrou* (clique abre a análise dos projetos) e, abaixo, *Oportunidades por offering*, ao lado de
-     *Resultado frente ao setor*. As oportunidades vêm dos sinais da empresa e, na falta deles, das leituras do setor,
-     com a marca de origem; neon: a Peers ainda não fez a offering na empresa. O resultado frente ao setor é uma lista de
-     cartões com barras (empresa x setor) e a posição; clicar abre a visão por player do indicador.
-- **Análise dos projetos** (janela aberta em "Onde a Peers já entrou"): faixa com projetos, período, offering principal,
-  líder de conta e MD; linha do tempo em barras (uma por projeto, colorida por offering, com a data de hoje marcada);
-  líder de conta, N1 e MD que mais aparecem; e as offerings ainda não feitas. Usa a lista de projetos da base de clientes,
-  que `publicar_clientes.py` envia como 12º item de cada cliente. Sem isso (base publicada antes dessa versão), a janela
-  mostra o resumo e um aviso.
-- **Faixa de atualização e No mercado** (visão de uma empresa, desde 06/11/2026): a faixa diz de que trimestre é o
-  resultado no portal, a próxima data de resultado, quando o Radar foi atualizado e de quando é a pesquisa fora do portal.
-  O quadro **No mercado** é uma linha do tempo de 90 dias que junta Radar, movimentos, concorrência, o arquivo da Roda e a
-  pesquisa fora do portal (RI da empresa, Valor 1000 e, por último, mídia de terceiros, com aviso para conferir a fonte).
-  O mesmo fato em várias fontes vira um evento só (datas a até 3 dias e palavras ou valor em comum); notícias que só citam
-  a empresa ficam recolhidas em "menções". O Radar guarda 30 dias e os movimentos uns 45: o resto vem de
-  `arquivar_roda.py`, que roda no GitHub Actions depois de `enviar_dados.py` e guarda os itens na própria linha "roda"
-  (`conteudo.arquivo`); o log só mostra contagens, porque é público.
-- **Visão Todos**: caixas de Radar e Movimentos, concorrência citada, oportunidades por offering (empresas com sinal),
-  onde a Peers já entrou e resultado frente ao setor, mais as próximas datas da Agenda.
-
-Para publicar ou trocar a lista, na pasta Backend, com `SUPABASE_URL` e `SUPABASE_SERVICE_KEY` definidas:
-`python publicar_roda.py "<roda.json>" ["<roda_pesquisa.json>"]`, com os arquivos guardados **fora** da pasta sincronizada com o repositório (hoje em `04. ⚙️ Gestão da Área\00. Apoio\Roda gigante`). Republicar a lista mantém o arquivo de 90 dias e, sem o segundo arquivo, a pesquisa já publicada. Cada
-empresa leva o nome mostrado e as grafias que contam como citação (`{"nome": "...", "nomes": ["...", "..."]}`).
-Para mostrar o card do setor de uma empresa que não está nas companhias abertas nem no Valor 1000, acrescente a ela
-`"industria"` e `"divisao"` (nomes da taxonomia do portal) no mesmo arquivo e publique a lista de novo.
-
-Limites conhecidos: o casamento é por nome, então empresa sem cobertura nas fontes do Radar fica com farol vermelho
-mesmo havendo notícia fora do portal; o mesmo fato noticiado por várias fontes aparece repetido na visão Todos (na ficha, vira um evento só); o texto do mercado da
-empresa e o "So what geral" são por regra, sem IA (passar para a rotina de IA exige mudar a regra de que ela evita citar
-clientes); a classificação de setor das notícias do Radar ainda erra em parte, e isso aparece em "Mudanças em curso no
-setor". A janela só foi testada com os dados locais; a conferência com login e a base de clientes reais é feita no portal.
+Em 16/11/2026 a parte comercial (Mapa de Conexões, base de clientes, Oportunidades e Roda gigante) **saiu deste
+portal e deste repositório** e passou a existir só no Peers Deck. Nenhum dado dela fica aqui nem no GitHub Pages.
+Os scripts, o SQL e a documentação dessa parte ficam fora do repositório, na pasta de apoio da Gestão da Área.
