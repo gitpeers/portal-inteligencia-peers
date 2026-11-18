@@ -2,6 +2,7 @@
 import gzip
 import hashlib
 import json
+import os
 import re
 import time
 import unicodedata
@@ -10,7 +11,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
-DADOS = RAIZ / "Frontend" / "dados"
+# PORTAL_DADOS: pasta dos dados fora do repositório (robô no PC, que publica no Peers Deck); sem ela, Frontend/dados
+DADOS = Path(os.environ["PORTAL_DADOS"]) if os.environ.get("PORTAL_DADOS") else RAIZ / "Frontend" / "dados"
 CONFIG = Path(__file__).resolve().parent / "config"
 FUSO_BR = timezone(timedelta(hours=-3))
 
