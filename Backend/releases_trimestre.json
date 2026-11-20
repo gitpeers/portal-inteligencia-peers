@@ -1,6 +1,6 @@
 {
  "trimestre": "3T26",
- "atualizadoEm": "2026-11-13",
+ "atualizadoEm": "2026-11-20",
  "releases": [
   {
    "id": "itau",
@@ -29,8 +29,9 @@
    "id": "banco-do-brasil",
    "nome": "Banco do Brasil",
    "cnpj": "00.000.000/0001-91",
-   "data": null,
-   "link": null
+   "data": "2026-11-11",
+   "assunto": "BB Notícias 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1587972&numSequencia=1112678&numVersao=1"
   },
   {
    "id": "gpa",
@@ -52,8 +53,9 @@
    "id": "grupo-mateus",
    "nome": "Grupo Mateus",
    "cnpj": "24.990.777/0001-09",
-   "data": null,
-   "link": null
+   "data": "2026-11-12",
+   "assunto": "Release 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1588727&numSequencia=1113433&numVersao=1"
   },
   {
    "id": "rd-saude",
@@ -98,36 +100,41 @@
    "id": "riachuelo",
    "nome": "Riachuelo",
    "cnpj": "08.402.943/0001-52",
-   "data": null,
-   "link": null
+   "data": "2026-11-09",
+   "assunto": "Resultados 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1586515&numSequencia=1111221&numVersao=1"
   },
   {
    "id": "azzas",
    "nome": "Azzas 2154",
    "cnpj": "16.590.234/0001-76",
-   "data": null,
-   "link": null
+   "data": "2026-11-11",
+   "assunto": "Earnings Release 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1588019&numSequencia=1112725&numVersao=1"
   },
   {
    "id": "cogna",
    "nome": "Cogna",
    "cnpj": "02.800.026/0001-40",
-   "data": null,
-   "link": null
+   "data": "2026-11-11",
+   "assunto": "Divulgação de Resultados 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1587916&numSequencia=1112622&numVersao=1"
   },
   {
    "id": "vitru",
    "nome": "Vitru",
    "cnpj": "20.512.706/0001-40",
-   "data": null,
-   "link": null
+   "data": "2026-11-11",
+   "assunto": "Earnings Release 3T26_Portugues",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1588021&numSequencia=1112727&numVersao=1"
   },
   {
    "id": "yduqs",
    "nome": "Yduqs",
    "cnpj": "08.807.432/0001-10",
-   "data": null,
-   "link": null
+   "data": "2026-11-12",
+   "assunto": "Release 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1588433&numSequencia=1113139&numVersao=1"
   },
   {
    "id": "anima",
@@ -156,36 +163,41 @@
    "id": "m-dias-branco",
    "nome": "M. Dias Branco",
    "cnpj": "07.206.816/0001-15",
-   "data": null,
-   "link": null
+   "data": "2026-11-12",
+   "assunto": "Earnings Release 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1588654&numSequencia=1113360&numVersao=1"
   },
   {
    "id": "mbrf",
    "nome": "MBRF",
    "cnpj": "03.853.896/0001-40",
-   "data": null,
-   "link": null
+   "data": "2026-11-12",
+   "assunto": "Relatório da Administração 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1588711&numSequencia=1113417&numVersao=1"
   },
   {
    "id": "slc-agricola",
    "nome": "SLC Agrícola",
    "cnpj": "89.096.457/0001-55",
-   "data": null,
-   "link": null
+   "data": "2026-11-11",
+   "assunto": "Release 3T26 português",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1587920&numSequencia=1112626&numVersao=1"
   },
   {
    "id": "raizen",
    "nome": "Raízen",
    "cnpj": "33.453.598/0001-23",
-   "data": null,
-   "link": null
+   "data": "2026-11-11",
+   "assunto": "Relatório de Resultados - 2T 26 27",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1588070&numSequencia=1112776&numVersao=1"
   },
   {
    "id": "profarma",
    "nome": "Profarma",
    "cnpj": "45.453.214/0001-51",
-   "data": null,
-   "link": null
+   "data": "2026-11-12",
+   "assunto": "Release de resultados do 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1588903&numSequencia=1113609&numVersao=1"
   },
   {
    "id": "hypera",
@@ -199,15 +211,17 @@
    "id": "blau",
    "nome": "Blau",
    "cnpj": "58.430.828/0001-60",
-   "data": null,
-   "link": null
+   "data": "2026-11-10",
+   "assunto": "Release 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1587437&numSequencia=1112143&numVersao=1"
   },
   {
    "id": "viveo",
    "nome": "Viveo",
    "cnpj": "12.420.164/0001-57",
-   "data": null,
-   "link": null
+   "data": "2026-11-10",
+   "assunto": "Relatório de Resultados do 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1587471&numSequencia=1112177&numVersao=1"
   },
   {
    "id": "biomm",
@@ -220,8 +234,9 @@
    "id": "rede-dor",
    "nome": "Rede D'Or",
    "cnpj": "06.047.087/0001-39",
-   "data": null,
-   "link": null
+   "data": "2026-11-12",
+   "assunto": "Press-release de Resultados 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1588419&numSequencia=1113125&numVersao=1"
   },
   {
    "id": "fleury",
@@ -235,15 +250,17 @@
    "id": "hapvida",
    "nome": "Hapvida",
    "cnpj": "05.197.443/0001-38",
-   "data": null,
-   "link": null
+   "data": "2026-11-11",
+   "assunto": "Release 3T26 PT e EN",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1588002&numSequencia=1112708&numVersao=1"
   },
   {
    "id": "mater-dei",
    "nome": "Mater Dei",
    "cnpj": "16.676.520/0001-59",
-   "data": null,
-   "link": null
+   "data": "2026-11-09",
+   "assunto": "Press-Release 3T26",
+   "link": "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1586697&numSequencia=1111403&numVersao=1"
   },
   {
    "id": "oncoclinicas",
